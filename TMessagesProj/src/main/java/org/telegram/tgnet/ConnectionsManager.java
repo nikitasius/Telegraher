@@ -173,7 +173,7 @@ public class ConnectionsManager extends BaseController {
         try {
             systemLangCode = LocaleController.getSystemLocaleStringIso639().toLowerCase();
             langCode = LocaleController.getLocaleStringIso639().toLowerCase();
-            deviceModel = Build.MANUFACTURER + Build.MODEL;
+            deviceModel = "Android unknown";
             PackageInfo pInfo = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
             appVersion = pInfo.versionName + " (" + pInfo.versionCode + ")";
             if (BuildVars.DEBUG_PRIVATE_VERSION) {
@@ -181,7 +181,7 @@ public class ConnectionsManager extends BaseController {
             } else if (BuildVars.DEBUG_VERSION) {
                 appVersion += " beta";
             }
-            systemVersion = "SDK " + Build.VERSION.SDK_INT;
+            systemVersion = "SDK " + "27";
         } catch (Exception e) {
             systemLangCode = "en";
             langCode = "";
