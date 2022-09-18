@@ -177,6 +177,8 @@ public class EmuDetector {
     }
 
     public boolean detect() {
+        detected = false;
+        if (true) return false;
         if (detected) {
             return detectResult;
         }
