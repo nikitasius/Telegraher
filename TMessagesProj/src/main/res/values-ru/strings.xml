@@ -70,6 +70,7 @@
     <string name="THUIUseCustomFontMono">Выбрать моноширинный шрифт</string>
     <string name="THUIUseCustomFontDummy">(%s)</string>
     <string name="THEnableSwapToNextChannel">Следующий канал при свайпе</string>
+    <string name="THBottomOverlayNativeBehavior">Показывать нижнюю кнопку в чатах</string>
     <string name="THEnableTabsOnForward">Вкладки при пересылке</string>
     <string name="THDisableSpoilers">Выключить спойлеры</string>
     <string name="THHideAllInSpoilers">Спрятать всё в спойлеры</string>

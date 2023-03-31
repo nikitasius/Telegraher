@@ -106,6 +106,7 @@ public class TelegraherSettingsActivity extends BaseFragment implements Notifica
     private int chatSBFullRow;
     private int chatSBManagerRow;
     private int chatSwapToNextChannelRow;
+    private int chatBottomOverlayNativeBehaviorRow;
     private int chatTabsOnForwardRow;
     private int chatDisableSpoilersRow;
     private int chatHideAllInSpoilersRow;
@@ -200,6 +201,7 @@ public class TelegraherSettingsActivity extends BaseFragment implements Notifica
         chatSBFullRow = rowCount++;
         chatSBManagerRow = rowCount++;
         chatSwapToNextChannelRow = rowCount++;
+        chatBottomOverlayNativeBehaviorRow = rowCount++;
         chatTabsOnForwardRow = rowCount++;
         chatDisableSpoilersRow = rowCount++;
         chatHideAllInSpoilersRow = rowCount++;
@@ -372,6 +374,12 @@ public class TelegraherSettingsActivity extends BaseFragment implements Notifica
                 SharedPreferences.Editor editor = preferences.edit();
                 enabled = preferences.getBoolean("EnableSwapToNextChannel", false);
                 editor.putBoolean("EnableSwapToNextChannel", !enabled);
+                editor.apply();
+            } else if (position == chatBottomOverlayNativeBehaviorRow) {
+                SharedPreferences preferences = MessagesController.getGlobalTelegraherSettings();
+                SharedPreferences.Editor editor = preferences.edit();
+                enabled = preferences.getBoolean("BottomOverlayNativeBehavior", false);
+                editor.putBoolean("BottomOverlayNativeBehavior", !enabled);
                 editor.apply();
             } else if (position == chatTabsOnForwardRow) {
                 SharedPreferences preferences = MessagesController.getGlobalTelegraherSettings();
@@ -708,6 +716,8 @@ public class TelegraherSettingsActivity extends BaseFragment implements Notifica
                         checkCell.setTextAndCheck(LocaleController.getString(R.string.THEnableChatSBFull), localPreps.getBoolean("EnableChatSBFull", false), true);
                     } else if (position == chatSwapToNextChannelRow) {
                         checkCell.setTextAndCheck(LocaleController.getString(R.string.THEnableSwapToNextChannel), globalPreps.getBoolean("EnableSwapToNextChannel", false), true);
+                    } else if (position == chatBottomOverlayNativeBehaviorRow) {
+                        checkCell.setTextAndCheck(LocaleController.getString(R.string.THBottomOverlayNativeBehavior), globalPreps.getBoolean("BottomOverlayNativeBehavior", false), true);
                     } else if (position == chatTabsOnForwardRow) {
                         checkCell.setTextAndCheck(LocaleController.getString(R.string.THEnableTabsOnForward), globalPreps.getBoolean("EnableTabsOnForward", false), true);
                     } else if (position == chatDisableSpoilersRow) {
@@ -980,7 +990,7 @@ public class TelegraherSettingsActivity extends BaseFragment implements Notifica
                     || position == profileUIDRow || position == profileDCIDRow || position == profileSBRow
                     || position == hardwareDisableVibroRow
                     || position == chatDeleteMarkRow || position == chatEnableMessageHistoryRow || position == accountExtendVanillaRow || position == chatSBFullRow
-                    || position == chatSwapToNextChannelRow || position == chatTabsOnForwardRow || position == chatDisableSpoilersRow || position == chatHideAllInSpoilersRow || position == chatRealForwardedMessageTimeRow
+                    || position == chatSwapToNextChannelRow || position == chatBottomOverlayNativeBehaviorRow || position == chatTabsOnForwardRow || position == chatDisableSpoilersRow || position == chatHideAllInSpoilersRow || position == chatRealForwardedMessageTimeRow
                     || position == chatHideStickersRow || position == chatHideAnimatedStickersRow || position == chatHideVideoStickersRow
                     || position == graheriumSpeedUpUpload || position == graheriumSpeedUpDownload || position == graheriumAnimateEveryAvatar || position == graheriumAnimatedStickerOverlays || position == graheriumVanillaStickerFlow || position == graheriumDisableEmojiStatus || position == graheriumDisablePremiumEmojis
                     || position == gifHDRow || position == videoRoundUseMainCameraRow

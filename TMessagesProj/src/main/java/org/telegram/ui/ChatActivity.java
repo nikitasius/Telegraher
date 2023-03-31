@@ -20090,6 +20090,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         }
         boolean haveBeenWaiting = bottomOverlayChatWaitsReply;
         bottomOverlayChatWaitsReply = false;
+		boolean THBottomOverlayNativeBehavior = MessagesController.getGlobalTelegraherSettings().getBoolean("BottomOverlayNativeBehavior", false);
         if (reportType >= 0) {
             updateActionModeTitle();
         } else if (chatMode == MODE_PINNED) {
@@ -20123,10 +20124,10 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             shouldApply = true;
                             if (requestedTime > 0 && System.currentTimeMillis() - requestedTime < 1000 * 60 * 2) {
                                 bottomOverlayChatText.setText(LocaleController.getString("ChannelJoinRequestSent", R.string.ChannelJoinRequestSent), true);
-                                bottomOverlayChatText.setEnabled(false);
+                                bottomOverlayChatText.setEnabled(THBottomOverlayNativeBehavior);
                             } else {
                                 bottomOverlayChatText.setText(LocaleController.getString("ChannelJoinRequest", R.string.ChannelJoinRequest));
-                                bottomOverlayChatText.setEnabled(false);
+                                bottomOverlayChatText.setEnabled(THBottomOverlayNativeBehavior);
                             }
                         } else {
                             bottomOverlayChatText.setText(LocaleController.getString("ChannelJoin", R.string.ChannelJoin));
@@ -20321,8 +20322,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 bottomOverlayChat.setVisibility(View.VISIBLE);
                 chatActivityEnterView.setVisibility(View.INVISIBLE);
             } else if (chatMode == MODE_PINNED ||
-                    currentChat != null && ((!ChatObject.isChannel(currentChat) && !ChatObject.canWriteToChat(currentChat)) && (currentChat.join_to_send || !isThreadChat() || ChatObject.isForum(currentChat)) || forumTopic != null && forumTopic.closed && !ChatObject.canManageTopic(currentAccount, currentChat, forumTopic) || currentChat.forum && !isTopic && replyingMessageObject == null) ||
-                    currentUser != null && (userBlocked || UserObject.isReplyUser(currentUser))) {
+                    currentChat != null && ((THBottomOverlayNativeBehavior && (ChatObject.isNotInChat(currentChat) || !ChatObject.canWriteToChat(currentChat))) || (!ChatObject.isChannel(currentChat) && !ChatObject.canWriteToChat(currentChat))) && (currentChat.join_to_send || !isThreadChat() || ChatObject.isForum(currentChat)) || forumTopic != null && forumTopic.closed && !ChatObject.canManageTopic(currentAccount, currentChat, forumTopic) || currentChat.forum && !isTopic && replyingMessageObject == null) ||
+                    currentUser != null && (((THBottomOverlayNativeBehavior && UserObject.isDeleted(currentUser)) || userBlocked || UserObject.isReplyUser(currentUser))) {
                 if (chatActivityEnterView.isEditingMessage()) {
                     chatActivityEnterView.setVisibility(View.VISIBLE);
                     AndroidUtilities.updateViewShow(bottomOverlayChat, false, false, true);

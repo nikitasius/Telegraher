@@ -6118,6 +6118,7 @@
     <string name="THUIUseCustomFontMono">Change Mono font</string>
     <string name="THUIUseCustomFontDummy">(%s)</string>
     <string name="THEnableSwapToNextChannel">Next channel on swap</string>
+    <string name="THBottomOverlayNativeBehavior">Show bottom button in chats</string>
     <string name="THEnableTabsOnForward">Tabs on forward</string>
     <string name="THDisableSpoilers">Disable spoilers</string>
     <string name="THHideAllInSpoilers">Hide all in spoilers</string>
