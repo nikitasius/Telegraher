@@ -20126,11 +20126,11 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                                 bottomOverlayChatText.setEnabled(false);
                             } else {
                                 bottomOverlayChatText.setText(LocaleController.getString("ChannelJoinRequest", R.string.ChannelJoinRequest));
-                                bottomOverlayChatText.setEnabled(true);
+                                bottomOverlayChatText.setEnabled(false);
                             }
                         } else {
                             bottomOverlayChatText.setText(LocaleController.getString("ChannelJoin", R.string.ChannelJoin));
-                            bottomOverlayChatText.setEnabled(true);
+                            bottomOverlayChatText.setEnabled(false);
                         }
                         showBottomOverlayProgress(false, false);
                     }
@@ -20321,8 +20321,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 bottomOverlayChat.setVisibility(View.VISIBLE);
                 chatActivityEnterView.setVisibility(View.INVISIBLE);
             } else if (chatMode == MODE_PINNED ||
-                    currentChat != null && ((ChatObject.isNotInChat(currentChat) || !ChatObject.canWriteToChat(currentChat)) && (currentChat.join_to_send || !isThreadChat() || ChatObject.isForum(currentChat)) || forumTopic != null && forumTopic.closed && !ChatObject.canManageTopic(currentAccount, currentChat, forumTopic) || currentChat.forum && !isTopic && replyingMessageObject == null) ||
-                    currentUser != null && (UserObject.isDeleted(currentUser) || userBlocked || UserObject.isReplyUser(currentUser))) {
+                    currentChat != null && ((!ChatObject.isChannel(currentChat) && !ChatObject.canWriteToChat(currentChat)) && (currentChat.join_to_send || !isThreadChat() || ChatObject.isForum(currentChat)) || forumTopic != null && forumTopic.closed && !ChatObject.canManageTopic(currentAccount, currentChat, forumTopic) || currentChat.forum && !isTopic && replyingMessageObject == null) ||
+                    currentUser != null && (userBlocked || UserObject.isReplyUser(currentUser))) {
                 if (chatActivityEnterView.isEditingMessage()) {
                     chatActivityEnterView.setVisibility(View.VISIBLE);
                     AndroidUtilities.updateViewShow(bottomOverlayChat, false, false, true);
