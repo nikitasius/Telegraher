@@ -1856,7 +1856,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             }
         }
 
-        if (chatInvite != null) {
+        if (false && chatInvite != null) {
             int timeout = chatInvite.expires - getConnectionsManager().getCurrentTime();
             if (timeout < 0) {
                 timeout = 10;
