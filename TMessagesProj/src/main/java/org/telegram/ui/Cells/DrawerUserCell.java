@@ -146,7 +146,7 @@ public class DrawerUserCell extends FrameLayout implements NotificationCenter.No
             return;
         }
         avatarDrawable.setInfo(user);
-        CharSequence text = ContactsController.formatName(user.first_name, user.last_name);
+        CharSequence text = ContactsController.formatName(Boolean.parseBoolean(SharedConfig.thAccounts.get(accs.get(position)).get("sessionRevoked")) ? "\uD83D\uDC80 "+user.first_name : user.first_name, user.last_name);
         try {
             text = Emoji.replaceEmoji(text, textView.getPaint().getFontMetricsInt(), AndroidUtilities.dp(20), false);
         } catch (Exception ignore) {}
