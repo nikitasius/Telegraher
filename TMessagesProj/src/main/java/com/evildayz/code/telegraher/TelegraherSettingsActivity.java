@@ -130,6 +130,7 @@ public class TelegraherSettingsActivity extends BaseFragment implements Notifica
 
     private int accountLabelRow;
     private int accountSessionManagerRow;
+    private int accountKeepRevokedSessionsRow;
     private int accountExtendVanillaRow;
 
     private int graheriumLabelRow;
@@ -210,6 +211,7 @@ public class TelegraherSettingsActivity extends BaseFragment implements Notifica
 
         accountLabelRow = rowCount++;
         accountSessionManagerRow = rowCount++;
+        accountKeepRevokedSessionsRow = rowCount++;
         accountExtendVanillaRow = -1;
         graheriumLabelRow = rowCount++;
         graheriumSpeedUpUpload = rowCount++;
@@ -495,6 +497,12 @@ public class TelegraherSettingsActivity extends BaseFragment implements Notifica
                 presentFragment(new ThShadowbanManagerActivity());
             } else if (position == accountSessionManagerRow) {
                 presentFragment(new ThSessionManagerActivity());
+            } else if (position == accountKeepRevokedSessionsRow) {
+                SharedPreferences preferences = MessagesController.getGlobalTelegraherSettings();
+                SharedPreferences.Editor editor = preferences.edit();
+                enabled = preferences.getBoolean("KeepRevokedSessions", true);
+                editor.putBoolean("KeepRevokedSessions", !enabled);
+                editor.apply();
 //            } else if (position == uiSystemFontRegularRow) {
 //                presentFragment(new UIFontActivity("fonts/rmedium.ttf", "regular"));
 //            } else if (position == uiSystemFontBoldRow) {
@@ -722,6 +730,8 @@ public class TelegraherSettingsActivity extends BaseFragment implements Notifica
                         checkCell.setTextAndCheck(LocaleController.getString(R.string.THChatHideAnimatedStickers), globalPreps.getBoolean("HideAnimatedStickers", false), true);
                     } else if (position == chatHideVideoStickersRow) {
                         checkCell.setTextAndCheck(LocaleController.getString(R.string.THChatHideVideoStickers), globalPreps.getBoolean("HideVideoStickers", false), true);
+                    } else if (position == accountKeepRevokedSessionsRow) {
+                        checkCell.setTextAndCheck(LocaleController.getString(R.string.THKeepRevokedSessions), globalPreps.getBoolean("KeepRevokedSessions", true), true);
                     } else if (position == gifHDRow) {
                         checkCell.setTextAndCheck(LocaleController.getString(R.string.THEnableGifHD), globalPreps.getBoolean("EnableGifHD", false), true);
                     } else if (position == videoRoundUseMainCameraRow) {
@@ -982,6 +992,7 @@ public class TelegraherSettingsActivity extends BaseFragment implements Notifica
                     || position == chatDeleteMarkRow || position == chatEnableMessageHistoryRow || position == accountExtendVanillaRow || position == chatSBFullRow
                     || position == chatSwapToNextChannelRow || position == chatTabsOnForwardRow || position == chatDisableSpoilersRow || position == chatHideAllInSpoilersRow || position == chatRealForwardedMessageTimeRow
                     || position == chatHideStickersRow || position == chatHideAnimatedStickersRow || position == chatHideVideoStickersRow
+                    || position == accountKeepRevokedSessionsRow
                     || position == graheriumSpeedUpUpload || position == graheriumSpeedUpDownload || position == graheriumAnimateEveryAvatar || position == graheriumAnimatedStickerOverlays || position == graheriumVanillaStickerFlow || position == graheriumDisableEmojiStatus || position == graheriumDisablePremiumEmojis
                     || position == gifHDRow || position == videoRoundUseMainCameraRow
                     || position == uiAppHidePhoneNumberOnLeftPanelRow

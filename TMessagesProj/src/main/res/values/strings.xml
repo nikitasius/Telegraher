@@ -6131,6 +6131,7 @@
     <string name="THAccountSessionDeleteError2">Session is online DUMBASS! WTF you can\'t read!?</string>
     <string name="THAccountSessionDeleteSuccessful">Session successfully deleted!</string>
     <string name="THDeleteThatBitch">Delete</string>
+    <string name="THKeepRevokedSessions">Keep remotely revoked sessions</string>
     <string name="THHistory">History</string>
     <string name="THDSBrandLabel">Brand</string>
     <string name="THDSModelLabel">Model</string>

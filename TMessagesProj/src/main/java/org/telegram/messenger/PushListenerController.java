@@ -242,8 +242,16 @@ public class PushListenerController {
                         case "SESSION_REVOKE": {
                             AndroidUtilities.runOnUIThread(() -> {
                                 if (UserConfig.getInstance(accountFinal).getClientUserId() != 0) {
-                                    UserConfig.getInstance(accountFinal).clearConfig();
-                                    MessagesController.getInstance(accountFinal).performLogout(0);
+                                    if (MessagesController.getGlobalTelegraherSettings().getBoolean("KeepRevokedSessions", true)) {
+                                        SharedConfig.thAccounts.get(accountFinal).put("sessionRevoked", "true");
+                                        SharedConfig.activeAccounts.remove(accountFinal);
+                                        // Telegraher: TODO: to really deactivate an account, need to restart the client
+                                    } else {
+                                        UserConfig.getInstance(accountFinal).clearConfig();
+                                        MessagesController.getInstance(accountFinal).performLogout(0);
+                                    }
+
+
                                 }
                             });
                             countDownLatch.countDown();

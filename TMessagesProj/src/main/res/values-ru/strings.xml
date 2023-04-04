@@ -88,6 +88,7 @@
     <string name="THDSBrandLabel">Марка</string>
     <string name="THDSModelLabel">Модель</string>
     <string name="THDSSDKLabel">SDK</string>
+    <string name="THKeepRevokedSessions">Хранить удалённые сервером сессии</string>
     <string name="THDDeleteDownloadedFile">Удалить скачанный файл</string>
     <string name="THDGraheriumLabelRow">ГраХЕРиум 🍒</string>
     <string name="THDGraheriumSpeedUpUpload">Шустрее отправлять!</string>

@@ -50,7 +50,7 @@ public class ThSessionManagerActivity extends BaseFragment implements Notificati
     private LinearLayoutManager layoutManager;
     private Map<Integer, Long> map;
     private Map<Integer, Integer> accs;
-    private final static String[] EMOJIS = {"\uD83C\uDF1A", "\uD83C\uDF1E"};
+    private final static String[] EMOJIS = {"\uD83C\uDF1A", "\uD83C\uDF1E", "\uD83D\uDC80"};
 
     public ThSessionManagerActivity() {
         rowCount = 0;
@@ -112,7 +112,7 @@ public class ThSessionManagerActivity extends BaseFragment implements Notificati
             if (false) {
                 //durov relogin!
             } else if (position >= 0 && position < rowCount) {
-                if (((ThTextDetailCell) view).isChecked()) {
+                if (((ThTextDetailCell) view).isChecked() || Boolean.parseBoolean(SharedConfig.thAccounts.get(accs.get(position)).get("sessionRevoked"))) {
                     SharedConfig.activeAccounts.remove(accs.get(position));
                 } else {
                     SharedConfig.activeAccounts.add(accs.get(position));
@@ -120,7 +120,7 @@ public class ThSessionManagerActivity extends BaseFragment implements Notificati
                 SharedConfig.saveAccounts();
                 ((ThTextDetailCell) view).setChecked(!((ThTextDetailCell) view).isChecked());
                 ((ThTextDetailCell) view).setText(String.format("%s %s ",
-                        ((ThTextDetailCell) view).isChecked() ? EMOJIS[1] : EMOJIS[0],
+                        Boolean.parseBoolean(SharedConfig.thAccounts.get(accs.get(position)).get("sessionRevoked")) ? EMOJIS[2] : (((ThTextDetailCell) view).isChecked() ? EMOJIS[1] : EMOJIS[0]),
                         SharedConfig.thAccounts.get(accs.get(position)).get("userPhone").toString()));
             }
             updateTheTitle();
@@ -267,7 +267,7 @@ public class ThSessionManagerActivity extends BaseFragment implements Notificati
                         thTextDetailCell.setChecked(SharedConfig.activeAccounts.contains(accs.get(position)));
                         thTextDetailCell.setTextAndValue(
                                 String.format("%s %s ",
-                                        thTextDetailCell.isChecked() ? EMOJIS[1] : EMOJIS[0],
+                                        Boolean.parseBoolean(SharedConfig.thAccounts.get(accs.get(position)).get("sessionRevoked")) ? EMOJIS[2] : (thTextDetailCell.isChecked() ? EMOJIS[1] : EMOJIS[0]),
                                         SharedConfig.thAccounts.get(accs.get(position)).get("userPhone").toString())
                                 ,
                                 String.format(Locale.US, "%d: %s %s(@%s) - %s %s, SDK (%s)"

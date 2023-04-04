@@ -223,6 +223,15 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
                 accountNumbers.add(a);
             }
         }
+
+        for (int a : SharedConfig.thAccounts.keySet()) {
+            if (Boolean.parseBoolean(SharedConfig.thAccounts.get(accs.get(position)).get("sessionRevoked"))) {
+                if (!accountNumbers.contains(a)) {
+                    accountNumbers.add(a);
+                }
+            }
+        }
+
         Collections.sort(accountNumbers, (o1, o2) -> {
             long l1 = UserConfig.getInstance(o1).loginTime;
             long l2 = UserConfig.getInstance(o2).loginTime;
