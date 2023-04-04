@@ -8,6 +8,7 @@ import android.util.SparseBooleanArray;
 import androidx.annotation.IntDef;
 import androidx.collection.LongSparseArray;
 
+import com.evildayz.code.telegraher.helpers.AppRestartHelper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.telegram.tgnet.ConnectionsManager;
@@ -245,7 +246,7 @@ public class PushListenerController {
                                     if (MessagesController.getGlobalTelegraherSettings().getBoolean("KeepRevokedSessions", true)) {
                                         SharedConfig.thAccounts.get(accountFinal).put("sessionRevoked", "true");
                                         SharedConfig.activeAccounts.remove(accountFinal);
-                                        // Telegraher: TODO: to really deactivate an account, need to restart the client
+                                        AppRestartHelper.triggerRebirth();
                                     } else {
                                         UserConfig.getInstance(accountFinal).clearConfig();
                                         MessagesController.getInstance(accountFinal).performLogout(0);

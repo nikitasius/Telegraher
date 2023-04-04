@@ -6167,4 +6167,5 @@
     <string name="THGraheriumDisablePremiumEmojis">Disable premium emojis</string>
     <string name="THChatHideVideoStickers">Hide video stickers in chats</string>
     <string name="THChatHideAnimatedStickers">Hide animated stickers in chats</string>
+    <string name="THAppRestartBulletin">Restart to apply this change</string>
 </resources>

@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.evildayz.code.telegraher.helpers.AppRestartHelper;
 import com.evildayz.code.telegraher.ui.ThTextCheckShadowbanCell;
 import com.evildayz.code.telegraher.ui.ThTextDetailCell;
 import org.telegram.messenger.*;
@@ -114,6 +115,7 @@ public class ThSessionManagerActivity extends BaseFragment implements Notificati
             } else if (position >= 0 && position < rowCount) {
                 if (((ThTextDetailCell) view).isChecked() || Boolean.parseBoolean(SharedConfig.thAccounts.get(accs.get(position)).get("sessionRevoked"))) {
                     SharedConfig.activeAccounts.remove(accs.get(position));
+                    AppRestartHelper.createRestartBulletin(frameLayout);
                 } else {
                     SharedConfig.activeAccounts.add(accs.get(position));
                 }

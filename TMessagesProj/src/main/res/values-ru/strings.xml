@@ -120,4 +120,5 @@
     <string name="THGraheriumDisablePremiumEmojis">Отключить премиум emoji</string>
     <string name="THChatHideVideoStickers">Скрывать видео стикеры в чатах</string>
     <string name="THChatHideAnimatedStickers">Скрывать анимированные стикеры в чатах</string>
+    <string name="THAppRestartBulletin">Чтобы применить, нужен перезапуск</string>
 </resources>
