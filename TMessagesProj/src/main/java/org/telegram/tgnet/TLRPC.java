@@ -52184,7 +52184,7 @@ public class TLRPC {
             if (ephemeralReceiverBotId != 0) {
                 // safety: send ephemeral message to nobody and crash for debug builds
                 peer = new TL_inputPeerEmpty();
-                if (BuildConfig.DEBUG_PRIVATE_VERSION) {
+                if (BuildVars.DEBUG_PRIVATE_VERSION) {
                     throw new IllegalStateException("ephemeral unsupported");
                 }
             }
@@ -52275,7 +52275,7 @@ public class TLRPC {
             if (ephemeralReceiverBotId != 0) {
                 // safety: send ephemeral message to nobody and crash for debug builds
                 peer = new TL_inputPeerEmpty();
-                if (BuildConfig.DEBUG_PRIVATE_VERSION) {
+                if (BuildVars.DEBUG_PRIVATE_VERSION) {
                     throw new IllegalStateException("ephemeral unsupported");
                 }
             }

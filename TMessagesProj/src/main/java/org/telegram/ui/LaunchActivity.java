@@ -402,7 +402,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                 .penaltyLog()
                 .build());
         }
-        if (BuildConfig.DEBUG_PRIVATE_VERSION) {
+        if (BuildVars.DEBUG_PRIVATE_VERSION) {
             LeakDetector.getInstance().start();
         }
 
@@ -6935,7 +6935,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
             editorView.destroy();
         }
         FloatingDebugController.onDestroy();
-        if (BuildConfig.DEBUG_PRIVATE_VERSION) {
+        if (BuildVars.DEBUG_PRIVATE_VERSION) {
             LeakDetector.getInstance().stop();
         }
     }

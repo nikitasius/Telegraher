@@ -2,13 +2,8 @@ package org.telegram.messenger.utils.tlutils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.math.MathUtils;
 
-import org.telegram.messenger.BuildConfig;
-import org.telegram.messenger.LocaleController;
-import org.telegram.messenger.MessagesController;
-import org.telegram.messenger.R;
-import org.telegram.messenger.UserConfig;
+import org.telegram.messenger.*;
 import org.telegram.tgnet.tl.TL_stars;
 
 import java.math.BigDecimal;
@@ -282,7 +277,7 @@ public class AmountUtils {
 
         public void set(Amount min, Amount max) {
             if (min.currency != max.currency) {
-                if (BuildConfig.DEBUG_PRIVATE_VERSION) {
+                if (BuildVars.DEBUG_PRIVATE_VERSION) {
                     throw new IllegalArgumentException();
                 }
                 return;
