@@ -190,6 +190,7 @@ public class BillingController implements PurchasesUpdatedListener, BillingClien
     }
 
     public boolean startManageSubscription(Context ctx, String productId) {
+        if (true) return false;
         try {
             ctx.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(String.format("https://play.google.com/store/account/subscriptions?sku=%s&package=%s", productId, ctx.getPackageName()))));
             return true;
