@@ -642,7 +642,7 @@ public class FileRefController extends BaseController {
             } else if ("update".equals(string)) {
                 TLRPC.TL_help_getAppUpdate req = new TLRPC.TL_help_getAppUpdate();
                 try {
-                    req.source = ApplicationLoader.applicationContext.getPackageManager().getInstallerPackageName(ApplicationLoader.applicationContext.getPackageName());
+                    req.source = BuildVars.BUILD_VENDOR;;
                 } catch (Exception ignore) {
 
                 }
