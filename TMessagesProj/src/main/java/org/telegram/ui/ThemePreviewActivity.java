@@ -1057,7 +1057,7 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
         }
 
         if (messagesAdapter.showSecretMessages) {
-            actionBar2.setTitle("Telegram Beta Chat");
+            actionBar2.setTitle(LocaleController.getString(R.string.AppName) + " Chat");
             actionBar2.setSubtitle(LocaleController.formatPluralString("Members", 505));
         } else {
             if (screenType == SCREEN_TYPE_CHANGE_BACKGROUND) {
@@ -1388,7 +1388,7 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
             if (screenType == SCREEN_TYPE_CHANGE_BACKGROUND) {
                 final boolean drawShadow = insideBottomSheet();
                 bottomOverlayChat = new FrameLayout(context) {
-                    
+
                     private LinearGradient gradient;
                     private int gradientHeight;
                     private final Paint gradientPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
@@ -1401,7 +1401,7 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
                         AndroidUtilities.multiplyBrightnessColorMatrix(colorMatrix, 0.65f);
                         colorFilter = new ColorMatrixColorFilter(colorMatrix);
                     }
-                    
+
                     @Override
                     protected void dispatchDraw(Canvas canvas) {
                         if (drawShadow) {

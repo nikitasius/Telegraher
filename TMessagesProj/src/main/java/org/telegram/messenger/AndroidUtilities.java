@@ -6719,10 +6719,9 @@ public class AndroidUtilities {
 
     public static String getBuildVersionInfo() {
         try {
-            PackageInfo pInfo = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
-            int code = pInfo.versionCode / 10;
+            int code = BuildVars.BUILD_VERSION;
             String abi = "";
-            switch (pInfo.versionCode % 10) {
+            switch (BuildVars.BUILD_VERSION_FULL % 10) {
                 case 1:
                 case 2:
                     abi = "store bundled " + Build.CPU_ABI + " " + Build.CPU_ABI2;
@@ -6736,7 +6735,7 @@ public class AndroidUtilities {
                     }
                     break;
             }
-            return formatString("TelegramVersion", R.string.TelegramVersion, String.format(Locale.US, "v%s (%d) %s", pInfo.versionName, code, abi));
+            return formatString("TelegramVersion", R.string.TelegramVersion, String.format(Locale.US, "v%s (%d) %s", BuildVars.BUILD_VERSION_STRING, code, abi));
         } catch (Exception e) {
             FileLog.e(e);
         }

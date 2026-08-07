@@ -464,7 +464,7 @@ public class SharedConfig {
                 editor.putBoolean("proxyRotationEnabled", proxyRotationEnabled);
                 editor.putInt("proxyRotationTimeout", proxyRotationTimeout);
 
-                if (pendingAppUpdate != null) {
+                if (false) {
                     try {
                         SerializedData data = new SerializedData(pendingAppUpdate.getObjectSize());
                         pendingAppUpdate.serializeToStream(data);
@@ -557,7 +557,7 @@ public class SharedConfig {
                         data.cleanup();
                     }
                 }
-                if (pendingAppUpdate != null) {
+                if (false) {
                     long updateTime = 0;
                     int updateVersion = 0;
                     String updateVersionString = null;
@@ -783,6 +783,7 @@ public class SharedConfig {
     }
 
     public static boolean setNewAppVersionAvailable(TLRPC.TL_help_appUpdate update) {
+        if (true) return false;
         String updateVersionString = null;
         int versionCode = 0;
         try {

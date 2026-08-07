@@ -39,9 +39,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.DatabaseUtils;
@@ -123,6 +121,7 @@ import org.checkerframework.checker.initialization.qual.UnknownInitialization;
 import org.checkerframework.checker.nullness.compatqual.NullableType;
 import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
 import org.checkerframework.checker.nullness.qual.PolyNull;
+import org.telegram.messenger.BuildVars;
 
 /** Miscellaneous utility methods. */
 public final class Util {
@@ -1638,23 +1637,10 @@ public final class Util {
    * @param applicationName String that will be prefix'ed to the generated user agent.
    * @return A user agent string generated using the applicationName and the library version.
    */
-  public static String getUserAgent(Context context, String applicationName) {
-    String versionName;
-    try {
-      String packageName = context.getPackageName();
-      PackageInfo info = context.getPackageManager().getPackageInfo(packageName, 0);
-      versionName = info.versionName;
-    } catch (NameNotFoundException e) {
-      versionName = "?";
+    public static String getUserAgent(Context context, String applicationName) {
+        return applicationName + "/" + BuildVars.BUILD_VERSION_STRING + " (Linux;Android " + Build.VERSION.RELEASE
+                + ") " + ExoPlayerLibraryInfo.VERSION_SLASHY;
     }
-    return applicationName
-        + "/"
-        + versionName
-        + " (Linux;Android "
-        + Build.VERSION.RELEASE
-        + ") "
-        + ExoPlayerLibraryInfo.VERSION_SLASHY;
-  }
 
   /** Returns the number of codec strings in {@code codecs} whose type matches {@code trackType}. */
   public static int getCodecCountOfType(@Nullable String codecs, @C.TrackType int trackType) {
