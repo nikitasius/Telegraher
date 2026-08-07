@@ -114,7 +114,7 @@ android {
                 abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
             }
             ext {
-                abiVersionCode = 1
+                abiVersionCode = 2
             }
             buildConfigField "boolean", "BUNDLE", "true"
         }
@@ -133,6 +133,42 @@ android {
                 abiVersionCode = 2
             }
             buildConfigField "boolean", "BUNDLE", "true"
+        }
+        arm64_v8a_sdk23 {
+            ndk {
+                abiFilters "arm64-v8a"
+            }
+            sourceSets.debug {
+                manifest.srcFile '../TMessagesProj/config/debug/AndroidManifest_SDK23.xml'
+            }
+            sourceSets.release {
+                manifest.srcFile '../TMessagesProj/config/release/AndroidManifest_SDK23.xml'
+            }
+            sourceSets.standalone {
+                manifest.srcFile '../TMessagesProj/config/release/AndroidManifest_standalone.xml'
+            }
+            minSdkVersion 23
+            ext {
+                abiVersionCode = 2
+            }
+        }
+        armeabi_v7a_sdk23 {
+            ndk {
+                abiFilters "armeabi-v7a"
+            }
+            sourceSets.debug {
+                manifest.srcFile '../TMessagesProj/config/debug/AndroidManifest_SDK23.xml'
+            }
+            sourceSets.release {
+                manifest.srcFile '../TMessagesProj/config/release/AndroidManifest_SDK23.xml'
+            }
+            sourceSets.standalone {
+                manifest.srcFile '../TMessagesProj/config/release/AndroidManifest_standalone.xml'
+            }
+            minSdkVersion 23
+            ext {
+                abiVersionCode = 2
+            }
         }
         afat {
             ndk {
@@ -159,7 +195,7 @@ android {
     applicationVariants.all { variant ->
         variant.outputs.all { output ->
             outputFileName = "app.apk"
-            output.versionCodeOverride = defaultConfig.versionCode * 10 + variant.productFlavors.get(0).abiVersionCode
+            output.versionCodeOverride = defaultConfig.versionCode
         }
     }
 
