@@ -27,6 +27,7 @@ public class BuildVars {
     public static int BUILD_VERSION_FULL = 69911;
     public static String BUILD_VENDOR = "com.android.vending";
     public static String BUILD_DUROV = "org.telegram.messenger";
+    public static String BUILD_GRAHER = "com.evildayz.code.telegraher3";
     public static String BUILD_VERSION_STRING = "12.9.2";
 
     public static int APP_ID = 4;
