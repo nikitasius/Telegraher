@@ -58956,7 +58956,7 @@ public class TLRPC {
             post = hasFlag(flags, FLAG_14);
             from_scheduled = hasFlag(flags, FLAG_18);
             legacy = hasFlag(flags, FLAG_19);
-            edit_hide = hasFlag(flags, FLAG_21);
+            edit_hide = false;
             pinned = hasFlag(flags, FLAG_24);
             noforwards = hasFlag(flags, FLAG_26);
             invert_media = hasFlag(flags, FLAG_27);
@@ -59200,7 +59200,7 @@ public class TLRPC {
             post = hasFlag(flags, FLAG_14);
             from_scheduled = hasFlag(flags, FLAG_18);
             legacy = hasFlag(flags, FLAG_19);
-            edit_hide = hasFlag(flags, FLAG_21);
+            edit_hide = false;
             id = stream.readInt32(exception);
             if (hasFlag(flags, FLAG_8)) {
                 from_id = new TLRPC.TL_peerUser();
