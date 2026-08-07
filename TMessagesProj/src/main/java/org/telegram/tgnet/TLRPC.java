@@ -2784,7 +2784,7 @@ public class TLRPC {
         public InputMedia input_media;
         public TLRPC.Peer added_by;
         public int date;
-        
+
         public int unshuffled_index; // custom
         public long shuffle_hash; // custom
 
@@ -9045,10 +9045,10 @@ public class TLRPC {
             stream.writeByteArray(random);
         }
     }
-    
+
     public static class DisallowedGiftsSettings extends TLObject {
         public static final int constructor = 0x71f276c4;
-        
+
         public int flags;
         public boolean disallow_unlimited_stargifts;
         public boolean disallow_limited_stargifts;
@@ -22179,7 +22179,7 @@ public class TLRPC {
 
     public static class TL_recentStory extends TLObject {
         public static final int constructor = 0x711d692d;
-        
+
         public int flags;
         public boolean live;
         public int max_id;
@@ -22434,7 +22434,7 @@ public class TLRPC {
             bot_chat_history = hasFlag(flags, FLAG_15);
             bot_nochats = hasFlag(flags, FLAG_16);
             verified = hasFlag(flags, FLAG_17);
-            restricted = hasFlag(flags, FLAG_18);
+            restricted = false;
             min = hasFlag(flags, FLAG_20);
             bot_inline_geo = hasFlag(flags, FLAG_21);
             support = hasFlag(flags, FLAG_23);
@@ -22640,7 +22640,7 @@ public class TLRPC {
             bot_chat_history = hasFlag(flags, FLAG_15);
             bot_nochats = hasFlag(flags, FLAG_16);
             verified = hasFlag(flags, FLAG_17);
-            restricted = hasFlag(flags, FLAG_18);
+            restricted = false;
             min = hasFlag(flags, FLAG_20);
             bot_inline_geo = hasFlag(flags, FLAG_21);
             support = hasFlag(flags, FLAG_23);
@@ -22839,7 +22839,7 @@ public class TLRPC {
             bot_chat_history = hasFlag(flags, FLAG_15);
             bot_nochats = hasFlag(flags, FLAG_16);
             verified = hasFlag(flags, FLAG_17);
-            restricted = hasFlag(flags, FLAG_18);
+            restricted = false;
             min = hasFlag(flags, FLAG_20);
             bot_inline_geo = hasFlag(flags, FLAG_21);
             support = hasFlag(flags, FLAG_23);
@@ -23029,7 +23029,7 @@ public class TLRPC {
             bot_chat_history = hasFlag(flags, FLAG_15);
             bot_nochats = hasFlag(flags, FLAG_16);
             verified = hasFlag(flags, FLAG_17);
-            restricted = hasFlag(flags, FLAG_18);
+            restricted = false;
             min = hasFlag(flags, FLAG_20);
             bot_inline_geo = hasFlag(flags, FLAG_21);
             support = hasFlag(flags, FLAG_23);
@@ -23213,7 +23213,7 @@ public class TLRPC {
             bot_chat_history = hasFlag(flags, FLAG_15);
             bot_nochats = hasFlag(flags, FLAG_16);
             verified = hasFlag(flags, FLAG_17);
-            restricted = hasFlag(flags, FLAG_18);
+            restricted = false;
             min = hasFlag(flags, FLAG_20);
             bot_inline_geo = hasFlag(flags, FLAG_21);
             support = hasFlag(flags, FLAG_23);
@@ -23395,7 +23395,7 @@ public class TLRPC {
             bot_chat_history = hasFlag(flags, FLAG_15);
             bot_nochats = hasFlag(flags, FLAG_16);
             verified = hasFlag(flags, FLAG_17);
-            restricted = hasFlag(flags, FLAG_18);
+            restricted = false;
             min = hasFlag(flags, FLAG_20);
             bot_inline_geo = hasFlag(flags, FLAG_21);
             support = hasFlag(flags, FLAG_23);
@@ -23571,7 +23571,7 @@ public class TLRPC {
             bot_chat_history = hasFlag(flags, FLAG_15);
             bot_nochats = hasFlag(flags, FLAG_16);
             verified = hasFlag(flags, FLAG_17);
-            restricted = hasFlag(flags, FLAG_18);
+            restricted = false;;
             min = hasFlag(flags, FLAG_20);
             bot_inline_geo = hasFlag(flags, FLAG_21);
             support = hasFlag(flags, FLAG_23);
@@ -23742,7 +23742,7 @@ public class TLRPC {
             bot_chat_history = hasFlag(flags, FLAG_15);
             bot_nochats = hasFlag(flags, FLAG_16);
             verified = hasFlag(flags, FLAG_17);
-            restricted = hasFlag(flags, FLAG_18);
+            restricted = false;
             min = hasFlag(flags, FLAG_20);
             bot_inline_geo = hasFlag(flags, FLAG_21);
             support = hasFlag(flags, FLAG_23);
@@ -23896,7 +23896,7 @@ public class TLRPC {
             bot_chat_history = hasFlag(flags, FLAG_15);
             bot_nochats = hasFlag(flags, FLAG_16);
             verified = hasFlag(flags, FLAG_17);
-            restricted = hasFlag(flags, FLAG_18);
+            restricted = false;
             min = hasFlag(flags, FLAG_20);
             bot_inline_geo = hasFlag(flags, FLAG_21);
             support = hasFlag(flags, FLAG_23);
@@ -24036,7 +24036,7 @@ public class TLRPC {
             bot_chat_history = hasFlag(flags, FLAG_15);
             bot_nochats = hasFlag(flags, FLAG_16);
             verified = hasFlag(flags, FLAG_17);
-            restricted = hasFlag(flags, FLAG_18);
+            restricted = false;
             min = hasFlag(flags, FLAG_20);
             bot_inline_geo = hasFlag(flags, FLAG_21);
             support = hasFlag(flags, FLAG_23);
@@ -24159,7 +24159,7 @@ public class TLRPC {
             bot_chat_history = hasFlag(flags, FLAG_15);
             bot_nochats = hasFlag(flags, FLAG_16);
             verified = hasFlag(flags, FLAG_17);
-            restricted = hasFlag(flags, FLAG_18);
+            restricted = false;
             min = hasFlag(flags, FLAG_20);
             bot_inline_geo = hasFlag(flags, FLAG_21);
             support = hasFlag(flags, FLAG_23);
@@ -24274,7 +24274,7 @@ public class TLRPC {
             bot_chat_history = hasFlag(flags, FLAG_15);
             bot_nochats = hasFlag(flags, FLAG_16);
             verified = hasFlag(flags, FLAG_17);
-            restricted = hasFlag(flags, FLAG_18);
+            restricted = false;
             min = hasFlag(flags, FLAG_20);
             bot_inline_geo = hasFlag(flags, FLAG_21);
             support = hasFlag(flags, FLAG_23);
@@ -24385,7 +24385,7 @@ public class TLRPC {
             bot_chat_history = hasFlag(flags, FLAG_15);
             bot_nochats = hasFlag(flags, FLAG_16);
             verified = hasFlag(flags, FLAG_17);
-            restricted = hasFlag(flags, FLAG_18);
+            restricted = false;
             min = hasFlag(flags, FLAG_20);
             bot_inline_geo = hasFlag(flags, FLAG_21);
             support = hasFlag(flags, FLAG_23);
@@ -24691,7 +24691,7 @@ public class TLRPC {
             bot_chat_history = hasFlag(flags, FLAG_15);
             bot_nochats = hasFlag(flags, FLAG_16);
             verified = hasFlag(flags, FLAG_17);
-            restricted = hasFlag(flags, FLAG_18);
+            restricted = false;
             min = hasFlag(flags, FLAG_20);
             bot_inline_geo = hasFlag(flags, FLAG_21);
             id = stream.readInt32(exception);
@@ -25883,10 +25883,10 @@ public class TLRPC {
             stream.writeInt32(constructor);
         }
     }
-    
+
     public static class TL_messageActionSuggestBirthday extends MessageAction {
         public static final int constructor = 0x2c8f2a25;
-        
+
         public TL_account.TL_birthday birthday;
 
         @Override
@@ -30305,7 +30305,7 @@ public class TLRPC {
             }
         }
     }
-    
+
     public static class TL_inputMediaTodo extends InputMedia {
         public static final int constructor = 0x9fc55fde;
 
@@ -35683,7 +35683,7 @@ public class TLRPC {
         public TL_pendingSuggestion custom_pending_suggestion;
         public ArrayList<Chat> chats = new ArrayList<>();
         public ArrayList<User> users = new ArrayList<>();
-        
+
         public void readParams(InputSerializedData stream, boolean exception) {
             flags = stream.readInt32(exception);
             proxy = hasFlag(flags, FLAG_0);
@@ -35732,7 +35732,7 @@ public class TLRPC {
 
     public static class TL_pendingSuggestion extends TLObject {
         public static final int constructor = 0xe7e82e12;
-        
+
         public String suggestion;
         public TL_textWithEntities title;
         public TL_textWithEntities description;
@@ -38509,7 +38509,7 @@ public class TLRPC {
 
     public static class TL_channelAdminLogEventActionToggleAutotranslation extends ChannelAdminLogEventAction {
         public static final int constructor = 0xc517f77e;
-        
+
         public boolean new_value;
 
         public void readParams(InputSerializedData stream, boolean exception) {
@@ -39902,7 +39902,7 @@ public class TLRPC {
             broadcast = hasFlag(flags, FLAG_5);
             verified = hasFlag(flags, FLAG_7);
             megagroup = hasFlag(flags, FLAG_8);
-            restricted = hasFlag(flags, FLAG_9);
+            restricted = false;
             signatures = hasFlag(flags, FLAG_11);
             id = stream.readInt32(exception);
             access_hash = stream.readInt64(exception);
@@ -39972,7 +39972,7 @@ public class TLRPC {
             broadcast = hasFlag(flags, FLAG_5);
             verified = hasFlag(flags, FLAG_7);
             megagroup = hasFlag(flags, FLAG_8);
-            restricted = hasFlag(flags, FLAG_9);
+            restricted = false;
             signatures = hasFlag(flags, FLAG_11);
             min = hasFlag(flags, FLAG_12);
             scam = hasFlag(flags, FLAG_19);
@@ -40159,7 +40159,7 @@ public class TLRPC {
             broadcast = hasFlag(flags, FLAG_5);
             verified = hasFlag(flags, FLAG_7);
             megagroup = hasFlag(flags, FLAG_8);
-            restricted = hasFlag(flags, FLAG_9);
+            restricted = false;
             signatures = hasFlag(flags, FLAG_11);
             min = hasFlag(flags, FLAG_12);
             scam = hasFlag(flags, FLAG_19);
@@ -40414,7 +40414,7 @@ public class TLRPC {
             broadcast = hasFlag(flags, FLAG_5);
             verified = hasFlag(flags, FLAG_7);
             megagroup = hasFlag(flags, FLAG_8);
-            restricted = hasFlag(flags, FLAG_9);
+            restricted = false;
             signatures = hasFlag(flags, FLAG_11);
             min = hasFlag(flags, FLAG_12);
             scam = hasFlag(flags, FLAG_19);
@@ -40597,7 +40597,7 @@ public class TLRPC {
             broadcast = hasFlag(flags, FLAG_5);
             verified = hasFlag(flags, FLAG_7);
             megagroup = hasFlag(flags, FLAG_8);
-            restricted = hasFlag(flags, FLAG_9);
+            restricted = false;
             signatures = hasFlag(flags, FLAG_11);
             min = hasFlag(flags, FLAG_12);
             scam = hasFlag(flags, FLAG_19);
@@ -40768,7 +40768,7 @@ public class TLRPC {
             broadcast = hasFlag(flags, FLAG_5);
             verified = hasFlag(flags, FLAG_7);
             megagroup = hasFlag(flags, FLAG_8);
-            restricted = hasFlag(flags, FLAG_9);
+            restricted = false;
             signatures = hasFlag(flags, FLAG_11);
             min = hasFlag(flags, FLAG_12);
             scam = hasFlag(flags, FLAG_19);
@@ -40931,7 +40931,7 @@ public class TLRPC {
             broadcast = hasFlag(flags, FLAG_5);
             verified = hasFlag(flags, FLAG_7);
             megagroup = hasFlag(flags, FLAG_8);
-            restricted = hasFlag(flags, FLAG_9);
+            restricted = false;
             signatures = hasFlag(flags, FLAG_11);
             min = hasFlag(flags, FLAG_12);
             scam = hasFlag(flags, FLAG_19);
@@ -41088,7 +41088,7 @@ public class TLRPC {
             broadcast = hasFlag(flags, FLAG_5);
             verified = hasFlag(flags, FLAG_7);
             megagroup = hasFlag(flags, FLAG_8);
-            restricted = hasFlag(flags, FLAG_9);
+            restricted = false;
             signatures = hasFlag(flags, FLAG_11);
             min = hasFlag(flags, FLAG_12);
             scam = hasFlag(flags, FLAG_19);
@@ -41237,7 +41237,7 @@ public class TLRPC {
             broadcast = hasFlag(flags, FLAG_5);
             verified = hasFlag(flags, FLAG_7);
             megagroup = hasFlag(flags, FLAG_8);
-            restricted = hasFlag(flags, FLAG_9);
+            restricted = false;;
             signatures = hasFlag(flags, FLAG_11);
             min = hasFlag(flags, FLAG_12);
             scam = hasFlag(flags, FLAG_19);
@@ -41368,7 +41368,7 @@ public class TLRPC {
             broadcast = hasFlag(flags, FLAG_5);
             verified = hasFlag(flags, FLAG_7);
             megagroup = hasFlag(flags, FLAG_8);
-            restricted = hasFlag(flags, FLAG_9);
+            restricted = false;
             signatures = hasFlag(flags, FLAG_11);
             min = hasFlag(flags, FLAG_12);
             scam = hasFlag(flags, FLAG_19);
@@ -41510,7 +41510,7 @@ public class TLRPC {
             broadcast = hasFlag(flags, FLAG_5);
             verified = hasFlag(flags, FLAG_7);
             megagroup = hasFlag(flags, FLAG_8);
-            restricted = hasFlag(flags, FLAG_9);
+            restricted = false;
             signatures = hasFlag(flags, FLAG_11);
             min = hasFlag(flags, FLAG_12);
             scam = hasFlag(flags, FLAG_19);
@@ -41648,7 +41648,7 @@ public class TLRPC {
             broadcast = hasFlag(flags, FLAG_5);
             verified = hasFlag(flags, FLAG_7);
             megagroup = hasFlag(flags, FLAG_8);
-            restricted = hasFlag(flags, FLAG_9);
+            restricted = false;
             signatures = hasFlag(flags, FLAG_11);
             min = hasFlag(flags, FLAG_12);
             scam = hasFlag(flags, FLAG_19);
@@ -41763,7 +41763,7 @@ public class TLRPC {
             broadcast = hasFlag(flags, FLAG_5);
             verified = hasFlag(flags, FLAG_7);
             megagroup = hasFlag(flags, FLAG_8);
-            restricted = hasFlag(flags, FLAG_9);
+            restricted = false;
             signatures = hasFlag(flags, FLAG_11);
             min = hasFlag(flags, FLAG_12);
             scam = hasFlag(flags, FLAG_19);
@@ -41898,7 +41898,7 @@ public class TLRPC {
             broadcast = hasFlag(flags, FLAG_5);
             verified = hasFlag(flags, FLAG_7);
             megagroup = hasFlag(flags, FLAG_8);
-            restricted = hasFlag(flags, FLAG_9);
+            restricted = false;
             signatures = hasFlag(flags, FLAG_11);
             min = hasFlag(flags, FLAG_12);
             id = stream.readInt32(exception);
@@ -42029,7 +42029,7 @@ public class TLRPC {
             broadcast = hasFlag(flags, FLAG_5);
             verified = hasFlag(flags, FLAG_7);
             megagroup = hasFlag(flags, FLAG_8);
-            restricted = hasFlag(flags, FLAG_9);
+            restricted = false;
             signatures = hasFlag(flags, FLAG_11);
             min = hasFlag(flags, FLAG_12);
             scam = hasFlag(flags, FLAG_19);
@@ -42126,7 +42126,7 @@ public class TLRPC {
             broadcast = hasFlag(flags, FLAG_5);
             verified = hasFlag(flags, FLAG_7);
             megagroup = hasFlag(flags, FLAG_8);
-            restricted = hasFlag(flags, FLAG_9);
+            restricted = false;
             signatures = hasFlag(flags, FLAG_11);
             min = hasFlag(flags, FLAG_12);
             scam = hasFlag(flags, FLAG_19);
@@ -42240,7 +42240,7 @@ public class TLRPC {
             broadcast = hasFlag(flags, FLAG_5);
             verified = hasFlag(flags, FLAG_7);
             megagroup = hasFlag(flags, FLAG_8);
-            restricted = hasFlag(flags, FLAG_9);
+            restricted = false;
             signatures = hasFlag(flags, FLAG_11);
             min = hasFlag(flags, FLAG_12);
             id = stream.readInt32(exception);
@@ -42317,7 +42317,7 @@ public class TLRPC {
             broadcast = hasFlag(flags, FLAG_5);
             verified = hasFlag(flags, FLAG_7);
             megagroup = hasFlag(flags, FLAG_8);
-            restricted = hasFlag(flags, FLAG_9);
+            restricted = false;
             signatures = hasFlag(flags, FLAG_11);
             min = hasFlag(flags, FLAG_12);
             id = stream.readInt32(exception);
@@ -42389,7 +42389,7 @@ public class TLRPC {
             broadcast = hasFlag(flags, FLAG_5);
             verified = hasFlag(flags, FLAG_7);
             megagroup = hasFlag(flags, FLAG_8);
-            restricted = hasFlag(flags, FLAG_9);
+            restricted = false;
             signatures = hasFlag(flags, FLAG_11);
             min = hasFlag(flags, FLAG_12);
             id = stream.readInt32(exception);
@@ -43160,7 +43160,7 @@ public class TLRPC {
 
     public static class TL_messages_translatedRichMessage extends TLObject {
         public static final int constructor = 0x4203998f;
-        
+
         public ArrayList<TL_iv.RichMessage> result = new ArrayList<>();
 
         public static TL_messages_translatedRichMessage TLdeserialize(InputSerializedData stream, int constructor, boolean exception) {
@@ -54856,7 +54856,7 @@ public class TLRPC {
             }
         }
     }
-    
+
     public static class TL_messages_declineUrlAuth extends TLMethod<Bool> {
         public static final int constructor = 0x35436bbc;
 
@@ -56973,7 +56973,7 @@ public class TLRPC {
 
     public static class TL_channels_getSendAs extends TLObject {
         public static final int constructor = 0xe785a43f;
-        
+
         public int flags;
         public boolean for_paid_reactions;
         public boolean for_live_stories;
@@ -65028,10 +65028,10 @@ public class TLRPC {
             stream.writeInt32(users);
         }
     }
-    
+
     public static class TL_inputStorePaymentAuthCode extends InputStorePaymentPurpose {
         public static final int constructor = 0x3fc18057;
-        
+
         public int flags;
         public boolean restore;
         public String phone_number;
@@ -65238,7 +65238,7 @@ public class TLRPC {
 
     public static class TL_inputInvoiceStarGiftPrepaidUpgrade extends InputInvoice {
         public static final int constructor = 0x9a0b48b8;
-        
+
         public InputPeer peer;
         public String hash;
 
@@ -65253,7 +65253,7 @@ public class TLRPC {
             stream.writeString(hash);
         }
     }
-    
+
     public static class TL_inputInvoicePremiumAuthCode extends InputInvoice {
         public static final int constructor = 0x3e77f614;
 
@@ -65563,7 +65563,7 @@ public class TLRPC {
 
     public static class TL_messageMediaToDo extends MessageMedia {
         public static final int constructor = 0x8a53b014;
-        
+
         public TodoList todo;
         public ArrayList<TodoCompletion> completions = new ArrayList<>();
 
@@ -67220,7 +67220,7 @@ public class TLRPC {
         public long background_emoji_id;
         public long collectible_id;
         public long gift_emoji_id;
-        
+
         public int accent_color;
         public ArrayList<Integer> colors;
         public int dark_accent_color;
@@ -67304,7 +67304,7 @@ public class TLRPC {
             }
         }
     }
-    
+
     public static class TL_inputPeerColorCollectible extends PeerColor {
         public static final int constructor = 0xb8ea86a9;
 
@@ -69044,7 +69044,7 @@ public class TLRPC {
         object.readParams(stream, exception);
         return object;
     }
-    
+
     public static class Users extends TLObject {
 
         public int count;
@@ -69097,7 +69097,7 @@ public class TLRPC {
 
     public static class TL_sponsoredPeer extends TLObject {
         public static final int constructor = 0xc69708d3;
-        
+
         public int flags;
         public byte[] random_id;
         public Peer peer;
@@ -69200,7 +69200,7 @@ public class TLRPC {
             stream.writeString(q);
         }
     }
-    
+
     public static class TL_channels_toggleAutotranslation extends TLObject {
         public static final int constructor = 0x167fc0a1;
 
@@ -69222,7 +69222,7 @@ public class TLRPC {
 
     public static class TL_channels_getMessageAuthor extends TLObject {
         public static final int constructor = 0xece2a0e6;
-        
+
         public InputChannel channel;
         public int id;
 
@@ -69321,7 +69321,7 @@ public class TLRPC {
 
     public static class TodoItem extends TLObject {
         public static final int constructor = 0xcba9a52f;
-        
+
         public int id;
         public TL_textWithEntities title;
 
@@ -69343,10 +69343,10 @@ public class TLRPC {
             title.serializeToStream(stream);
         }
     }
-    
+
     public static class TodoList extends TLObject {
         public static final int constructor = 0x49b92a26;
-        
+
         public int flags;
         public boolean others_can_append;
         public boolean others_can_complete;
@@ -69436,10 +69436,10 @@ public class TLRPC {
             stream.writeInt32(date);
         }
     }
-    
+
     public static class TL_messages_toggleTodoCompleted extends TLObject {
         public static final int constructor = 0xd3e03124;
-        
+
         public InputPeer peer;
         public int msg_id;
         public ArrayList<Integer> completed = new ArrayList<>();
@@ -69483,7 +69483,7 @@ public class TLRPC {
 
     public static class SearchPostsFlood extends TLObject {
         public static final int constructor = 0x3e0b5b6a;
-        
+
         public int flags;
         public boolean query_is_free;
         public int total_daily;
@@ -69524,7 +69524,7 @@ public class TLRPC {
 
     public static class TL_channels_checkSearchPostsFlood extends TLObject {
         public static final int constructor = 0x22567115;
-        
+
         public int flags;
         public String query;
 
@@ -69690,10 +69690,10 @@ public class TLRPC {
             Vector.serialize(stream, documents);
         }
     }
-    
+
     public static class TL_getSavedMusic extends TLObject {
         public static final int constructor = 0x788d7fe3;
-        
+
         public InputUser id;
         public int offset;
         public int limit;
@@ -69753,7 +69753,7 @@ public class TLRPC {
 
     public static class TL_account_saveMusic extends TLObject {
         public static final int constructor = 0xb26732a9;
-        
+
         public int flags;
         public boolean unsave;
         public InputDocument id;
@@ -69896,7 +69896,7 @@ public class TLRPC {
             slug = stream.readString(exception);
         }
     }
-    
+
     public static class TL_checkPaidAuth extends TLObject {
         public static final int constructor = 0x56e59f9c;
 
@@ -69993,10 +69993,10 @@ public class TLRPC {
             return TLdeserialize(TL_keyboardButtonStyle.class, result, stream, constructor, exception);
         }
     }
-    
+
     public static class TL_messages_emojiGameOutcome extends TLObject {
         public static final int constructor = 0xda2ad647;
-        
+
         public byte[] seed;
         public long stake_ton_amount;
         public long ton_amount;
@@ -70021,7 +70021,7 @@ public class TLRPC {
             stream.writeInt64(ton_amount);
         }
     }
-    
+
     public static class EmojiGameInfo extends TLObject {
         public static EmojiGameInfo TLdeserialize(InputSerializedData stream, int constructor, boolean exception) {
             return TLdeserialize(EmojiGameInfo.class, fromConstructor(constructor), stream, constructor, exception);
@@ -70047,7 +70047,7 @@ public class TLRPC {
 
     public static class TL_emojiGameDiceInfo extends EmojiGameInfo {
         public static final int constructor = 0x44e56023;
-        
+
         public int flags;
         public String game_hash;
         public long prev_stake;
@@ -70083,7 +70083,7 @@ public class TLRPC {
 
     public static class TL_messages_getEmojiGameInfo extends TLMethod<EmojiGameInfo> {
         public static final int constructor = 0xfb7e8ca7;
-        
+
         @Override
         public EmojiGameInfo deserializeResponseT(InputSerializedData stream, int constructor, boolean exception) {
             return EmojiGameInfo.TLdeserialize(stream, constructor, exception);
@@ -70097,7 +70097,7 @@ public class TLRPC {
 
     public static class TL_messages_summarizeText extends TLMethod<TL_textWithEntities> {
         public static final int constructor = 0xabbbd346;
-        
+
         public int flags;
         public InputPeer peer;
         public int id;
@@ -70123,7 +70123,7 @@ public class TLRPC {
             }
         }
     }
-    
+
     public static class TL_channels_getFutureCreatorAfterLeave extends TLMethod<User> {
         public static final int constructor = 0xa00918af;
 
@@ -70140,10 +70140,10 @@ public class TLRPC {
             channel.serializeToStream(stream);
         }
     }
-    
+
     public static class TL_messages_editChatParticipantRank extends TLMethod<Updates> {
         public static final int constructor = 0xa00f32b0;
-        
+
         public InputPeer peer;
         public InputPeer participant;
         public String rank;
@@ -70238,8 +70238,8 @@ public class TLRPC {
     }
 
     public static class TL_composedMessageWithAI extends TLObject {
-        public static final int constructor = 0x90d7adfa;         
-        
+        public static final int constructor = 0x90d7adfa;
+
         public int flags;
         public TL_textWithEntities result_text;
         public TL_textWithEntities diff_text;
