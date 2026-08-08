@@ -141,7 +141,7 @@ android {
     }
 
     buildFeatures {
-        buildConfig = true
+        buildConfig = false
     }
     namespace 'org.telegram.messenger.web'
 
