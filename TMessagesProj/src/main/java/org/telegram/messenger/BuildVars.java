@@ -18,20 +18,29 @@ import java.util.Objects;
 
 public class BuildVars {
 
-    public static boolean DEBUG_VERSION = BuildConfig.DEBUG_VERSION;
-    public static boolean LOGS_ENABLED = BuildConfig.DEBUG_VERSION;
-    public static boolean DEBUG_PRIVATE_VERSION = BuildConfig.DEBUG_PRIVATE_VERSION;
+    public static boolean DEBUG_VERSION = false;
+    public static boolean LOGS_ENABLED = false;
+    public static boolean DEBUG_PRIVATE_VERSION = false;
     public static boolean USE_CLOUD_STRINGS = true;
     public static boolean CHECK_UPDATES = true;
+    public static boolean BUILD_HOST_IS_WINDOWS = false;
     public static boolean NO_SCOPED_STORAGE = Build.VERSION.SDK_INT <= 29;
-    public static String BUILD_VERSION_STRING = BuildConfig.BUILD_VERSION_STRING;
+    public static int BUILD_VERSION = 6991;
+    public static int BUILD_VERSION_FULL = 69919;
+//    public static String BUILD_VENDOR = "com.android.vending";
+//    public static String BUILD_GRAHER = "com.evildayz.code.telegraher3";
+    public static String BUILD_VENDOR = "com.google.android.packageinstaller";
+    public static String BUILD_DUROV = "org.telegram.messenger.web";
+    public static String BUILD_DUROV_TG = "org.telegram.messenger";
+    public static String BUILD_GRAHER = BUILD_DUROV_TG;
+    public static String BUILD_VERSION_STRING = "12.9.2";
 
     public static int APP_ID = 4;
     public static String APP_HASH = "014b35b6184100b085b0d0572f9b5103";
 
     // SafetyNet key for Google Identity SDK, set it to empty to disable
     public static String SAFETYNET_KEY = "AIzaSyDqt8P-7F7CPCseMkOiVRgb1LY8RN1bvH8";
-    public static String PLAYSTORE_APP_URL = "https://play.google.com/store/apps/details?id=org.telegram.messenger";
+    public static String PLAYSTORE_APP_URL = "https://github.com/nikitasius/Telegraher/releases";
     public static String HUAWEI_STORE_URL = "https://appgallery.huawei.com/app/C101184875";
     public static String GOOGLE_AUTH_CLIENT_ID = "760348033671-81kmi3pi84p11ub8hp9a1funsv0rn2p9.apps.googleusercontent.com";
 
