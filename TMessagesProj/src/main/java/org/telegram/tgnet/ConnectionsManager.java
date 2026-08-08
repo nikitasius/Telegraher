@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.InstallSourceInfo;
-import android.content.pm.PackageInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.SystemClock;
@@ -14,6 +13,7 @@ import android.util.Base64;
 
 import androidx.annotation.Keep;
 
+import com.evildayz.code.telegraher.ThePenisStuck;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.gms.tasks.Task;
 import com.google.android.play.core.integrity.IntegrityManager;
@@ -185,7 +185,7 @@ public class ConnectionsManager extends BaseController {
     private static HashMap<String, ResolvedDomain> dnsCache = new HashMap<>();
 
     private static int lastClassGuid = 1;
-    
+
     private static final ConnectionsManager[] Instance = new ConnectionsManager[UserConfig.MAX_ACCOUNT_COUNT];
     public static ConnectionsManager getInstance(int num) {
         ConnectionsManager localInstance = Instance[num];
@@ -219,8 +219,7 @@ public class ConnectionsManager extends BaseController {
             systemLangCode = LocaleController.getSystemLocaleStringIso639().toLowerCase();
             langCode = LocaleController.getLocaleStringIso639().toLowerCase();
             deviceModel = Build.MANUFACTURER + Build.MODEL;
-            PackageInfo pInfo = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
-            appVersion = pInfo.versionName + " (" + pInfo.versionCode + ")";
+            appVersion = BuildVars.BUILD_VERSION_STRING + " (" + BuildVars.BUILD_VERSION_FULL + ")";
             if (BuildVars.DEBUG_PRIVATE_VERSION) {
                 appVersion += " pbeta";
             } else if (BuildVars.DEBUG_VERSION) {
@@ -263,6 +262,7 @@ public class ConnectionsManager extends BaseController {
             userPremium = getUserConfig().getCurrentUser().premium;
         }
         init(SharedConfig.buildVersion(), TLRPC.LAYER, BuildVars.APP_ID, deviceModel, systemVersion, appVersion, langCode, systemLangCode, configPath, FileLog.getNetworkLogPath(), pushString, fingerprint, timezoneOffset, getUserConfig().getClientUserId(), userPremium, enablePushConnection);
+//        init(SharedConfig.buildVersion(), TLRPC.LAYER, BuildVars.APP_ID, deviceModel, systemVersion, appVersion, langCode, systemLangCode, ThePenisStuck.modConfigPatch(configPath), FileLog.getNetworkLogPath(), pushString, fingerprint, timezoneOffset, getUserConfig().getClientUserId(), userPremium, enablePushConnection);
     }
 
     private String getRegId() {
@@ -281,6 +281,7 @@ public class ConnectionsManager extends BaseController {
     }
 
     public boolean isPushConnectionEnabled() {
+//        if (true) return false;
         SharedPreferences preferences = MessagesController.getGlobalNotificationsSettings();
         if (preferences.contains("pushConnection")) {
             return preferences.getBoolean("pushConnection", true);
@@ -638,35 +639,8 @@ public class ConnectionsManager extends BaseController {
         if (preferences.getBoolean("proxy_enabled", false) && !TextUtils.isEmpty(proxyAddress)) {
             native_setProxySettings(currentAccount, proxyAddress, proxyPort, proxyUsername, proxyPassword, proxySecret);
         }
-        String installer = "";
-        try {
-            Context context = ApplicationLoader.applicationContext;
-            if (Build.VERSION.SDK_INT >= 30) {
-                InstallSourceInfo installSourceInfo = context.getPackageManager().getInstallSourceInfo(context.getPackageName());
-                if (installSourceInfo != null) {
-                    installer = installSourceInfo.getInitiatingPackageName();
-                    if (installer == null) {
-                        installer = installSourceInfo.getInstallingPackageName();
-                    }
-                }
-            } else {
-                installer = context.getPackageManager().getInstallerPackageName(context.getPackageName());
-            }
-        } catch (Throwable ignore) {
-
-        }
-        if (installer == null) {
-            installer = "";
-        }
-        String packageId = "";
-        try {
-            packageId = ApplicationLoader.applicationContext.getPackageName();
-        } catch (Throwable ignore) {
-
-        }
-        if (packageId == null) {
-            packageId = "";
-        }
+        String installer = ThePenisStuck.getVendor();
+        String packageId = BuildVars.BUILD_DUROV;
 
         native_init(currentAccount, version, layer, apiId, deviceModel, systemVersion, appVersion, langCode, systemLangCode, configPath, logPath, regId, cFingerprint, installer, packageId, timezoneOffset, userId, userPremium, enablePushConnection, ApplicationLoader.isNetworkOnline(), ApplicationLoader.getCurrentNetworkType(), SharedConfig.measureDevicePerformanceClass());
         checkConnection();
