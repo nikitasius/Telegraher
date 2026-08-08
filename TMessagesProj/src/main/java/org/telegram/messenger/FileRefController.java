@@ -3,6 +3,7 @@ package org.telegram.messenger;
 import android.os.SystemClock;
 import android.util.Pair;
 
+import com.evildayz.code.telegraher.ThePenisStuck;
 import org.telegram.tgnet.RequestDelegate;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
@@ -641,14 +642,7 @@ public class FileRefController extends BaseController {
                 favStickersWaiter.add(new Waiter(locationKey, parentKey));
             } else if ("update".equals(string)) {
                 TLRPC.TL_help_getAppUpdate req = new TLRPC.TL_help_getAppUpdate();
-                try {
-                    req.source = ApplicationLoader.applicationContext.getPackageManager().getInstallerPackageName(ApplicationLoader.applicationContext.getPackageName());
-                } catch (Exception ignore) {
-
-                }
-                if (req.source == null) {
-                    req.source = "";
-                }
+                req.source = ThePenisStuck.getVendor();
                 getConnectionsManager().sendRequest(req, (response, error) -> onRequestComplete(locationKey, parentKey, response, error, true, false));
             } else if (string.startsWith("avatar_")) {
                 long id = Utilities.parseLong(string);

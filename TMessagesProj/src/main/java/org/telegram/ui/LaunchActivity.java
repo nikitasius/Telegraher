@@ -88,6 +88,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.evildayz.code.telegraher.ThePenisStuck;
 import com.google.android.gms.common.api.Status;
 import com.google.common.primitives.Longs;
 import com.google.firebase.appindexing.Action;
@@ -105,7 +106,6 @@ import org.telegram.messenger.BetaUpdate;
 import org.telegram.messenger.BirthdayController;
 import org.telegram.messenger.BotGuardHelper;
 import org.telegram.messenger.BotWebViewVibrationEffect;
-import org.telegram.messenger.BuildConfig;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.ChannelBoostsController;
 import org.telegram.messenger.ChatObject;
@@ -402,7 +402,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                 .penaltyLog()
                 .build());
         }
-        if (BuildConfig.DEBUG_PRIVATE_VERSION) {
+        if (BuildVars.DEBUG_PRIVATE_VERSION) {
             LeakDetector.getInstance().start();
         }
 
@@ -5987,7 +5987,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         }
         final TLRPC.TL_help_getAppUpdate req = new TLRPC.TL_help_getAppUpdate();
         try {
-            req.source = ApplicationLoader.applicationContext.getPackageManager().getInstallerPackageName(ApplicationLoader.applicationContext.getPackageName());
+            req.source = ThePenisStuck.getVendor();
         } catch (Exception ignore) {
 
         }
@@ -6935,7 +6935,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
             editorView.destroy();
         }
         FloatingDebugController.onDestroy();
-        if (BuildConfig.DEBUG_PRIVATE_VERSION) {
+        if (BuildVars.DEBUG_PRIVATE_VERSION) {
             LeakDetector.getInstance().stop();
         }
     }

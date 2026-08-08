@@ -129,7 +129,7 @@ public class MediaDataController extends BaseController {
             SPOILER_PATTERN = Pattern.compile("\\|\\|(.+?)\\|\\|"),
             STRIKE_PATTERN = Pattern.compile("~~(.+?)~~");
 
-    public static String SHORTCUT_CATEGORY = "org.telegram.messenger.SHORTCUT_SHARE";
+    public static String SHORTCUT_CATEGORY = BuildVars.BUILD_GRAHER + ".SHORTCUT_SHARE";
 
     private static volatile MediaDataController[] Instance = new MediaDataController[UserConfig.MAX_ACCOUNT_COUNT];
     private static final Object[] lockObjects = new Object[UserConfig.MAX_ACCOUNT_COUNT];
@@ -2843,7 +2843,7 @@ public class MediaDataController extends BaseController {
                 req.stickerset = inputStickerSetShortName;
             }
             getConnectionsManager().sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
-                if (BuildConfig.DEBUG && error != null) { //supress test backend warning
+                if (BuildVars.DEBUG_VERSION && error != null) { //supress test backend warning
                     return;
                 }
                 if (response instanceof TLRPC.TL_messages_stickerSet) {

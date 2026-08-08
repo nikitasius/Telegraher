@@ -19,7 +19,6 @@ import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 
 import org.telegram.messenger.ApplicationLoader;
-import org.telegram.messenger.BuildConfig;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.DialogObject;
 import org.telegram.messenger.FileLoader;
@@ -52184,7 +52183,7 @@ public class TLRPC {
             if (ephemeralReceiverBotId != 0) {
                 // safety: send ephemeral message to nobody and crash for debug builds
                 peer = new TL_inputPeerEmpty();
-                if (BuildConfig.DEBUG_PRIVATE_VERSION) {
+                if (BuildVars.DEBUG_PRIVATE_VERSION) {
                     throw new IllegalStateException("ephemeral unsupported");
                 }
             }
@@ -52275,7 +52274,7 @@ public class TLRPC {
             if (ephemeralReceiverBotId != 0) {
                 // safety: send ephemeral message to nobody and crash for debug builds
                 peer = new TL_inputPeerEmpty();
-                if (BuildConfig.DEBUG_PRIVATE_VERSION) {
+                if (BuildVars.DEBUG_PRIVATE_VERSION) {
                     throw new IllegalStateException("ephemeral unsupported");
                 }
             }

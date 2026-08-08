@@ -123,6 +123,7 @@ import org.checkerframework.checker.initialization.qual.UnknownInitialization;
 import org.checkerframework.checker.nullness.compatqual.NullableType;
 import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
 import org.checkerframework.checker.nullness.qual.PolyNull;
+import org.telegram.messenger.BuildVars;
 
 /** Miscellaneous utility methods. */
 public final class Util {
@@ -1639,17 +1640,9 @@ public final class Util {
    * @return A user agent string generated using the applicationName and the library version.
    */
   public static String getUserAgent(Context context, String applicationName) {
-    String versionName;
-    try {
-      String packageName = context.getPackageName();
-      PackageInfo info = context.getPackageManager().getPackageInfo(packageName, 0);
-      versionName = info.versionName;
-    } catch (NameNotFoundException e) {
-      versionName = "?";
-    }
     return applicationName
         + "/"
-        + versionName
+        + BuildVars.BUILD_VERSION_STRING
         + " (Linux;Android "
         + Build.VERSION.RELEASE
         + ") "

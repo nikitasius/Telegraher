@@ -16,8 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.BuildConfig;
-import org.telegram.messenger.FileLog;
+import org.telegram.messenger.BuildVars;
 
 import java.util.Locale;
 
@@ -206,7 +205,7 @@ public final class RefreshRateController {
     }
 
     private void logDecision(String direction, float fps) {
-        if (!BuildConfig.DEBUG) return;
+        if (!BuildVars.DEBUG_VERSION) return;
         Log.d(TAG, String.format(Locale.US,
                 "%s switch, avgFps=%.2f, preferModeId=%d",
                 direction, fps, currentPreferredModeId));
@@ -251,7 +250,7 @@ public final class RefreshRateController {
         mode60 = best60;
         modeMax = bestMax;
 
-        if (BuildConfig.DEBUG) {
+        if (BuildVars.DEBUG_VERSION) {
             Log.d(TAG, "mode60=" + modeToString(mode60)
                     + ", modeMax=" + modeToString(modeMax));
         }

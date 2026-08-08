@@ -9,12 +9,12 @@ import android.util.SparseArray;
 
 import androidx.annotation.Nullable;
 
-import org.telegram.messenger.BuildConfig;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 import me.vkryl.core.reference.ReferenceList;
+import org.telegram.messenger.BuildVars;
 
 /**
  * A thin wrapper around Android {@link Choreographer} that delivers animation
@@ -351,7 +351,7 @@ public final class Choreographer60FpsContent implements Choreographer.FrameCallb
     }
 
     private static void checkMainThread() {
-        if (BuildConfig.DEBUG_PRIVATE_VERSION || BuildConfig.DEBUG_VERSION) {
+        if (BuildVars.DEBUG_PRIVATE_VERSION || BuildVars.DEBUG_VERSION) {
             if (Looper.myLooper() != Looper.getMainLooper()) {
                 throw new IllegalStateException("Choreographer60FpsContent must be used on the main thread");
             }

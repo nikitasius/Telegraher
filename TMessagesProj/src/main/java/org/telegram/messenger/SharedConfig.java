@@ -13,7 +13,6 @@ import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
 import android.os.Build;
@@ -548,7 +547,7 @@ public class SharedConfig {
             lastUpdateCheckTime = preferences.getLong("appUpdateCheckTime", System.currentTimeMillis());
             try {
                 String update = preferences.getString("appUpdate", null);
-                if (update != null) {
+                if (false && update != null) {
                     pendingAppUpdateBuildVersion = preferences.getInt("appUpdateBuild", buildVersion());
                     byte[] arr = Base64.decode(update, Base64.DEFAULT);
                     if (arr != null) {
@@ -557,14 +556,13 @@ public class SharedConfig {
                         data.cleanup();
                     }
                 }
-                if (pendingAppUpdate != null) {
+                if (false && pendingAppUpdate != null) {
                     long updateTime = 0;
                     int updateVersion = 0;
                     String updateVersionString = null;
                     try {
-                        PackageInfo packageInfo = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
-                        updateVersion = packageInfo.versionCode;
-                        updateVersionString = packageInfo.versionName;
+                        updateVersion = BuildVars.BUILD_VERSION_FULL;
+                        updateVersionString = BuildVars.BUILD_VERSION_STRING;
                     } catch (Exception e) {
                         FileLog.e(e);
                     }
@@ -686,6 +684,7 @@ public class SharedConfig {
     }
 
     public static int buildVersion() {
+        if (true) return BuildVars.BUILD_VERSION_FULL;
         try {
             return ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0).versionCode;
         } catch (Exception e) {
@@ -768,13 +767,13 @@ public class SharedConfig {
     }
 
     public static boolean isAppUpdateAvailable() {
+        if (true) return false;
         if (pendingAppUpdate == null || pendingAppUpdate.document == null || !ApplicationLoader.isStandaloneBuild()) {
             return false;
         }
         int currentVersion;
         try {
-            PackageInfo pInfo = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
-            currentVersion = pInfo.versionCode;
+            currentVersion = BuildVars.BUILD_VERSION_FULL;
         } catch (Exception e) {
             FileLog.e(e);
             currentVersion = buildVersion();
@@ -783,12 +782,13 @@ public class SharedConfig {
     }
 
     public static boolean setNewAppVersionAvailable(TLRPC.TL_help_appUpdate update) {
+        if (true) return false;
         String updateVersionString = null;
         int versionCode = 0;
         try {
-            PackageInfo packageInfo = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
-            versionCode = packageInfo.versionCode;
-            updateVersionString = packageInfo.versionName;
+//            PackageInfo packageInfo = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
+//            versionCode = packageInfo.versionCode;
+//            updateVersionString = packageInfo.versionName;
         } catch (Exception e) {
             FileLog.e(e);
         }

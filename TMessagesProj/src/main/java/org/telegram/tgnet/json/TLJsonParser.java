@@ -5,7 +5,7 @@ import androidx.annotation.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.telegram.messenger.BuildConfig;
+import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.Utilities;
 
@@ -47,7 +47,7 @@ public class TLJsonParser {
 
                 } catch (JSONException e) {
                     FileLog.e(e);
-                    if (BuildConfig.DEBUG_PRIVATE_VERSION) {
+                    if (BuildVars.DEBUG_PRIVATE_VERSION) {
                         throw new RuntimeException(e);
                     }
                 }

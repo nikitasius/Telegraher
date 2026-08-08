@@ -17,7 +17,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -59,7 +58,7 @@ public class ApplicationLoader extends Application {
 
     private static ConnectivityManager connectivityManager;
     private static volatile boolean applicationInited = false;
-    private static volatile  ConnectivityManager.NetworkCallback networkCallback;
+    private static volatile ConnectivityManager.NetworkCallback networkCallback;
     private static long lastNetworkCheckTypeTime;
     private static int lastKnownNetworkType = -1;
 
@@ -171,7 +170,7 @@ public class ApplicationLoader extends Application {
         } catch (Exception e) {
             FileLog.e(e);
         }
-        return new File("/data/data/org.telegram.messenger/files");
+        return new File("/data/data/" + BuildVars.BUILD_GRAHER + "/files");
     }
 
     public static File getFilesDirFixed(String child) {
@@ -292,9 +291,8 @@ public class ApplicationLoader extends Application {
         if (BuildVars.LOGS_ENABLED) {
             FileLog.d("app start time = " + (startTime = SystemClock.elapsedRealtime()));
             try {
-                final PackageInfo info = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
                 final String abi;
-                switch (info.versionCode % 10) {
+                switch (BuildVars.BUILD_VERSION_FULL % 10) {
                     case 1:
                     case 2:
                         abi = "store bundled " + Build.CPU_ABI + " " + Build.CPU_ABI2;
@@ -308,7 +306,7 @@ public class ApplicationLoader extends Application {
                         }
                         break;
                 }
-                FileLog.d("buildVersion = " + String.format(Locale.US, "v%s (%d[%d]) %s", info.versionName, info.versionCode / 10, info.versionCode % 10, abi));
+                FileLog.d("buildVersion = " + String.format(Locale.US, "v%s (%d[%d]) %s", BuildVars.BUILD_VERSION_STRING, BuildVars.BUILD_VERSION_FULL / 10, BuildVars.BUILD_VERSION_FULL % 10, abi));
             } catch (Exception e) {
                 FileLog.e(e);
             }
@@ -323,7 +321,7 @@ public class ApplicationLoader extends Application {
         try {
             ConnectionsManager.native_setJava(false);
         } catch (UnsatisfiedLinkError error) {
-            throw new RuntimeException("can't load native libraries " +  Build.CPU_ABI + " lookup folder " + NativeLoader.getAbiFolder());
+            throw new RuntimeException("can't load native libraries " + Build.CPU_ABI + " lookup folder " + NativeLoader.getAbiFolder());
         }
         new ForegroundDetector(this) {
             @Override

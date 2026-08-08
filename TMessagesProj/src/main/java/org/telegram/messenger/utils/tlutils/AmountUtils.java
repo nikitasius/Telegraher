@@ -282,7 +282,7 @@ public class AmountUtils {
 
         public void set(Amount min, Amount max) {
             if (min.currency != max.currency) {
-                if (BuildConfig.DEBUG_PRIVATE_VERSION) {
+                if (BuildVars.DEBUG_PRIVATE_VERSION) {
                     throw new IllegalArgumentException();
                 }
                 return;
