@@ -29,7 +29,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -124,7 +123,6 @@ import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.AuthTokensHelper;
 import org.telegram.messenger.BillingController;
-import org.telegram.messenger.BuildConfig;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.CallReceiver;
 import org.telegram.messenger.ContactsController;
@@ -333,7 +331,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
     private boolean checkPermissions = true;
     private boolean checkShowPermissions = true;
     private boolean newAccount;
-    private boolean syncContacts = true;
+    private boolean syncContacts = false;
     private boolean testBackend = false;
 
     @ActivityMode
@@ -1252,8 +1250,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         }
         builder.setNeutralButton(getString("BotHelp", R.string.BotHelp), (dialog, which) -> {
             try {
-                PackageInfo pInfo = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
-                String version = String.format(Locale.US, "%s (%d)", pInfo.versionName, pInfo.versionCode);
+                String version = String.format(Locale.US, "%s (%d)", BuildVars.BUILD_VERSION_STRING, BuildVars.BUILD_VERSION_FULL);
 
                 Intent mailer = new Intent(Intent.ACTION_SENDTO);
                 mailer.setData(Uri.parse("mailto:"));
@@ -2000,7 +1997,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                         if (BuildVars.LOGS_ENABLED) {
                             FileLog.d("app start time = " + ApplicationLoader.startTime);
                             try {
-                                FileLog.d("buildVersion = " + ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0).versionCode);
+                                FileLog.d("buildVersion = " + BuildVars.BUILD_VERSION_FULL);
                             } catch (Exception e) {
                                 FileLog.e(e);
                             }
@@ -2465,7 +2462,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                         return;
                     }
                     CheckBoxCell cell = (CheckBoxCell) v;
-                    syncContacts = !syncContacts;
+                    syncContacts = false; //fuckers!
                     cell.setChecked(syncContacts, true);
                     if (syncContacts) {
                         BulletinFactory.of(slideViewsContainer, null).createSimpleBulletin(R.raw.contacts_sync_on, getString("SyncContactsOn", R.string.SyncContactsOn)).show();
@@ -2475,7 +2472,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 });
             }
 
-            final boolean allowTestBackend = (BuildVars.DEBUG_VERSION || TEST_BACKEND_IN_STORE && !BuildConfig.BUNDLE) || getConnectionsManager().isTestBackend();
+            final boolean allowTestBackend = (BuildVars.DEBUG_VERSION || TEST_BACKEND_IN_STORE) || getConnectionsManager().isTestBackend();
             if (allowTestBackend && activityMode == MODE_LOGIN) {
                 testBackendCheckBox = new CheckBoxCell(context, 2);
                 testBackendCheckBox.setText(getString(R.string.DebugTestBackend), "", testBackend = getConnectionsManager().isTestBackend(), false);
@@ -3042,7 +3039,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), getString("ChooseCountry", R.string.ChooseCountry));
                 needHideProgress(false);
                 return;
-            } else if (countryState == COUNTRY_STATE_INVALID && !BuildVars.DEBUG_VERSION && !(TEST_BACKEND_IN_STORE && !BuildConfig.BUNDLE)) {
+            } else if (countryState == COUNTRY_STATE_INVALID && !BuildVars.DEBUG_VERSION && !TEST_BACKEND_IN_STORE) {
                 needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), getString(R.string.WrongCountry));
                 needHideProgress(false);
                 return;
@@ -3982,8 +3979,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                 .setMessage(AndroidUtilities.replaceTags(LocaleController.formatString(R.string.DidNotGetTheCodeInfo, phone)))
                                 .setNeutralButton(getString(R.string.DidNotGetTheCodeHelpButton), (dialog, which) -> {
                                     try {
-                                        PackageInfo pInfo = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
-                                        String version = String.format(Locale.US, "%s (%d)", pInfo.versionName, pInfo.versionCode);
+                                        String version = String.format(Locale.US, "%s (%d)", BuildVars.BUILD_VERSION_STRING, BuildVars.BUILD_VERSION_FULL);
 
                                         Intent mailer = new Intent(Intent.ACTION_SENDTO);
                                         mailer.setData(Uri.parse("mailto:"));
@@ -4062,7 +4058,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                         body.append("\n");
                                         body.append("App: ").append(BuildVars.APP_ID).append("\n");
                                         final String versionType;
-                                        switch (pInfo.versionCode % 10) {
+                                        switch (BuildVars.BUILD_VERSION_FULL % 10) {
                                             case 1:
                                             case 2:
                                                 versionType = "store";
@@ -9883,8 +9879,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 ItemOptions.makeOptions(LoginActivity.this, optionsButton)
                     .add(R.drawable.msg_help, getString(R.string.SettingsHelp), () -> {
                         try {
-                            PackageInfo pInfo = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
-                            String version = String.format(Locale.US, "%s (%d)", pInfo.versionName, pInfo.versionCode);
+                            String version = String.format(Locale.US, "%s (%d)", BuildVars.BUILD_VERSION_STRING, BuildVars.BUILD_VERSION_FULL);
 
                             Intent mailer = new Intent(Intent.ACTION_SENDTO);
                             mailer.setData(Uri.parse("mailto:"));
@@ -9970,7 +9965,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                             body.append("\n");
                             body.append("App: ").append(BuildVars.APP_ID).append("\n");
                             final String versionType;
-                            switch (pInfo.versionCode % 10) {
+                            switch (BuildVars.BUILD_VERSION_FULL % 10) {
                                 case 1:
                                 case 2:
                                     versionType = "store";
