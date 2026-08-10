@@ -82,14 +82,14 @@ import com.google.android.gms.wallet.PaymentDataRequest;
 import com.google.android.gms.wallet.PaymentsClient;
 import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
-import com.stripe.android.Stripe;
-import com.stripe.android.TokenCallback;
-import com.stripe.android.exception.APIConnectionException;
-import com.stripe.android.exception.APIException;
-import com.stripe.android.model.Card;
-import com.stripe.android.model.Token;
-import com.stripe.android.net.StripeApiHandler;
-import com.stripe.android.net.TokenParser;
+//import com.stripe.android.Stripe;
+//import com.stripe.android.TokenCallback;
+//import com.stripe.android.exception.APIConnectionException;
+//import com.stripe.android.exception.APIException;
+//import com.stripe.android.model.Card;
+//import com.stripe.android.model.Token;
+//import com.stripe.android.net.StripeApiHandler;
+//import com.stripe.android.net.TokenParser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -499,7 +499,7 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
     private void setDelegate(PaymentFormActivityDelegate paymentFormActivityDelegate) {
         delegate = paymentFormActivityDelegate;
     }
-    
+
     public void setResourcesProvider(Theme.ResourcesProvider provider) {
         resourcesProvider = provider;
     }
@@ -2945,6 +2945,7 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
     }
 
     private void createGooglePayButton(Context context) {
+        if (true) return;
         googlePayContainer = new FrameLayout(context);
         googlePayContainer.setBackgroundDrawable(Theme.getSelectorDrawable(true));
         googlePayContainer.setVisibility(View.GONE);
@@ -2974,18 +2975,18 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
                         }});
                     }});
                 } else {
-                    cardPaymentMethod.put("tokenizationSpecification", new JSONObject() {{
-                        put("type", "PAYMENT_GATEWAY");
-                        if (googlePayParameters != null) {
-                            put("parameters", googlePayParameters);
-                        } else {
-                            put("parameters", new JSONObject() {{
-                                put("gateway", "stripe");
-                                put("stripe:publishableKey", providerApiKey);
-                                put("stripe:version", StripeApiHandler.VERSION);
-                            }});
-                        }
-                    }});
+//                    cardPaymentMethod.put("tokenizationSpecification", new JSONObject() {{
+//                        put("type", "PAYMENT_GATEWAY");
+//                        if (googlePayParameters != null) {
+//                            put("parameters", googlePayParameters);
+//                        } else {
+//                            put("parameters", new JSONObject() {{
+//                                put("gateway", "stripe");
+//                                put("stripe:publishableKey", providerApiKey);
+//                                put("stripe:version", StripeApiHandler.VERSION);
+//                            }});
+//                        }
+//                    }});
                 }
 
                 paymentDataRequest.put("allowedPaymentMethods", new JSONArray().put(cardPaymentMethod));
@@ -3417,10 +3418,10 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
                                 cardName = "Android Pay";
                             }
                         } else {
-                            Token t = TokenParser.parseToken(token);
-                            paymentJson = String.format(Locale.US, "{\"type\":\"%1$s\", \"id\":\"%2$s\"}", t.getType(), t.getId());
-                            Card card = t.getCard();
-                            cardName = card.getBrand() + " *" + card.getLast4();
+//                            Token t = TokenParser.parseToken(token);
+//                            paymentJson = String.format(Locale.US, "{\"type\":\"%1$s\", \"id\":\"%2$s\"}", t.getType(), t.getId());
+//                            Card card = t.getCard();
+//                            cardName = card.getBrand() + " *" + card.getLast4();
                         }
                         goToNextStep();
                     } catch (JSONException e) {
@@ -3678,47 +3679,7 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
 
     @SuppressLint("HardwareIds")
     public void fillNumber(String number) {
-        try {
-            TelephonyManager tm = (TelephonyManager) ApplicationLoader.applicationContext.getSystemService(Context.TELEPHONY_SERVICE);
-            boolean allowCall = true;
-            boolean allowSms = true;
-            if (number != null || tm.getSimState() != TelephonyManager.SIM_STATE_ABSENT && tm.getPhoneType() != TelephonyManager.PHONE_TYPE_NONE) {
-                if (Build.VERSION.SDK_INT >= 23) {
-                    allowCall = getParentActivity().checkSelfPermission(Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED;
-                }
-                if (number != null || allowCall) {
-                    if (number == null) {
-                        number = PhoneFormat.stripExceptNumbers(tm.getLine1Number());
-                    }
-                    String textToSet = null;
-                    boolean ok = false;
-                    if (!TextUtils.isEmpty(number)) {
-                        if (number.length() > 4) {
-                            for (int a = 4; a >= 1; a--) {
-                                String sub = number.substring(0, a);
-                                String country = codesMap.get(sub);
-                                if (country != null) {
-                                    ok = true;
-                                    textToSet = number.substring(a);
-                                    inputFields[FIELD_PHONECODE].setText(sub);
-                                    break;
-                                }
-                            }
-                            if (!ok) {
-                                textToSet = number.substring(1);
-                                inputFields[FIELD_PHONECODE].setText(number.substring(0, 1));
-                            }
-                        }
-                        if (textToSet != null) {
-                            inputFields[FIELD_PHONE].setText(textToSet);
-                            inputFields[FIELD_PHONE].setSelection(inputFields[FIELD_PHONE].length());
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            FileLog.e(e);
-        }
+        return;
     }
 
     private void sendSavePassword(final boolean clear) {
@@ -3895,181 +3856,6 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
     }
 
     private boolean sendCardData() {
-        Integer month;
-        Integer year;
-        String date = inputFields[FIELD_EXPIRE_DATE].getText().toString();
-        String[] args = date.split("/");
-        if (args.length == 2) {
-            month = Utilities.parseInt(args[0]);
-            year = Utilities.parseInt(args[1]);
-        } else {
-            month = null;
-            year = null;
-        }
-        Card card = new Card(
-                inputFields[FIELD_CARD].getText().toString(),
-                month,
-                year,
-                inputFields[FIELD_CVV].getText().toString(),
-                inputFields[FIELD_CARDNAME].getText().toString(),
-                null, null, null, null,
-                inputFields[FIELD_CARD_POSTCODE].getText().toString(),
-                inputFields[FIELD_CARD_COUNTRY].getText().toString(),
-                null);
-        cardName = card.getBrand() + " *" + card.getLast4();
-
-        boolean skipDateCheck = false;
-        if (month != null && year != null) {
-            if (UserConfig.getInstance(currentAccount).getClientPhone().startsWith("7")) {
-                if ("smartglocal".equals(paymentForm.native_provider)) {
-                    if (year > 22 || year == 22 && month > 1) {
-                        skipDateCheck = true;
-                    }
-                }
-            }
-        }
-
-        if (!card.validateNumber()) {
-            shakeField(FIELD_CARD);
-            return false;
-        } else if (!skipDateCheck && (!card.validateExpMonth() || !card.validateExpYear() || !card.validateExpiryDate())) {
-            shakeField(FIELD_EXPIRE_DATE);
-            return false;
-        } else if (need_card_name && inputFields[FIELD_CARDNAME].length() == 0) {
-            shakeField(FIELD_CARDNAME);
-            return false;
-        } else if (!card.validateCVC()) {
-            shakeField(FIELD_CVV);
-            return false;
-        } else if (need_card_country && inputFields[FIELD_CARD_COUNTRY].length() == 0) {
-            shakeField(FIELD_CARD_COUNTRY);
-            return false;
-        } else if (need_card_postcode && inputFields[FIELD_CARD_POSTCODE].length() == 0) {
-            shakeField(FIELD_CARD_POSTCODE);
-            return false;
-        }
-        showEditDoneProgress(true, true);
-        try {
-            if ("stripe".equals(paymentForm.native_provider)) {
-                Stripe stripe = new Stripe(providerApiKey);
-                stripe.createToken(card, new TokenCallback() {
-                            public void onSuccess(Token token) {
-                                if (canceled) {
-                                    return;
-                                }
-                                paymentJson = String.format(Locale.US, "{\"type\":\"%1$s\", \"id\":\"%2$s\"}", token.getType(), token.getId());
-                                AndroidUtilities.runOnUIThread(() -> {
-                                    goToNextStep();
-                                    showEditDoneProgress(true, false);
-                                    setDonePressed(false);
-                                });
-                            }
-
-                            public void onError(Exception error) {
-                                if (canceled) {
-                                    return;
-                                }
-                                showEditDoneProgress(true, false);
-                                setDonePressed(false);
-                                if (error instanceof APIConnectionException || error instanceof APIException) {
-                                    AlertsCreator.showSimpleToast(PaymentFormActivity.this, LocaleController.getString(R.string.PaymentConnectionFailed));
-                                } else {
-                                    AlertsCreator.showSimpleToast(PaymentFormActivity.this, error.getMessage());
-                                }
-                            }
-                        }
-                );
-            } else if ("smartglocal".equals(paymentForm.native_provider)) {
-                AsyncTask<Object, Object, String> task = new AsyncTask<Object, Object, String>() {
-                    @Override
-                    protected String doInBackground(Object... objects) {
-                        HttpURLConnection conn = null;
-                        try {
-                            JSONObject jsonObject = new JSONObject();
-                            JSONObject cardObject = new JSONObject();
-                            cardObject.put("number", card.getNumber());
-                            cardObject.put("expiration_month", String.format(Locale.US, "%02d", card.getExpMonth()));
-                            cardObject.put("expiration_year", "" + card.getExpYear());
-                            cardObject.put("security_code", "" + card.getCVC());
-                            jsonObject.put("card", cardObject);
-
-                            String overrideSmartGlocalConnectionUrl = null;
-                            if (paymentForm.native_params != null) {
-                                try {
-                                    JSONObject jsonObject2 = new JSONObject(paymentForm.native_params.data);
-                                    overrideSmartGlocalConnectionUrl = jsonObject2.getString("tokenize_url");
-                                    if (overrideSmartGlocalConnectionUrl != null && !(
-                                        overrideSmartGlocalConnectionUrl.startsWith("https://") &&
-                                        overrideSmartGlocalConnectionUrl.endsWith(".smart-glocal.com/cds/v1/tokenize/card")
-                                    )) {
-                                        overrideSmartGlocalConnectionUrl = null;
-                                    }
-                                } catch (Exception e) {}
-                            }
-                            URL connectionUrl;
-                            if (overrideSmartGlocalConnectionUrl != null) {
-                                connectionUrl = new URL(overrideSmartGlocalConnectionUrl);
-                            } else if (paymentForm.invoice.test) {
-                                connectionUrl = new URL("https://tgb-playground.smart-glocal.com/cds/v1/tokenize/card");
-                            } else {
-                                connectionUrl = new URL("https://tgb.smart-glocal.com/cds/v1/tokenize/card");
-                            }
-                            conn = (HttpURLConnection) connectionUrl.openConnection();
-                            conn.setConnectTimeout(30 * 1000);
-                            conn.setReadTimeout(80 * 1000);
-                            conn.setUseCaches(false);
-                            conn.setDoOutput(true);
-                            conn.setRequestMethod("POST");
-                            conn.setRequestProperty("Content-Type", "application/json");
-                            conn.setRequestProperty("X-PUBLIC-TOKEN", providerApiKey);
-
-                            try (OutputStream output = conn.getOutputStream()) {
-                                output.write(jsonObject.toString().getBytes("UTF-8"));
-                            }
-
-                            int code = conn.getResponseCode();
-                            if (code >= 200 && code < 300) {
-                                JSONObject result = new JSONObject();
-                                JSONObject jsonObject1 = new JSONObject(getResponseBody(conn.getInputStream()));
-                                String token = jsonObject1.getJSONObject("data").getString("token");
-                                result.put("token", token);
-                                result.put("type", "card");
-                                return result.toString();
-                            } else {
-                                if (BuildVars.DEBUG_VERSION) {
-                                    FileLog.e("" + getResponseBody(conn.getErrorStream()));
-                                }
-                            }
-                        } catch (Exception e) {
-                            FileLog.e(e);
-                        } finally {
-                            if (conn != null) {
-                                conn.disconnect();
-                            }
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    protected void onPostExecute(String result) {
-                        if (canceled) {
-                            return;
-                        }
-                        if (result == null) {
-                            AlertsCreator.showSimpleToast(PaymentFormActivity.this, LocaleController.getString(R.string.PaymentConnectionFailed));
-                        } else {
-                            paymentJson = result;
-                            goToNextStep();
-                        }
-                        showEditDoneProgress(true, false);
-                        setDonePressed(false);
-                    }
-                };
-                task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null, null, null);
-            }
-        } catch (Exception e) {
-            FileLog.e(e);
-        }
         return true;
     }
 
