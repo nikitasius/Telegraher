@@ -1869,7 +1869,7 @@ public class TL_stories {
             isPublic = hasFlag(flags, FLAG_7);
             close_friends = hasFlag(flags, FLAG_8);
             min = hasFlag(flags, FLAG_9);
-            noforwards = hasFlag(flags, FLAG_10);
+            noforwards = false;
             edited = hasFlag(flags, FLAG_11);
             contacts = hasFlag(flags, FLAG_12);
             selected_contacts = hasFlag(flags, FLAG_13);
@@ -1969,7 +1969,7 @@ public class TL_stories {
             isPublic = hasFlag(flags, FLAG_7);
             close_friends = hasFlag(flags, FLAG_8);
             min = hasFlag(flags, FLAG_9);
-            noforwards = hasFlag(flags, FLAG_10);
+            noforwards = false;
             edited = hasFlag(flags, FLAG_11);
             contacts = hasFlag(flags, FLAG_12);
             selected_contacts = hasFlag(flags, FLAG_13);
@@ -2063,7 +2063,7 @@ public class TL_stories {
             isPublic = hasFlag(flags, FLAG_7);
             close_friends = hasFlag(flags, FLAG_8);
             min = hasFlag(flags, FLAG_9);
-            noforwards = hasFlag(flags, FLAG_10);
+            noforwards = false;
             edited = hasFlag(flags, FLAG_11);
             contacts = hasFlag(flags, FLAG_12);
             selected_contacts = hasFlag(flags, FLAG_13);
@@ -2150,7 +2150,7 @@ public class TL_stories {
             isPublic = hasFlag(flags, FLAG_7);
             close_friends = hasFlag(flags, FLAG_8);
             min = hasFlag(flags, FLAG_9);
-            noforwards = hasFlag(flags, FLAG_10);
+            noforwards = false;
             edited = hasFlag(flags, FLAG_11);
             contacts = hasFlag(flags, FLAG_12);
             selected_contacts = hasFlag(flags, FLAG_13);
@@ -2231,7 +2231,7 @@ public class TL_stories {
             isPublic = hasFlag(flags, FLAG_7);
             close_friends = hasFlag(flags, FLAG_8);
             min = hasFlag(flags, FLAG_9);
-            noforwards = hasFlag(flags, FLAG_10);
+            noforwards = false;
             edited = hasFlag(flags, FLAG_11);
             contacts = hasFlag(flags, FLAG_12);
             selected_contacts = hasFlag(flags, FLAG_13);
@@ -2306,7 +2306,7 @@ public class TL_stories {
             isPublic = hasFlag(flags, FLAG_7);
             close_friends = hasFlag(flags, FLAG_8);
             min = hasFlag(flags, FLAG_9);
-            noforwards = hasFlag(flags, FLAG_10);
+            noforwards = false;
             edited = hasFlag(flags, FLAG_11);
             contacts = hasFlag(flags, FLAG_12);
             selected_contacts = hasFlag(flags, FLAG_13);
