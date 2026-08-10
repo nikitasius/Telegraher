@@ -3846,6 +3846,7 @@ public class AndroidUtilities {
     }
 
     public static boolean isSimAvailable() {
+        if (true) return false;
         TelephonyManager tm = (TelephonyManager) ApplicationLoader.applicationContext.getSystemService(Context.TELEPHONY_SERVICE);
         int state = tm.getSimState();
         return state != TelephonyManager.SIM_STATE_ABSENT && state != TelephonyManager.SIM_STATE_UNKNOWN && tm.getPhoneType() != TelephonyManager.PHONE_TYPE_NONE && !isAirplaneModeOn();

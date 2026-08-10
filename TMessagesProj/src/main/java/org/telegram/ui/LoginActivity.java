@@ -44,16 +44,13 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.telephony.PhoneNumberUtils;
-import android.telephony.SignalStrength;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
-import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.Layout;
@@ -2540,14 +2537,14 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
             String country = null;
 
-            try {
-                TelephonyManager telephonyManager = (TelephonyManager) ApplicationLoader.applicationContext.getSystemService(Context.TELEPHONY_SERVICE);
-                if (telephonyManager != null) {
-                    country = null;//telephonyManager.getSimCountryIso().toUpperCase();
-                }
-            } catch (Exception e) {
-                FileLog.e(e);
-            }
+//            try {
+//                TelephonyManager telephonyManager = (TelephonyManager) ApplicationLoader.applicationContext.getSystemService(Context.TELEPHONY_SERVICE);
+//                if (telephonyManager != null) {
+//                    country = null;//telephonyManager.getSimCountryIso().toUpperCase();
+//                }
+//            } catch (Exception e) {
+//                FileLog.e(e);
+//            }
 
             if (country != null) {
                 setCountry(languageMap, country.toUpperCase());
@@ -2858,10 +2855,10 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 return;
             }
 
-            TelephonyManager tm = (TelephonyManager) ApplicationLoader.applicationContext.getSystemService(Context.TELEPHONY_SERVICE);
-            if (BuildVars.DEBUG_VERSION) {
-                FileLog.d("sim status = " + tm.getSimState());
-            }
+//            TelephonyManager tm = (TelephonyManager) ApplicationLoader.applicationContext.getSystemService(Context.TELEPHONY_SERVICE);
+//            if (BuildVars.DEBUG_VERSION) {
+//                FileLog.d("sim status = " + tm.getSimState());
+//            }
             if (codeField.length() == 0 || phoneField.length() == 0) {
                 onFieldError(phoneOutlineView, false);
                 return;
@@ -3250,7 +3247,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 return;
             }
             try {
-                TelephonyManager tm = (TelephonyManager) ApplicationLoader.applicationContext.getSystemService(Context.TELEPHONY_SERVICE);
+//                TelephonyManager tm = (TelephonyManager) ApplicationLoader.applicationContext.getSystemService(Context.TELEPHONY_SERVICE);
                 if (AndroidUtilities.isSimAvailable()) {
                     boolean allowCall = true;
                     boolean allowReadPhoneNumbers = true;
@@ -3298,53 +3295,53 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                         codeField.setAlpha(0);
                         phoneField.setAlpha(0);
 
-                        String number = PhoneFormat.stripExceptNumbers(tm.getLine1Number());
+//                        String number = PhoneFormat.stripExceptNumbers(tm.getLine1Number());
                         String textToSet = null;
-                        boolean ok = false;
-                        if (!TextUtils.isEmpty(number)) {
-                            if (number.length() > 4) {
-                                for (int a = 4; a >= 1; a--) {
-                                    String sub = number.substring(0, a);
-
-                                    CountrySelectActivity.Country country;
-                                    List<CountrySelectActivity.Country> list = codesMap.get(sub);
-                                    if (list == null) {
-                                        country = null;
-                                    } else if (list.size() > 1) {
-                                        SharedPreferences preferences = MessagesController.getGlobalMainSettings();
-                                        String lastMatched = preferences.getString("phone_code_last_matched_" + sub, null);
-
-                                        country = list.get(list.size() - 1);
-                                        if (lastMatched != null) {
-                                            for (CountrySelectActivity.Country c : countriesArray) {
-                                                if (Objects.equals(c.shortname, lastMatched)) {
-                                                    country = c;
-                                                    break;
-                                                }
-                                            }
-                                        }
-                                    } else {
-                                        country = list.get(0);
-                                    }
-
-                                    if (country != null) {
-                                        ok = true;
-                                        textToSet = number.substring(a);
-                                        codeField.setText(sub);
-                                        break;
-                                    }
-                                }
-                                if (!ok) {
-                                    textToSet = number.substring(1);
-                                    codeField.setText(number.substring(0, 1));
-                                }
-                            }
-                            if (textToSet != null) {
-                                phoneField.requestFocus();
-                                phoneField.setText(textToSet);
-                                phoneField.setSelection(phoneField.length());
-                            }
-                        }
+                        boolean ok = true;
+//                        if (!TextUtils.isEmpty(number)) {
+//                            if (number.length() > 4) {
+//                                for (int a = 4; a >= 1; a--) {
+//                                    String sub = number.substring(0, a);
+//
+//                                    CountrySelectActivity.Country country;
+//                                    List<CountrySelectActivity.Country> list = codesMap.get(sub);
+//                                    if (list == null) {
+//                                        country = null;
+//                                    } else if (list.size() > 1) {
+//                                        SharedPreferences preferences = MessagesController.getGlobalMainSettings();
+//                                        String lastMatched = preferences.getString("phone_code_last_matched_" + sub, null);
+//
+//                                        country = list.get(list.size() - 1);
+//                                        if (lastMatched != null) {
+//                                            for (CountrySelectActivity.Country c : countriesArray) {
+//                                                if (Objects.equals(c.shortname, lastMatched)) {
+//                                                    country = c;
+//                                                    break;
+//                                                }
+//                                            }
+//                                        }
+//                                    } else {
+//                                        country = list.get(0);
+//                                    }
+//
+//                                    if (country != null) {
+//                                        ok = true;
+//                                        textToSet = number.substring(a);
+//                                        codeField.setText(sub);
+//                                        break;
+//                                    }
+//                                }
+//                                if (!ok) {
+//                                    textToSet = number.substring(1);
+//                                    codeField.setText(number.substring(0, 1));
+//                                }
+//                            }
+//                            if (textToSet != null) {
+//                                phoneField.requestFocus();
+//                                phoneField.setText(textToSet);
+//                                phoneField.setSelection(phoneField.length());
+//                            }
+//                        }
 
                         if (phoneField.length() > 0) {
                             AnimatorSet set = new AnimatorSet().setDuration(300);
@@ -3511,15 +3508,15 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
     private HashSet<String> getUserPhoneNumbers() {
         final HashSet<String> numbers = new HashSet<>();
-        try {
-            final TelephonyManager tm = (TelephonyManager) ApplicationLoader.applicationContext.getSystemService(Context.TELEPHONY_SERVICE);
-            final String number = tm.getLine1Number();
-            if (!TextUtils.isEmpty(number)) {
-                numbers.add(number);
-            }
-        } catch (Exception e) {
-            FileLog.e(e);
-        }
+//        try {
+//            final TelephonyManager tm = (TelephonyManager) ApplicationLoader.applicationContext.getSystemService(Context.TELEPHONY_SERVICE);
+//            final String number = tm.getLine1Number();
+//            if (!TextUtils.isEmpty(number)) {
+//                numbers.add(number);
+//            }
+//        } catch (Exception e) {
+//            FileLog.e(e);
+//        }
         try {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP_MR1) {
                 final SubscriptionManager subscriptionManager = SubscriptionManager.from(getContext());
@@ -3960,18 +3957,18 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                         req.phone_code_hash = phoneHash;
                         req.mnc = "";
                         String networkOperator = null;
-                        try {
-                            TelephonyManager tm = (TelephonyManager) ApplicationLoader.applicationContext.getSystemService(Context.TELEPHONY_SERVICE);
-                            networkOperator = tm.getNetworkOperator();
-                            if (!TextUtils.isEmpty(networkOperator)) {
-                                final String mcc = networkOperator.substring(0, 3);
-                                final String mnc = networkOperator.substring(3);
-//                                req.mcc = mcc;
-                                req.mnc = mnc;
-                            }
-                        } catch (Exception e) {
-                            FileLog.e(e);
-                        }
+//                        try {
+//                            TelephonyManager tm = (TelephonyManager) ApplicationLoader.applicationContext.getSystemService(Context.TELEPHONY_SERVICE);
+//                            networkOperator = tm.getNetworkOperator();
+//                            if (!TextUtils.isEmpty(networkOperator)) {
+//                                final String mcc = networkOperator.substring(0, 3);
+//                                final String mnc = networkOperator.substring(3);
+////                                req.mcc = mcc;
+//                                req.mnc = mnc;
+//                            }
+//                        } catch (Exception e) {
+//                            FileLog.e(e);
+//                        }
                         String finalNetworkOperator = networkOperator;
                         getConnectionsManager().sendRequest(req, null, ConnectionsManager.RequestFlagWithoutLogin);
                         new AlertDialog.Builder(context)
@@ -4021,35 +4018,35 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                                     }
                                                 }
                                             } else {
-                                                try {
-                                                    final TelephonyManager tm = (TelephonyManager) ApplicationLoader.applicationContext.getSystemService(Context.TELEPHONY_SERVICE);
-                                                    final String number = tm.getLine1Number();
-                                                    if (!TextUtils.isEmpty(number)) {
-                                                        body.append("SIM0.Phone: ").append(number).append("\n");
-                                                        body.append("SIM0.MCC: unknown\n");
-                                                        body.append("SIM0.MNC: unknown\n");
-                                                        body.append("SIM0.Carrier: unknown\n\n");
-                                                    }
-                                                } catch (Exception e) {
-                                                    FileLog.e(e);
-                                                }
+//                                                try {
+//                                                    final TelephonyManager tm = (TelephonyManager) ApplicationLoader.applicationContext.getSystemService(Context.TELEPHONY_SERVICE);
+//                                                    final String number = tm.getLine1Number();
+//                                                    if (!TextUtils.isEmpty(number)) {
+//                                                        body.append("SIM0.Phone: ").append(number).append("\n");
+//                                                        body.append("SIM0.MCC: unknown\n");
+//                                                        body.append("SIM0.MNC: unknown\n");
+//                                                        body.append("SIM0.Carrier: unknown\n\n");
+//                                                    }
+//                                                } catch (Exception e) {
+//                                                    FileLog.e(e);
+//                                                }
                                             }
                                         } catch (Exception e) {
                                             FileLog.e(e);
                                         }
                                         if (Build.VERSION.SDK_INT >= 29) {
-                                            try {
-                                                TelephonyManager tm = context.getSystemService(TelephonyManager.class);
-                                                ConnectivityManager cm = context.getSystemService(ConnectivityManager.class);
-                                                SignalStrength signal = tm.getSignalStrength();
-                                                if (signal != null) {
-                                                    body.append("Signal: ").append(signal.getLevel()).append("/4\n");
-                                                } else {
-                                                    body.append("Signal: unknown\n");
-                                                }
-                                            } catch (Exception e) {
-                                                FileLog.e(e);
-                                            }
+//                                            try {
+//                                                TelephonyManager tm = context.getSystemService(TelephonyManager.class);
+//                                                ConnectivityManager cm = context.getSystemService(ConnectivityManager.class);
+//                                                SignalStrength signal = tm.getSignalStrength();
+//                                                if (signal != null) {
+//                                                    body.append("Signal: ").append(signal.getLevel()).append("/4\n");
+//                                                } else {
+//                                                    body.append("Signal: unknown\n");
+//                                                }
+//                                            } catch (Exception e) {
+//                                                FileLog.e(e);
+//                                            }
                                         } else {
                                             body.append("Signal: unknown\n");
                                         }
@@ -8784,7 +8781,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             showProxyButton(false, animated);
         }
     }
-    
+
     private boolean proxyButtonVisible;
     private Runnable showProxyButtonDelayed;
     private void showProxyButtonDelayed() {
@@ -9928,35 +9925,35 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                         }
                                     }
                                 } else {
-                                    try {
-                                        final TelephonyManager tm = (TelephonyManager) ApplicationLoader.applicationContext.getSystemService(Context.TELEPHONY_SERVICE);
-                                        final String number = tm.getLine1Number();
-                                        if (!TextUtils.isEmpty(number)) {
-                                            body.append("SIM0.Phone: ").append(number).append("\n");
-                                            body.append("SIM0.MCC: unknown\n");
-                                            body.append("SIM0.MNC: unknown\n");
-                                            body.append("SIM0.Carrier: unknown\n\n");
-                                        }
-                                    } catch (Exception e) {
-                                        FileLog.e(e);
-                                    }
+//                                    try {
+//                                        final TelephonyManager tm = (TelephonyManager) ApplicationLoader.applicationContext.getSystemService(Context.TELEPHONY_SERVICE);
+//                                        final String number = tm.getLine1Number();
+//                                        if (!TextUtils.isEmpty(number)) {
+//                                            body.append("SIM0.Phone: ").append(number).append("\n");
+//                                            body.append("SIM0.MCC: unknown\n");
+//                                            body.append("SIM0.MNC: unknown\n");
+//                                            body.append("SIM0.Carrier: unknown\n\n");
+//                                        }
+//                                    } catch (Exception e) {
+//                                        FileLog.e(e);
+//                                    }
                                 }
                             } catch (Exception e) {
                                 FileLog.e(e);
                             }
                             if (Build.VERSION.SDK_INT >= 29) {
-                                try {
-                                    TelephonyManager tm = getContext().getSystemService(TelephonyManager.class);
-                                    ConnectivityManager cm = getContext().getSystemService(ConnectivityManager.class);
-                                    SignalStrength signal = tm.getSignalStrength();
-                                    if (signal != null) {
-                                        body.append("Signal: ").append(signal.getLevel()).append("/4\n");
-                                    } else {
-                                        body.append("Signal: unknown\n");
-                                    }
-                                } catch (Exception e) {
-                                    FileLog.e(e);
-                                }
+//                                try {
+//                                    TelephonyManager tm = getContext().getSystemService(TelephonyManager.class);
+//                                    ConnectivityManager cm = getContext().getSystemService(ConnectivityManager.class);
+//                                    SignalStrength signal = tm.getSignalStrength();
+//                                    if (signal != null) {
+//                                        body.append("Signal: ").append(signal.getLevel()).append("/4\n");
+//                                    } else {
+//                                        body.append("Signal: unknown\n");
+//                                    }
+//                                } catch (Exception e) {
+//                                    FileLog.e(e);
+//                                }
                             } else {
                                 body.append("Signal: unknown\n");
                             }
