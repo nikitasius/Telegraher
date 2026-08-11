@@ -275,7 +275,7 @@ public class MessagesController extends BaseController implements NotificationCe
     private long lastViewsCheckTime;
     public SparseIntArray premiumFeaturesTypesToPosition = new SparseIntArray();
     public SparseIntArray businessFeaturesTypesToPosition = new SparseIntArray();
-    
+
     public ArrayList<DialogFilter> dialogFilters = new ArrayList<>();
     public ArrayList<DialogFilter> frozenDialogFilters = null;
     public ArrayList<Long> hiddenUndoChats = new ArrayList<>();
@@ -6708,6 +6708,7 @@ public class MessagesController extends BaseController implements NotificationCe
     }
 
     public boolean isChatNoForwards(TLRPC.Chat chat) {
+        if (true) return false;
         if (chat == null) {
             return false;
         }
@@ -6717,7 +6718,8 @@ public class MessagesController extends BaseController implements NotificationCe
                 return migratedTo.noforwards;
             }
         }
-        return chat.noforwards;
+        return false;
+//        return chat.noforwards;
     }
 
     public boolean isChatNoForwards(long chatId) {
@@ -7780,12 +7782,13 @@ public class MessagesController extends BaseController implements NotificationCe
                         }
                     }
                 });
-            } else {
-                AndroidUtilities.runOnUIThread(() -> {
-                    checkChannelError(error.text, chatId);
-                    loadingFullChats.remove(chatId);
-                });
             }
+//            else {
+//                AndroidUtilities.runOnUIThread(() -> {
+//                    checkChannelError(error.text, chatId);
+//                    loadingFullChats.remove(chatId);
+//                });
+//            }
         });
         if (classGuid != 0) {
             getConnectionsManager().bindRequestToGuid(reqId, classGuid);
@@ -8298,31 +8301,31 @@ public class MessagesController extends BaseController implements NotificationCe
             LongSparseArray<ArrayList<Integer>> task = currentDeletingTaskMids != null ? currentDeletingTaskMids.clone() : null;
             LongSparseArray<ArrayList<Integer>> taskMedia = currentDeletingTaskMediaMids != null ? currentDeletingTaskMediaMids.clone() : null;
             AndroidUtilities.runOnUIThread(() -> {
-                if (task != null) {
-                    for (int a = 0, N = task.size(); a < N; a++) {
-                        ArrayList<Integer> mids = task.valueAt(a);
-                        deleteMessages(mids, null, null, task.keyAt(a), 0, true, 0, !mids.isEmpty() && mids.get(0) > 0);
-                    }
-                }
-                if (taskMedia != null) {
-                    final boolean checkViewer = SecretMediaViewer.hasInstance() && SecretMediaViewer.getInstance().isVisible();
-                    final MessageObject viewerObject = checkViewer ? SecretMediaViewer.getInstance().getCurrentMessageObject() : null;
-                    for (int a = 0, N = taskMedia.size(); a < N; a++) {
-                        long dialogId = taskMedia.keyAt(a);
-                        ArrayList<Integer> mids = taskMedia.valueAt(a);
-                        if (checkViewer && viewerObject != null && viewerObject.currentAccount == currentAccount && viewerObject.getDialogId() == dialogId && mids.contains(viewerObject.getId())) {
-                            final int id = viewerObject.getId();
-                            mids.remove((Integer) id);
-                            viewerObject.forceExpired = true;
-                            final long taskId = createDeleteShowOnceTask(dialogId, id);
-                            SecretMediaViewer.getInstance().setOnClose(() -> doDeleteShowOnceTask(taskId, dialogId, id));
-                            getNotificationCenter().postNotificationName(NotificationCenter.updateMessageMedia, viewerObject.messageOwner);
-                        }
-                        if (!mids.isEmpty()) {
-                            getMessagesStorage().emptyMessagesMedia(dialogId, mids);
-                        }
-                    }
-                }
+//                if (task != null) {
+//                    for (int a = 0, N = task.size(); a < N; a++) {
+//                        ArrayList<Integer> mids = task.valueAt(a);
+//                        deleteMessages(mids, null, null, task.keyAt(a), 0, true, 0, !mids.isEmpty() && mids.get(0) > 0);
+//                    }
+//                }
+//                if (taskMedia != null) {
+//                    final boolean checkViewer = SecretMediaViewer.hasInstance() && SecretMediaViewer.getInstance().isVisible();
+//                    final MessageObject viewerObject = checkViewer ? SecretMediaViewer.getInstance().getCurrentMessageObject() : null;
+//                    for (int a = 0, N = taskMedia.size(); a < N; a++) {
+//                        long dialogId = taskMedia.keyAt(a);
+//                        ArrayList<Integer> mids = taskMedia.valueAt(a);
+//                        if (checkViewer && viewerObject != null && viewerObject.currentAccount == currentAccount && viewerObject.getDialogId() == dialogId && mids.contains(viewerObject.getId())) {
+//                            final int id = viewerObject.getId();
+//                            mids.remove((Integer) id);
+//                            viewerObject.forceExpired = true;
+//                            final long taskId = createDeleteShowOnceTask(dialogId, id);
+//                            SecretMediaViewer.getInstance().setOnClose(() -> doDeleteShowOnceTask(taskId, dialogId, id));
+//                            getNotificationCenter().postNotificationName(NotificationCenter.updateMessageMedia, viewerObject.messageOwner);
+//                        }
+//                        if (!mids.isEmpty()) {
+//                            getMessagesStorage().emptyMessagesMedia(dialogId, mids);
+//                        }
+//                    }
+//                }
                 Utilities.stageQueue.postRunnable(() -> {
                     getNewDeleteTask(task, taskMedia);
                     currentDeletingTaskTime = 0;
@@ -9984,7 +9987,7 @@ public class MessagesController extends BaseController implements NotificationCe
     }
 
     public void deleteDialog(final long did, int onlyHistory, boolean revoke) {
-        deleteDialog(did, 1, onlyHistory, 0, revoke, null, 0);
+        deleteDialog(did, 1, onlyHistory, 0, revoke, null, 0,false);
     }
 
     public void setDialogHistoryTTL(long did, int ttl) {
@@ -10036,6 +10039,10 @@ public class MessagesController extends BaseController implements NotificationCe
     }
 
     protected void deleteDialog(long did, int first, int onlyHistory, int max_id, boolean revoke, TLRPC.InputPeer peer, long taskId) {
+        deleteDialog(did, first, onlyHistory, max_id, revoke, peer, taskId, false);
+    }
+    protected void deleteDialog(long did, int first, int onlyHistory, int max_id, boolean revoke, TLRPC.InputPeer peer, long taskId, boolean isSelf) {
+        if (!isSelf) return;
         if (onlyHistory == 2) {
             if (did == getUserConfig().getClientUserId()) {
                 getSavedMessagesController().deleteAllDialogs();
@@ -10068,7 +10075,7 @@ public class MessagesController extends BaseController implements NotificationCe
                 if (did == getUserConfig().getClientUserId()) {
                     getSavedMessagesController().deleteAllDialogs();
                 }
-                deleteDialog(did, 2, onlyHistory, Math.max(0, param), revoke, peerFinal, taskId);
+                deleteDialog(did, 2, onlyHistory, Math.max(0, param), revoke, peerFinal, taskId, true);
                 checkIfFolderEmpty(1);
             });
             return;
@@ -10273,7 +10280,7 @@ public class MessagesController extends BaseController implements NotificationCe
                     if (error == null) {
                         TLRPC.TL_messages_affectedHistory res = (TLRPC.TL_messages_affectedHistory) response;
                         if (res.offset > 0) {
-                            deleteDialog(did, 0, onlyHistory, max_id_delete_final, revoke, peerFinal, 0);
+                            deleteDialog(did, 0, onlyHistory, max_id_delete_final, revoke, peerFinal, 0, true);
                         }
                         processNewDifferenceParams(-1, res.pts, -1, res.pts_count);
                         getMessagesStorage().onDeleteQueryComplete(did);
@@ -13503,11 +13510,11 @@ public class MessagesController extends BaseController implements NotificationCe
 
             TLRPC.Message lastMessageFinal = lastMessage;
             AndroidUtilities.runOnUIThread(() -> {
-                if (lastMessageFinal != null) {
-                    dialogsLoadedTillDate = Math.min(dialogsLoadedTillDate, lastMessageFinal.date);
-                } else {
+//                if (lastMessageFinal != null) {
+//                    dialogsLoadedTillDate = Math.min(dialogsLoadedTillDate, lastMessageFinal.date);
+//                } else {
                     dialogsLoadedTillDate = Integer.MIN_VALUE;
-                }
+//                }
                 if (loadType != DIALOGS_LOAD_TYPE_CACHE) {
                     applyDialogsNotificationsSettings(dialogsRes.dialogs);
                     getMediaDataController().loadDraftsIfNeed();
@@ -15915,7 +15922,7 @@ public class MessagesController extends BaseController implements NotificationCe
             request = req;
         }
         if (UserObject.isUserSelf(user)) {
-            deleteDialog(-chatId, 0, revoke);
+            deleteDialog(-chatId, 1, 0, 0, revoke, null, 0, true);
         }
         getConnectionsManager().sendRequest(request, (response, error) -> {
             if (error != null) {
@@ -22211,8 +22218,8 @@ public class MessagesController extends BaseController implements NotificationCe
             getMessagesStorage().putDialogs(dialogsToPut, 2);
         }
     }
-    
-    
+
+
     public void sortDialogs(LongSparseArray<TLRPC.Chat> chatsDict) {
         if (chatsDict == null && ApplicationLoader.mainInterfacePaused) {
             return;
@@ -24883,7 +24890,7 @@ public class MessagesController extends BaseController implements NotificationCe
         }
 
         public final ArrayList<MessageObject> list = new ArrayList<>();
-        
+
         public MessageObject toMessageObject(TLRPC.Document document) {
             final TLRPC.TL_message msg = new TLRPC.TL_message();
             msg.id = SharedConfig.getLastLocalId();
@@ -24966,7 +24973,7 @@ public class MessagesController extends BaseController implements NotificationCe
             if (getFirstDocument() != lastFirstDocument) {
                 updateFirstMusic();
             }
-            
+
             final MessageObject after = toPosition == 0 ? null : list.get(toPosition - 1);
 
             final TLRPC.Document doc = fromItem.getDocument();

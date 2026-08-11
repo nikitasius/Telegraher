@@ -8303,8 +8303,8 @@ public class ChatActivity extends BaseFragment implements
         bottomOverlayText.setTextColor(getThemedColor(Theme.key_chat_secretChatStatusText));
         bottomOverlayText.setPadding(dp(24), 0, dp(24), 0);
         bottomOverlay.addView(bottomOverlayText, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.CENTER));
-        
-        
+
+
         bottomChannelButtonsLayout = new ChatActivityChannelButtonsLayout(context, resourceProvider, blurredBackgroundColorProvider, glassBackgroundDrawableFactory) {
             @Override
             public void setVisibility(int visibility) {
@@ -8954,11 +8954,11 @@ public class ChatActivity extends BaseFragment implements
         }
 
         windowInsetsStateHolder.setInsets(insets);
-        
+
         if (messagesSearchListContainer != null) {
             messagesSearchListContainer.setPadding(insetsLeft, 0, insetsRight, 0);
         }
-        
+
         checkUi_chatListViewPaddings();
         checkUi_messagesSearchListPadding();
         invalidateClipRectForBackgroundAndChatList();
@@ -14337,7 +14337,7 @@ public class ChatActivity extends BaseFragment implements
         public String text;
         public ArrayList<TLRPC.MessageEntity> entities;
         public int offset, length;
-        
+
         public TLRPC.TodoItem task;
         public TLRPC.PollAnswer answer;
 
@@ -22578,7 +22578,7 @@ public class ChatActivity extends BaseFragment implements
                     builder.setMessage(LocaleController.getString(R.string.JoinByPeekChannelText));
                 }
                 builder.setPositiveButton(LocaleController.getString(R.string.Close), null);
-                if (showDialog(closeChatDialog = builder.create()) == null) {
+                if (false && showDialog(closeChatDialog = builder.create()) == null) {
                     showCloseChatDialogLater = true;
                 }
 
@@ -25766,13 +25766,13 @@ public class ChatActivity extends BaseFragment implements
                 if (obj.messageOwner.action instanceof TLRPC.TL_messageActionSetMessagesTTL && messages.size() == 2) {
                     placeToPaste = 1;
                 }
-                
+
                 if (hasSentMessages) {
                     if (chatAdapter != null) {
                         chatAdapter.checkRemoveBotForumRowsStartThreadRow(true);
                     }
                 }
-                
+
                 if (dayArray == null) {
                     dayArray = new ArrayList<>();
                     messagesByDays.put(obj.dateKey, dayArray);
@@ -31701,7 +31701,7 @@ public class ChatActivity extends BaseFragment implements
                                 TranslateAlert2 alert = TranslateAlert2.showAlert(getParentActivity(), this, currentAccount, inputPeer, messageIdToTranslate[0], selectedObject.summarized, fromLang, toLangValue, finalMessageText, entities, noforwardsOrPaidMedia, onLinkPress, () -> dimBehindView(false));
                                 alert.setDimBehind(false);
                                 closeMenu(false);
-                                
+
 //                                final TranslateAlert3 alert =
 //                                    new TranslateAlert3(getContext(), resourceProvider)
 //                                        .setText(fromLang, finalMessageText)

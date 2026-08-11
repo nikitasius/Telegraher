@@ -1950,24 +1950,27 @@ public class ChatObject {
     }
 
     public static boolean isLeftFromChat(TLRPC.Chat chat) {
-        return chat == null || chat instanceof TLRPC.TL_chatEmpty || isForbidden(chat) || chat.left || chat.deactivated;
+        return false;
+//        return chat == null || chat instanceof TLRPC.TL_chatEmpty || isForbidden(chat) || chat.left || chat.deactivated;
     }
 
     public static boolean isKickedFromChat(TLRPC.Chat chat) {
-        return chat == null || chat instanceof TLRPC.TL_chatEmpty || isForbidden(chat) || chat.kicked || chat.deactivated || chat.banned_rights != null && chat.banned_rights.view_messages;
+        return false;
+//        return chat == null || chat instanceof TLRPC.TL_chatEmpty || isForbidden(chat) || chat.kicked || chat.deactivated || chat.banned_rights != null && chat.banned_rights.view_messages;
     }
 
     public static boolean isNotInChat(TLRPC.Chat chat) {
-        return chat == null || chat instanceof TLRPC.TL_chatEmpty || isForbidden(chat) || chat.left || chat.kicked || chat.deactivated;
+        return false;
+//        return chat == null || chat instanceof TLRPC.TL_chatEmpty || isForbidden(chat) || chat.left || chat.kicked || chat.deactivated;
     }
 
     public static boolean isInChat(TLRPC.Chat chat) {
-        if (chat == null || chat instanceof TLRPC.TL_chatEmpty || isForbidden(chat)) {
-            return false;
-        }
-        if (chat.left || chat.kicked || chat.deactivated) {
-            return false;
-        }
+//        if (chat == null || chat instanceof TLRPC.TL_chatEmpty || isForbidden(chat)) {
+//            return false;
+//        }
+//        if (chat.left || chat.kicked || chat.deactivated) {
+//            return false;
+//        }
         return true;
     }
 

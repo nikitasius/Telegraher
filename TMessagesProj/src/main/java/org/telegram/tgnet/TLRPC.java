@@ -33420,7 +33420,7 @@ public class TLRPC {
 
         public void readParams(InputSerializedData stream, boolean exception) {
             flags = stream.readInt32(exception);
-            history_deleted = hasFlag(flags, FLAG_0);
+            history_deleted = false;
             id = stream.readInt32(exception);
         }
 
