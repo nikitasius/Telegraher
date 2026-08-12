@@ -14417,7 +14417,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.dialogPhotosUpdate, dialogPhotos);
             }
         }
-        if (currentMessageObject != null && currentMessageObject.isVideo() || currentBotInlineResult != null && (currentBotInlineResult.type.equals("video") || MessageObject.isVideoDocument(currentBotInlineResult.document)) || (pageBlocksAdapter != null && (pageBlocksAdapter.isVideo(index) || pageBlocksAdapter.isHardwarePlayer(index))) || (sendPhotoType == SELECT_TYPE_NO_SELECT && ((MediaController.PhotoEntry)imagesArrLocals.get(index)).isVideo)) {
+        if (currentMessageObject != null && (currentMessageObject.isVideo() || currentMessageObject.isGif()) || currentBotInlineResult != null && (currentBotInlineResult.type.equals("video") || MessageObject.isVideoDocument(currentBotInlineResult.document)) || (pageBlocksAdapter != null && (pageBlocksAdapter.isVideo(index) || pageBlocksAdapter.isHardwarePlayer(index))) || (sendPhotoType == SELECT_TYPE_NO_SELECT && ((MediaController.PhotoEntry) imagesArrLocals.get(index)).isVideo)) {
             playerAutoStarted = true;
             onActionClick(false);
         } else if (!imagesArrLocals.isEmpty()) {
@@ -14649,9 +14649,9 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             }
 
             if (currentAnimation != null) {
-                galleryButton.setVisibility(View.GONE);
-                galleryGap.setVisibility(View.GONE);
-                menuItem.hideSubItem(gallery_menu_share);
+                galleryButton.setVisibility(View.VISIBLE);
+                galleryGap.setVisibility(View.VISIBLE);
+                menuItem.showSubItem(gallery_menu_share);
                 setItemVisible(editItem, false, animated);
                 if (!newMessageObject.canDeleteMessage(parentChatActivity != null && parentChatActivity.isInScheduleMode(), null)) {
                     menuItem.hideSubItem(gallery_menu_delete);
