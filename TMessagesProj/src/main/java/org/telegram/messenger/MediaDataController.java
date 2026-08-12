@@ -6055,7 +6055,8 @@ public class MediaDataController extends BaseController {
 
             long selfUserId = getUserConfig().clientUserId;
 
-            SQLiteCursor cursor = getMessagesStorage().getDatabase().queryFinalized(String.format(Locale.US, "SELECT data, mid, date FROM messages_v2 WHERE mid IN (%s) AND uid = %d", longIds, dialogId));
+//            SQLiteCursor cursor = getMessagesStorage().getDatabase().queryFinalized(String.format(Locale.US, "SELECT data, mid, date FROM messages_v2 WHERE mid IN (%s) AND uid = %d", longIds, dialogId));
+            SQLiteCursor cursor = getMessagesStorage().getDatabase().queryFinalized(String.format(Locale.US, "SELECT m.data, m.mid, m.date, tmd.isdel FROM messages_v2 as m LEFT JOIN telegraher_message_deletions as tmd ON tmd.mid=m.mid AND tmd.uid=m.uid WHERE m.mid IN (%s) AND m.uid = %d", longIds, dialogId));
             while (cursor.next()) {
                 NativeByteBuffer data = cursor.byteBufferValue(0);
                 if (data != null) {
@@ -6064,6 +6065,7 @@ public class MediaDataController extends BaseController {
                         result.readAttachPath(data, selfUserId);
                         result.id = cursor.intValue(1);
                         result.date = cursor.intValue(2);
+                        result.isDeleted = !cursor.isNull(3);
                         result.dialog_id = dialogId;
                         MessagesStorage.addUsersAndChatsFromMessage(result, usersToLoad, chatsToLoad, null);
                         results.add(result);
@@ -6280,7 +6282,8 @@ public class MediaDataController extends BaseController {
                 Timer.Task t3 = Timer.start(logLogger, "loadReplyMessagesForMessages: (encrypted) loading those messages from storage");
                 try {
                     ArrayList<MessageObject> loadedMessages = new ArrayList<>();
-                    SQLiteCursor cursor = getMessagesStorage().getDatabase().queryFinalized(String.format(Locale.US, "SELECT m.data, m.mid, m.date, r.random_id FROM randoms_v2 as r INNER JOIN messages_v2 as m ON r.mid = m.mid AND r.uid = m.uid WHERE r.random_id IN(%s)", TextUtils.join(",", replyMessages)));
+//                    SQLiteCursor cursor = getMessagesStorage().getDatabase().queryFinalized(String.format(Locale.US, "SELECT m.data, m.mid, m.date, r.random_id FROM randoms_v2 as r INNER JOIN messages_v2 as m ON r.mid = m.mid AND r.uid = m.uid WHERE r.random_id IN(%s)", TextUtils.join(",", replyMessages)));
+                    SQLiteCursor cursor = getMessagesStorage().getDatabase().queryFinalized(String.format(Locale.US, "SELECT m.data, m.mid, m.date, r.random_id, tmd.isdel FROM randoms_v2 as r INNER JOIN messages_v2 as m ON r.mid = m.mid AND r.uid = m.uid LEFT JOIN telegraher_message_deletions as tmd ON tmd.mid=m.mid AND tmd.uid=m.uid WHERE r.random_id IN(%s)", TextUtils.join(",", replyMessages)));
                     while (cursor.next()) {
                         NativeByteBuffer data = cursor.byteBufferValue(0);
                         if (data != null) {
@@ -6290,6 +6293,7 @@ public class MediaDataController extends BaseController {
                             message.id = cursor.intValue(1);
                             message.date = cursor.intValue(2);
                             message.dialog_id = dialogId;
+                            message.isDeleted = !cursor.isNull(4);
 
                             long value = cursor.longValue(3);
                             ArrayList<MessageObject> arrayList = replyMessageRandomOwners.get(value);
@@ -6557,6 +6561,8 @@ public class MediaDataController extends BaseController {
                                     message.readAttachPath(data, getUserConfig().clientUserId);
                                     data.reuse();
                                     message.id = cursor.intValue(1);
+                                    if (!scheduled) message.isDeleted = !cursor.isNull(4);
+                                    else message.isDeleted = false;
                                     message.date = cursor.intValue(2);
                                     message.dialog_id = dialogId;
                                     MessagesStorage.addUsersAndChatsFromMessage(message, usersToLoad, chatsToLoad, null);

@@ -126,6 +126,8 @@
     <string name="InternalFolderInfo">Sfoglia i tuoi file di sistema</string>
     <string name="ExternalFolderInfo">Sfoglia il tuo archivio esterno</string>
     <string name="SearchMusic">Cerca musica</string>
+    <string name="EditedMessage">modificato</string>
+    <string name="DeletedMessage">cancellato</string>
     <!--notification-->
     <string name="NotificationMessageGiftCode">%1$s ti ha inviato un codice regalo per %2$s di Telegram Premium</string>
     <string name="NotificationMessageGiveaway">%1$s ti ha inviato un giveaway di %2$s abbonamenti Premium da %3$sm</string>

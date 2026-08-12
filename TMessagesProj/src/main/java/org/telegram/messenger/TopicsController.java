@@ -410,7 +410,7 @@ public class TopicsController extends BaseController {
         }
     }
 
-    public void updateTopicsWithDeletedMessages(long dialogId, ArrayList<Integer> messages) {
+    public void updateTopicsWithDeletedMessages(long dialogId, List<Integer> messages) {
         if (dialogId > 0) {
             return;
         }

@@ -7,6 +7,8 @@
     <string name="LanguageNameInEnglish">Spanish</string>
     <string name="LanguageCode">es</string>
     <string name="ContinueOnThisLanguage">Continuar en español</string>
+    <string name="EditedMessage">editado</string>
+    <string name="DeletedMessage">eliminado</string>
     <!--signin view-->
     <string name="YourPhone">Tu teléfono</string>
     <string name="StartText">Por favor, confirma el código de tu\npaís y pon tu número de teléfono.</string>

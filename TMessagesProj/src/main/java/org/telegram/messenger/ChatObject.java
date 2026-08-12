@@ -2157,6 +2157,10 @@ public class ChatObject {
         return canUserDoAction(chat, ACTION_MANAGE_CALLS);
     }
 
+    public static boolean canDeleteMessages(TLRPC.Chat chat) { // TODO: 8/12/26 it belong to another old graher stuff so will be used later
+        return canUserDoAction(chat, ACTION_DELETE_MESSAGES);
+    }
+
     public static boolean canSendStickers(TLRPC.Chat chat) {
         if (isIgnoredChatRestrictionsForBoosters(chat)) {
             return true;

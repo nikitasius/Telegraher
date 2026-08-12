@@ -12667,7 +12667,7 @@ public class ChatActivity extends BaseFragment implements
                     getMessagesController().getTopicsController().onTopicsDeletedServerSide(currentChat.id, threadId);
                 }
             } else {
-                getMessagesController().deleteDialog(dialog_id, 1, revoke);
+                getMessagesController().deleteDialog(dialog_id, 1, revoke, true);
                 getMessagesStorage().removeAllTopics(dialog_id);
                 getMessagesController().getTopicsController().reloadTopics(-dialog_id);
             }
@@ -22630,25 +22630,26 @@ public class ChatActivity extends BaseFragment implements
                 }
             }
         } else if (id == NotificationCenter.removeAllMessagesFromDialog) {
-            long did = (Long) args[0];
-            if (dialog_id == did) {
-                setFilterMessages(false);
-                if (threadMessageId != 0) {
-                    if (forwardEndReached[0]) {
-                        forwardEndReached[0] = false;
-                        hideForwardEndReached = false;
-                        if (chatAdapter != null && !chatAdapter.isFiltered) {
-                            // chatAdapter.notifyItemInserted(0);
-                        }
-                    }
-                    if (chatAdapter != null) {
-                        chatAdapter.notifyDataSetChanged(true);
-                    }
-                    getMessagesController().addToViewsQueue(threadMessageObject);
-                } else {
-                    clearHistory((Boolean) args[1], (TLRPC.TL_updates_channelDifferenceTooLong) args[2]);
-                }
-            }
+            // TODO: 8/12/26 review this part of code cause it could be handy
+//            long did = (Long) args[0];
+//            if (dialog_id == did) {
+//                setFilterMessages(false);
+//                if (threadMessageId != 0) {
+//                    if (forwardEndReached[0]) {
+//                        forwardEndReached[0] = false;
+//                        hideForwardEndReached = false;
+//                        if (chatAdapter != null && !chatAdapter.isFiltered) {
+//                            // chatAdapter.notifyItemInserted(0);
+//                        }
+//                    }
+//                    if (chatAdapter != null) {
+//                        chatAdapter.notifyDataSetChanged(true);
+//                    }
+//                    getMessagesController().addToViewsQueue(threadMessageObject);
+//                } else {
+//                    clearHistory((Boolean) args[1], (TLRPC.TL_updates_channelDifferenceTooLong) args[2]);
+//                }
+//            }
         } else if (id == NotificationCenter.screenshotTook) {
             updateInformationForScreenshotDetector();
         } else if (id == NotificationCenter.blockedUsersDidLoad) {
@@ -26114,6 +26115,7 @@ public class ChatActivity extends BaseFragment implements
         processDeletedMessages(markAsDeletedMessages, channelId, sent, true);
     }
     private void processDeletedMessages(ArrayList<Integer> markAsDeletedMessages, long channelId, boolean sent, boolean thanos) {
+//        if (true) return; //honestly it's quite sucks + waiting for feedbacks
         ArrayList<Integer> removedIndexes = new ArrayList<>();
         ArrayList<Integer> thanosMessagesIndexes = new ArrayList<>();
         final int currentTime = getConnectionsManager().getCurrentTime();
@@ -26163,12 +26165,12 @@ public class ChatActivity extends BaseFragment implements
             Integer mid = markAsDeletedMessages.get(a);
             MessageObject obj = chatAdapter != null && chatAdapter.isFiltered ? filteredMessagesDict.get(mid) :  messagesDict[loadIndex].get(mid);
             if (selectedObject != null && obj == selectedObject || obj != null && selectedObjectGroup != null && selectedObjectGroup == groupedMessagesMap.get(obj.getGroupId())) {
-                closeMenu();
+//                closeMenu(); //really?
             }
             if (PhotoViewer.isPlayingMessage(obj)) {
-                PhotoViewer.getInstance().closePhoto(false, false);
+//                PhotoViewer.getInstance().closePhoto(false, false); //close photo while watching?
             } else if (PhotoViewer.isPlayingMessageInPip(obj)) {
-                PhotoViewer.getPipInstance().destroyPhotoViewer();
+//                PhotoViewer.getPipInstance().destroyPhotoViewer(); // wtf bruh/sis/whatever
             }
             if (loadIndex == 0) {
                 if (pinnedMessageObjects.containsKey(mid)) {
@@ -27432,9 +27434,10 @@ public class ChatActivity extends BaseFragment implements
                 BaseFragment fragment = parentLayout.getFragmentStack().get(parentLayout.getFragmentStack().size() - 1);
                 removeSelfFromStack();
                 fragment.finishFragment();
-            } else {
-                finishFragment();
             }
+//            } else {
+//                finishFragment();
+//            }
         }
     }
 

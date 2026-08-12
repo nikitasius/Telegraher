@@ -108,6 +108,8 @@
     <string name="InternalFolderInfo">파일 시스템 탐색</string>
     <string name="ExternalFolderInfo">외부 저장 공간 탐색</string>
     <string name="SearchMusic">음악 검색</string>
+    <string name="EditedMessage">수정됨</string>
+    <string name="DeletedMessage">삭제</string>
     <!--notification-->
     <string name="NotificationMessageGiftCode">%1$s님이 텔레그램 프리미엄 %2$s의 선물 코드를 보냈습니다.</string>
     <string name="NotificationMessageGiveaway">%1$s님이 %2$sx %3$sm 프리미엄 구독권을 경품으로 보냈습니다.</string>

@@ -7,6 +7,8 @@
     <string name="LanguageNameInEnglish">German</string>
     <string name="LanguageCode">de</string>
     <string name="ContinueOnThisLanguage">Weiter auf Deutsch</string>
+    <string name="EditedMessage">bearbeitet</string>
+    <string name="DeletedMessage">entfernt</string>
     <!--signin view-->
     <string name="YourPhone">Dein Telefon</string>
     <string name="StartText">Bitte bestätige deine Landeskennzahl und deine Telefonnummer.</string>

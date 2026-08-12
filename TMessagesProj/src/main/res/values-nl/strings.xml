@@ -126,6 +126,8 @@
     <string name="InternalFolderInfo">Blader door je bestandssysteem</string>
     <string name="ExternalFolderInfo">Blader door je externe opslag</string>
     <string name="SearchMusic">Zoek muziek</string>
+    <string name="EditedMessage">gewijzigd</string>
+    <string name="DeletedMessage">slettet</string>
     <!--notification-->
     <string name="NotificationMessageGiftCode">%1$s heeft je een cadeaucode voor %2$s Telegram Premium gestuurd</string>
     <string name="NotificationMessageGiveaway">%1$s heeft je een winactie voor %2$s premium-abonnementen van %3$s maanden gestuurd</string>
