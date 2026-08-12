@@ -18850,6 +18850,7 @@ public class ChatActivity extends BaseFragment implements
                             }
                         }
                         if (canSave) {
+                            sendSecretMessageRead(messageObject, true);
                             if (messageObject.getDocument() != null && !messageObject.isMusic()) {
                                 String mime = messageObject.getDocument().mime_type;
                                 if (mime != null) {
