@@ -14762,15 +14762,17 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 setItemVisible(sendItem, false, false);
             }
             if (isEmbedVideo || newMessageObject.messageOwner.ttl != 0 && newMessageObject.messageOwner.ttl < 60 * 60 || noforwards) {
-                allowShare = false;
-                galleryButton.setVisibility(View.GONE);
-                galleryGap.setVisibility(View.GONE);
-                menuItem.hideSubItem(gallery_menu_share);
+                allowShare = true;
+                galleryButton.setVisibility(View.VISIBLE);
+                galleryGap.setVisibility(View.VISIBLE);
+                menuItem.showSubItem(gallery_menu_save);
+                menuItem.showSubItem(gallery_menu_share);
                 setItemVisible(editItem, false, animated);
             } else {
                 allowShare = true;
                 galleryButton.setVisibility(View.VISIBLE);
                 galleryGap.setVisibility(View.VISIBLE);
+                menuItem.showSubItem(gallery_menu_save);
                 menuItem.showSubItem(gallery_menu_share);
             }
             groupedPhotosListView.fillList();
@@ -15174,11 +15176,12 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             if (currentAnimation != null || (!pageBlocksAdapter.isVideo(index) && pageBlocksAdapter.isHardwarePlayer(index))) {
                 galleryButton.setVisibility(View.GONE);
                 galleryGap.setVisibility(View.GONE);
-                if (allowShare) {
-                    menuItem.showSubItem(gallery_menu_savegif);
-                } else {
-                    menuItem.hideSubItem(gallery_menu_savegif);
-                }
+//                if (allowShare) {
+//                    menuItem.showSubItem(gallery_menu_savegif);
+//                } else {
+//                    menuItem.hideSubItem(gallery_menu_savegif);
+//                }
+                menuItem.hideSubItem(gallery_menu_savegif);
                 menuItem.checkHideMenuItem();
                 title = getString(R.string.AttachGif);
             } else {

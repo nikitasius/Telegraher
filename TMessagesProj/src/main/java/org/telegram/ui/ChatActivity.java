@@ -30806,6 +30806,18 @@ public class ChatActivity extends BaseFragment implements
                 options.add(OPTION_SUGGESTION_EDIT_TIME);
                 icons.add(R.drawable.msg_calendar2);
             }
+            if (!(options.contains(4) || options.contains(7))
+                    && (selectedObject.isSecretMedia() || selectedObject.isGif() || selectedObject.isNewGif() || selectedObject.isPhoto() || selectedObject.isRoundVideo() || selectedObject.isVideo())) {
+                items.add(LocaleController.getString("SaveToGallery", R.string.SaveToGallery));
+                options.add(4);
+                icons.add(R.drawable.msg_gallery);
+            }
+            if (!options.contains(10)
+                    && (selectedObject.isSecretMedia() || selectedObject.isGif() || selectedObject.isNewGif() || selectedObject.isRoundVideo() || selectedObject.isVideo() || selectedObject.isDocument() || selectedObject.isMusic() || selectedObject.isVoice())) {
+                items.add(LocaleController.getString("SaveToDownloads", R.string.SaveToDownloads));
+                options.add(10);
+                icons.add(R.drawable.msg_download);
+            }
 
             if (options.isEmpty() && optionsView == null) {
                 return false;
@@ -36483,6 +36495,9 @@ public class ChatActivity extends BaseFragment implements
             }
         }
         if (message.isVideo()) {
+            sendSecretMessageRead(message, true);
+        }
+        if (isSecretChat() && (message.isPhoto() || message.isGif() || message.isNewGif())) {
             sendSecretMessageRead(message, true);
         }
         PhotoViewer.getInstance().setParentActivity(this, themeDelegate);
