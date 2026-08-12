@@ -9611,7 +9611,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
     private void performDeleteOrClearDialogAction(int action, long selectedDialog, TLRPC.Chat chat, boolean isBot, boolean revoke) {
         if (action == clear) {
-            getMessagesController().deleteDialog(selectedDialog, 1, revoke);
+            getMessagesController().deleteDialog(selectedDialog, 1, revoke, true);
         } else {
             if (chat != null) {
                 if (ChatObject.isNotInChat(chat)) {
@@ -9621,7 +9621,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     getMessagesController().deleteParticipantFromChat(-selectedDialog, currentUser, null, revoke, false);
                 }
             } else {
-                getMessagesController().deleteDialog(selectedDialog, 0, revoke);
+                getMessagesController().deleteDialog(selectedDialog, 0, revoke, true);
                 if (isBot && revoke) {
                     getMessagesController().blockPeer(selectedDialog);
                 }
@@ -10708,12 +10708,12 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             Runnable deleteRunnable = () -> {
                 if (chat != null) {
                     if (ChatObject.isNotInChat(chat)) {
-                        getMessagesController().deleteDialog(dialogId, 0, revoke);
+                        getMessagesController().deleteDialog(dialogId, 0, revoke, true);
                     } else {
                         getMessagesController().deleteParticipantFromChat(-dialogId, getMessagesController().getUser(getUserConfig().getClientUserId()), null, revoke, revoke);
                     }
                 } else {
-                    getMessagesController().deleteDialog(dialogId, 0, revoke);
+                    getMessagesController().deleteDialog(dialogId, 0, revoke, true);
                     if (user != null && user.bot && botBlock) {
                         getMessagesController().blockPeer(user.id);
                     }
