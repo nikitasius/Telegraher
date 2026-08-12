@@ -180,6 +180,7 @@ public class VideoAds {
     private int requestId;
     private boolean loading, loaded;
     private void load() {
+        if (true) return; //FU
         if (loading || loaded) return;
 
         if (UserConfig.getInstance(currentAccount).isPremium() && MessagesController.getInstance(currentAccount).isSponsoredDisabled()) {
