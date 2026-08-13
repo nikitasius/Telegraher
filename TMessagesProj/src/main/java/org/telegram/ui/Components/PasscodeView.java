@@ -742,7 +742,13 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
         numbersTitleContainer.addView(subtitleView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 23, 0, 0));
 
         numberFrameLayouts = new ArrayList<>(10);
-        for (int a = 0; a < 12; a++) {
+
+        List<Integer> pinButtOns = new ArrayList<>() {{
+            for (int i = 0; i <= 9; i++) add(i);
+        }};
+        if (SharedConfig.shufflePinButtons) Collections.shuffle(pinButtOns);
+        for (int i = 10; i < 12; i++) pinButtOns.add(i);
+        for (Integer a:pinButtOns) {
             PasscodeButton frameLayout = new PasscodeButton(context);
             ScaleStateListAnimator.apply(frameLayout, .15f, 1.5f);
             frameLayout.setTag(a);

@@ -136,6 +136,8 @@ public class PasscodeActivity extends BaseFragment implements NotificationCenter
     @Keep
     private int fingerprintRow;
     @Keep
+    private int shufflePinButtons;
+    @Keep
     private int autoLockRow;
     private int autoLockDetailRow;
 
@@ -356,6 +358,10 @@ public class PasscodeActivity extends BaseFragment implements NotificationCenter
                         SharedConfig.useFingerprintLock = !SharedConfig.useFingerprintLock;
                         UserConfig.getInstance(currentAccount).saveConfig(false);
                         ((TextCheckCell) view).setChecked(SharedConfig.useFingerprintLock);
+                    } else if (position == shufflePinButtons) {
+                        SharedConfig.shufflePinButtons = !SharedConfig.shufflePinButtons;
+                        UserConfig.getInstance(currentAccount).saveConfig(false);
+                        ((TextCheckCell) view).setChecked(SharedConfig.shufflePinButtons);
                     } else if (position == captureRow) {
                         SharedConfig.allowScreenCapture = !SharedConfig.allowScreenCapture;
                         UserConfig.getInstance(currentAccount).saveConfig(false);
@@ -818,6 +824,7 @@ public class PasscodeActivity extends BaseFragment implements NotificationCenter
         } catch (Throwable e) {
             FileLog.e(e);
         }
+        shufflePinButtons = rowCount++;
         autoLockRow = rowCount++;
         autoLockDetailRow = rowCount++;
         captureHeaderRow = rowCount++;
@@ -1074,7 +1081,7 @@ public class PasscodeActivity extends BaseFragment implements NotificationCenter
         @Override
         public boolean isEnabled(RecyclerView.ViewHolder holder) {
             int position = holder.getAdapterPosition();
-            return position == fingerprintRow || position == autoLockRow || position == captureRow ||
+            return position == fingerprintRow || position == shufflePinButtons || position == autoLockRow || position == captureRow ||
                     position == changePasscodeRow || position == disablePasscodeRow;
         }
 
@@ -1116,6 +1123,8 @@ public class PasscodeActivity extends BaseFragment implements NotificationCenter
                     TextCheckCell textCell = (TextCheckCell) holder.itemView;
                     if (position == fingerprintRow) {
                         textCell.setTextAndCheck(LocaleController.getString(R.string.UnlockFingerprint), SharedConfig.useFingerprintLock, false);
+                    } else if (position == shufflePinButtons) {
+                        textCell.setTextAndCheck(LocaleController.getString(R.string.ShufflePinButton), SharedConfig.shufflePinButtons, false);
                     } else if (position == captureRow) {
                         textCell.setTextAndCheck(LocaleController.getString(R.string.ScreenCaptureShowContent), SharedConfig.allowScreenCapture, false);
                     }
@@ -1187,7 +1196,7 @@ public class PasscodeActivity extends BaseFragment implements NotificationCenter
 
         @Override
         public int getItemViewType(int position) {
-            if (position == fingerprintRow || position == captureRow) {
+            if (position == fingerprintRow || position == captureRow || position == shufflePinButtons) {
                 return VIEW_TYPE_CHECK;
             } else if (position == changePasscodeRow || position == autoLockRow || position == disablePasscodeRow) {
                 return VIEW_TYPE_SETTING;

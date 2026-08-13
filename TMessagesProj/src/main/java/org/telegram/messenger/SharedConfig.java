@@ -235,6 +235,7 @@ public class SharedConfig {
     public static int lastPauseTime;
     public static boolean isWaitingForPasscodeEnter;
     public static boolean useFingerprintLock = true;
+    public static boolean shufflePinButtons = true;
     public static boolean useFaceLock = true;
     public static int suggestStickers;
     public static boolean suggestAnimatedEmoji;
@@ -441,6 +442,7 @@ public class SharedConfig {
                 editor.putInt("autoLockIn", autoLockIn);
                 editor.putInt("lastPauseTime", lastPauseTime);
                 editor.putBoolean("useFingerprint", useFingerprintLock);
+                editor.putBoolean("shufflePinButtons", shufflePinButtons);
                 editor.putBoolean("allowScreenCapture", allowScreenCapture);
                 editor.putString("pushString2", pushString);
                 editor.putInt("pushType", pushType);
@@ -519,6 +521,7 @@ public class SharedConfig {
             autoLockIn = preferences.getInt("autoLockIn", 60 * 60);
             lastPauseTime = preferences.getInt("lastPauseTime", 0);
             useFingerprintLock = preferences.getBoolean("useFingerprint", true);
+            shufflePinButtons = preferences.getBoolean("shufflePinButtons", false);
             allowScreenCapture = preferences.getBoolean("allowScreenCapture", true);
             lastLocalId = preferences.getInt("lastLocalId", -210000);
             pushString = preferences.getString("pushString2", "");
@@ -870,6 +873,7 @@ public class SharedConfig {
         autoLockIn = 60 * 60;
         lastPauseTime = 0;
         useFingerprintLock = true;
+        shufflePinButtons = false;
         isWaitingForPasscodeEnter = false;
         allowScreenCapture = false;
         textSelectionHintShows = 0;
