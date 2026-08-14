@@ -1,5 +1,7 @@
 # Build
 
+# OUTDATED / 2026
+
 It's very simple
 
 * open `builditbitch.sh` and remove lines from 10 to 17 and from 22 to 27

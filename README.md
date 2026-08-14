@@ -59,17 +59,21 @@ Actual graher is simplified, also it's acutually not FOSS. Maybe we'll make it f
 
 Another features (timed TTL messages etc) need to me moved.
 
-TEXT BELOW PLEASE IGNORE. CI/CD and BUILD TUTORIAL is on the way.
+### BUILD
 
-### [BUILD](README_BUILD.md)
+1) You clone the project on your dev laptop or a pc.
+2) You run `gradle :TMessagesProj_AppStandalone:assembleStandalone` OR click in your IDE `TMessagesProj_AppStandalone -> assembleStandalone`
+3) It will assemble for you APK and sign w/ default keys
+
+You can still use docker TG offer for official build, just build a **Standalone** app
+
 
 ### APKs
 
-* for android >=4.1
+* for android >=5
 * Realeases are
   here: [https://github.com/nikitasius/Telegraher/releases](https://github.com/nikitasius/Telegraher/releases)
     * if it contain `beta` it mean it's BETA
-* Last release `9.33.31`: [bundle](https://github.com/nikitasius/Telegraher/releases/tag/graher_9.33.31_bundle)
 * Last beta: write `!beta` in chat
 
 ### Issues/Wishlist
@@ -80,6 +84,8 @@ Probably it's a good thing 😃
 ### [Changes](README_CHANGES.md)
 
 ### Code mirrors
+
+# NEED TO UPDATE / 2026 / OUTDATED except telegram channel
 
 * Github: [https://github.com/nikitasius/Telegraher](https://github.com/nikitasius/Telegraher)
 * Gitlab: [https://gitlab.com/nikitasius/Telegraher](https://gitlab.com/nikitasius/Telegraher)
