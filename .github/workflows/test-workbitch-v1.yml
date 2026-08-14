@@ -43,4 +43,4 @@ jobs:
                 with:
                     gradle-version: '8.14.5'
             -   name: Build APK
-                run: bash ./gradlew bundleStandalone
+                run: bash ./gradlew :TMessagesProj_AppStandalone:assembleStandalone
