@@ -1,9 +1,16 @@
 name: Minimal Android CI Workflow
 
+#on:
+#    pull_request:
+#        branches: [ master ]
+#        types: [ opened, synchronize ]
 on:
-    pull_request:
-        branches: [ master ]
-        types: [ opened, synchronize ]
+    workflow_dispatch:
+        inputs:
+            module-name:
+                description: The module you wanna test
+                type: string
+                default: 'POTATO'
 jobs:
     test:
         name: Run Unit Tests
