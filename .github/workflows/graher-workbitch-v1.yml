@@ -59,13 +59,18 @@ jobs:
                     fi
                     GRAHERAPK="/home/runner/work/Telegraher/Telegraher/TMessagesProj_AppStandalone/build/outputs/apk/afat/standalone/Telegraher.${{inputs.graher-version}}.apk"
                     mv "$APK_PATH" "$GRAHERAPK"
+                    sha256sum "$GRAHERAPK" > "$GRAHERHASH"
                     echo "apk_path=$GRAHERAPK" >> "$GITHUB_OUTPUT"
+                    echo "apk_sha256=$GRAHERHASH" >> "$GITHUB_OUTPUT"
             -   name: Create Release and Upload APK
                 uses: softprops/action-gh-release@v3
                 with:
                     tag_name: ${{env.TNAME}}
                     name: ${{env.RNAME}}
                     files: ${{ steps.locate_apk.outputs.apk_path }}
+                    body:  |
+                        Graher `${{inputs.graher-version}}` sha256 `${{ steps.locate_apk.outputs.apk_sha256 }}`
+                        Thank you, folks, for many years of your support and believing in tomorrow! 🍻
                 env:
                     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                     RNAME: Telegraher ${{inputs.graher-version}}
