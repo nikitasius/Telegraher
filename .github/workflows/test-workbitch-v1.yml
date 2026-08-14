@@ -19,7 +19,7 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v3
             - name: Set up AWS Coretto 21
-              uses: actions/setup-java@v3
+              uses: actions/setup-java@v5
               with:
                   java-version: '21'
                   distribution: 'corretto'
@@ -34,7 +34,7 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v1
             - name: Set up AWS Coretto 21
-              uses: actions/setup-java@v3
+              uses: actions/setup-java@v5
               with:
                   java-version: '21'
                   distribution: 'corretto'
