@@ -2,7 +2,7 @@
 
 (c) Bender Bending Rodríguez
 
-![Telegraher](/TMessagesProj/src/main/res/mipmap-xhdpi/ic_launcher.png)
+![Telegraher](/TMessagesProj/src/main/res/mipmap-xhdpi/ic_launcher_sa.png)
 
 ## Telegraher
 
@@ -32,7 +32,7 @@ Follow the ~~white rabbit~~ the git flow:
 
 * i took and forked the original client
 * i cloned the latest `master` branch (with 8.3.1 patch) into `master_8.3.1`
-    * actually master branch for repo is `graher_12.92.1`
+    * actually master branch for repo is `graher_9.33`
 * i made another branch `noshit_8.3.1` from `master_8.3.1`, it contain changes
 
 It gives us `telegram` -> `master` -> `master_8.3.1` -> `noshit_8.3.1`
@@ -42,24 +42,22 @@ different)
 
 ### Summary
 
-There are old README from [8.3](README_old_8.3.1.md) and from 2023th [9.33](README_old_9.33.md).
-
-Actual graher is simplified, also it's acutually not FOSS. Maybe we'll make it foss + add more features.
-
 * DISABLED ADS
 * EVERY element have `save to downloads`/`save to gallery`
+* UNLIMITED multiacc
+* SESSION MANAGER & DEVICE SPOOFING
 * DISABLED REMOTE DELETIONS
 * FULL ACCESS in "restrict saving content" chats
 * FULL ACCESS in secret chats (GREEN ONES!)
 * KEEP CACHED chats while banned in
+* MESSAGE HISTORY
+* TIMED medias AREN'T expire
+* SHADOWBAN feature! block anyone just for you!
 * DISABLED emulator detections
 * LEGIT Phone and legit SIM no matter which number you use
-* Scramble PIN layout to make your PIN undetectable for CCTV footages
 * Hi, i'm Vanilla telegram using vanilla keys, vanilla fingerpring & package 💅
-
-Another features (timed TTL messages etc) need to me moved.
-
-TEXT BELOW PLEASE IGNORE. CI/CD and BUILD TUTORIAL is on the way.
+* KABOOM, to KABOOM your app's data!
+* Graherium local features 😎
 
 ### [BUILD](README_BUILD.md)
 
@@ -89,6 +87,8 @@ Probably it's a good thing 😃
     * `releases` w/ actual releases and cloned `Telegraher` & `Telegraher.git` in `.tar.gz`
     * `betas` w/ actual betas
 * TG channel: [https://t.me/telegraher](https://t.me/telegraher)
+* MATRIX
+  chat: [https://matrix.to/#/%23telegraher-chat:matrix.evildayz.com](https://matrix.to/#/%23telegraher-chat:matrix.evildayz.com)
 
 ### Coffee
 
