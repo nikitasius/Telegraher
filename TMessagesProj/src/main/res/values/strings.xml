@@ -3142,7 +3142,7 @@
     <string name="AutoLockInTime">in %1$s</string>
     <string name="AutoLockDisabled">Disabled</string>
     <string name="UnlockFingerprint">Unlock with Fingerprint</string>
-    <string name="ShufflePinButton">Shuffle pin buttons on a pin panel</string>
+    <string name="ShufflePinButton">Scramble PIN input layout</string>
     <string name="ScreenCapture">Show App Content in Task Switcher</string>
     <string name="ScreenCaptureHeader">App Content in Task Switcher</string>
     <string name="ScreenCaptureShowContent">Show Content</string>
