@@ -38,15 +38,7 @@ import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.BillingController;
-import org.telegram.messenger.FileLog;
-import org.telegram.messenger.LocaleController;
-import org.telegram.messenger.MessagesController;
-import org.telegram.messenger.NotificationCenter;
-import org.telegram.messenger.R;
-import org.telegram.messenger.UserConfig;
-import org.telegram.messenger.UserObject;
+import org.telegram.messenger.*;
 import org.telegram.messenger.browser.Browser;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLObject;
@@ -649,7 +641,7 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
             ssb.setSpan(balanceTitleSizeSpan, index, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         balanceTitle.setText(ssb);
-        balanceSubtitle.setText("≈" + BillingController.getInstance().formatCurrency(amount, "USD"));
+        balanceSubtitle.setText(BuildVars.gimmeFuLabel());
         balanceEditTextContainer.setVisibility(amount > 0 ? View.VISIBLE : View.GONE);
         if (balanceEditTextAll) {
             balanceEditTextIgnore = true;
@@ -682,7 +674,7 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
             ssb.setSpan(tonBalanceTitleSizeSpan, index, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         tonBalanceTitle.setText(ssb);
-        tonBalanceSubtitle.setText("≈" + BillingController.getInstance().formatCurrency(amount, "USD"));
+        tonBalanceSubtitle.setText(BuildVars.gimmeFuLabel());
     }
 
     private SpannableStringBuilder lock;

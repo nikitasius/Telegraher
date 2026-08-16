@@ -19,8 +19,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.BillingController;
-import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.GenericProvider;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
@@ -267,7 +265,7 @@ public class PremiumTierCell extends ViewGroup {
                 break;
         }
 
-        isDrawingGradient = !BuildVars.useInvoiceBilling() && (!BillingController.getInstance().isReady() || tier.getOfferDetails() == null);
+        isDrawingGradient = false;
         if (!isDrawingGradient) {
             if (tier.getDiscount() <= 0) {
                 discountView.setVisibility(GONE);

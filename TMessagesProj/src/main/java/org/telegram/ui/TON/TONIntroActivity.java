@@ -31,7 +31,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
-import org.telegram.messenger.BillingController;
 import org.telegram.messenger.BirthdayController;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.FileLog;
@@ -342,12 +341,7 @@ public class TONIntroActivity extends GradientHeaderActivity implements Notifica
         sb.append(formatStarsAmount(balance, 0.66f, ' '));
         starBalanceTextView.setText(sb);
 
-        final double dollars = balance.amount / 1_000_000_000.0 * ton_usd_rate;
-        if ((int) (dollars * 100) > 0) {
-            starBalanceTitleView.setText("≈" + BillingController.getInstance().formatCurrency((int) (dollars * 100), "USD"));
-        } else {
-            starBalanceTitleView.setText(LocaleController.getString(R.string.YourTonBalance));
-        }
+        starBalanceTitleView.setText(LocaleController.getString(R.string.YourTonBalance));
 
         final TLRPC.TL_payments_starsRevenueStats stats = BotStarsController.getInstance(currentAccount).getTONRevenueStats(getUserConfig().getClientUserId(), true);
         updateButtonsLayouts(stats != null && stats.status != null && stats.status.overall_revenue.positive(), true);

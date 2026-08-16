@@ -95,11 +95,6 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 
-import com.android.billingclient.api.BillingClient;
-import com.android.billingclient.api.BillingFlowParams;
-import com.android.billingclient.api.ProductDetails;
-import com.android.billingclient.api.Purchase;
-import com.android.billingclient.api.QueryProductDetailsParams;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -119,7 +114,6 @@ import org.telegram.messenger.AccountInstance;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.AuthTokensHelper;
-import org.telegram.messenger.BillingController;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.CallReceiver;
 import org.telegram.messenger.ContactsController;
@@ -10006,7 +10000,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 if (!TextUtils.isEmpty(currency) && amount > 0) {
                     button.setVisibility(View.VISIBLE);
                     button.setLoading(false);
-                    button.setText(formatString(R.string.SMSFeePurchaseTitle, BillingController.getInstance().formatCurrency(amount, currency)), false);
+                    button.setText(formatString(R.string.SMSFeePurchaseTitle, BuildVars.gimmeFuLabel()), false);
                     button.setSubText(premium_days == 7 ? getString(R.string.SMSFeePurchaseText) : formatPluralStringComma("SMSFeePurchaseTextDays", premium_days), false);
                     button.setOnClickListener(v -> {
                         if (button.isLoading())
@@ -10086,144 +10080,6 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             } else {
                 button.setVisibility(View.VISIBLE);
                 button.setLoading(true);
-
-                final Runnable fetch = () -> {
-                    final ArrayList<QueryProductDetailsParams.Product> productQueries = new ArrayList<>();
-                    productQueries.add(
-                        QueryProductDetailsParams.Product.newBuilder()
-                            .setProductType(BillingClient.ProductType.INAPP)
-                            .setProductId(product)
-                            .build()
-                    );
-                    FileLog.d("LoginBilling querying \"" + product + "\" product");
-                    BillingController.getInstance().queryProductDetails(productQueries, (result, list) -> AndroidUtilities.runOnUIThread(() -> {
-                        FileLog.d("LoginBilling queried \"" + product + "\" product: " + BillingController.getResponseCodeString(result.getResponseCode()));
-                        if (result.getResponseCode() != BillingClient.BillingResponseCode.OK) {
-                            lastError = "BILLING_" + BillingController.getResponseCodeString(result.getResponseCode());
-                            BulletinFactory.of(slideViewsContainer, null).createSimpleBulletin(R.raw.error, formatString(R.string.UnknownErrorCode, BillingController.getResponseCodeString(result.getResponseCode())));
-                            return;
-                        }
-                        if (list != null && !list.isEmpty()) {
-                            final ProductDetails productDetails = list.get(0);
-
-                            final ProductDetails.OneTimePurchaseOfferDetails offer = productDetails.getOneTimePurchaseOfferDetails();
-
-                            final TLRPC.TL_inputStorePaymentAuthCode purpose = new TLRPC.TL_inputStorePaymentAuthCode();
-                            purpose.currency = offer.getPriceCurrencyCode();
-                            purpose.amount = (long) ((offer.getPriceAmountMicros() / Math.pow(10, 6)) * Math.pow(10, BillingController.getInstance().getCurrencyExp(purpose.currency)));
-                            purpose.phone_code_hash = TextUtils.isEmpty(phoneHash) ? "" : phoneHash;
-                            purpose.phone_number = phone;
-                            purpose.premium_days = premium_days;
-
-                            FileLog.d("LoginBilling found \"" + product + "\" product, with currency=" + purpose.currency + " amount=" + purpose.amount + "; phone=" + phone + ", phone_code_hash=" + phoneHash);
-
-                            final TLRPC.TL_payments_canPurchaseStore req = new TLRPC.TL_payments_canPurchaseStore();
-                            req.purpose = purpose;
-                            ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
-                                FileLog.d("LoginBilling canPurchaseStore returned " + res + " " + err);
-                                if (res instanceof TLRPC.TL_boolTrue) {
-                                    button.setText(formatString(R.string.SMSFeePurchaseTitle, offer.getFormattedPrice()), false);
-                                    button.setSubText(premium_days == 7 ? getString(R.string.SMSFeePurchaseText) : formatPluralStringComma("SMSFeePurchaseTextDays", premium_days), false);
-                                    button.setLoading(false);
-                                    button.setOnClickListener(v -> {
-                                        if (button.isLoading()) return;
-                                        button.setLoading(true);
-
-                                        final Utilities.Callback<String> whenDone = error -> {
-                                            FileLog.d("LoginBilling purchased done " + error);
-                                            if ("CANCELLED".equalsIgnoreCase(error)) {
-                                                button.setLoading(false);
-                                                return;
-                                            }
-                                        };
-                                        FileLog.d("LoginBilling, querying done purchases...");
-
-                                        Runnable buy = () -> {
-                                            paid = true;
-                                            BillingController.getInstance().addResultListener(productDetails.getProductId(), billingResult2 -> {
-                                                final boolean success = billingResult2.getResponseCode() == BillingClient.BillingResponseCode.OK;
-                                                final String error = success ? null : BillingController.getResponseCodeString(billingResult2.getResponseCode());
-                                                AndroidUtilities.runOnUIThread(() -> whenDone.run(error));
-                                            });
-                                            BillingController.getInstance().setOnCanceled(() -> {
-                                                AndroidUtilities.runOnUIThread(() -> whenDone.run("CANCELLED"));
-                                            });
-                                            BillingController.getInstance().launchBillingFlow(
-                                                getParentActivity(),
-                                                AccountInstance.getInstance(currentAccount),
-                                                purpose,
-                                                Collections.singletonList(BillingFlowParams.ProductDetailsParams.newBuilder()
-                                                    .setProductDetails(productDetails)
-                                                    .build())
-                                            );
-                                        };
-
-                                        BillingController.getInstance().queryPurchases(BillingClient.ProductType.INAPP, (billingResult1, paidList) -> AndroidUtilities.runOnUIThread(() -> {
-                                            if (billingResult1.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                                                if (paidList != null && !paidList.isEmpty()) {
-                                                    for (Purchase purchase : paidList) {
-                                                        if (purchase.getProducts().contains(product)) {
-                                                            final TLRPC.TL_payments_assignPlayMarketTransaction req2 = new TLRPC.TL_payments_assignPlayMarketTransaction();
-                                                            req2.receipt = new TLRPC.TL_dataJSON();
-                                                            req2.receipt.data = purchase.getOriginalJson();
-                                                            purpose.restore = true;
-                                                            req2.purpose = purpose;
-                                                            getConnectionsManager().sendRequest(req2, (response, error) -> {
-                                                                if (response instanceof TLRPC.Updates) {
-                                                                    for (TL_update.TL_updateSentPhoneCode u : findUpdatesAndRemove((TLRPC.Updates) response, TL_update.TL_updateSentPhoneCode.class)) {
-                                                                        AndroidUtilities.runOnUIThread(() -> {
-                                                                            paid = true;
-                                                                            LoginActivity fragment = LaunchActivity.findFragment(LoginActivity.class);
-                                                                            if (fragment == null) {
-                                                                                fragment = new LoginActivity(currentAccount);
-                                                                                BaseFragment lastFragment = LaunchActivity.getSafeLastFragment();
-                                                                                if (lastFragment != null) {
-                                                                                    lastFragment.presentFragment(fragment);
-                                                                                }
-                                                                            }
-                                                                            fragment.open(purpose.phone_number, u.sent_code);
-                                                                        });
-                                                                    }
-
-                                                                    getMessagesController().processUpdates((TLRPC.Updates) response, false);
-
-                                                                    BillingController.getInstance().consumeGiftPurchase(purchase, req.purpose, null);
-                                                                    AndroidUtilities.runOnUIThread(() -> {
-                                                                        button.setLoading(false);
-                                                                    });
-                                                                } else if (error != null) {
-                                                                    AndroidUtilities.runOnUIThread(() -> {
-                                                                        buy.run();
-                                                                    });
-                                                                }
-                                                            }, ConnectionsManager.RequestFlagFailOnServerErrors | ConnectionsManager.RequestFlagInvokeAfter | ConnectionsManager.RequestFlagWithoutLogin);
-                                                            return;
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            buy.run();
-                                        }));
-                                    });
-                                } else if (res instanceof TLRPC.TL_boolFalse) {
-                                    lastError = "RESPONSE_FALSE";
-                                    BulletinFactory.of(slideViewsContainer, null).createSimpleBulletin(R.raw.error, formatString(R.string.UnknownErrorCode, "RESPONSE_FALSE"));
-                                } else if (err != null) {
-                                    lastError = err.text;
-                                    BulletinFactory.of(slideViewsContainer, null).showForError(err);
-                                }
-                            }), ConnectionsManager.RequestFlagFailOnServerErrors | ConnectionsManager.RequestFlagWithoutLogin);
-                        } else {
-                            lastError = "PRODUCT_NOT_FOUND";
-                            BulletinFactory.of(slideViewsContainer, null).createSimpleBulletin(R.raw.error, formatString(R.string.UnknownErrorCode, "PRODUCT_NOT_FOUND"));
-                        }
-                    }));
-                };
-                if (!BillingController.getInstance().isReady()) {
-                    BillingController.getInstance().whenSetuped(fetch);
-                } else {
-                    fetch.run();
-                }
             }
         }
 

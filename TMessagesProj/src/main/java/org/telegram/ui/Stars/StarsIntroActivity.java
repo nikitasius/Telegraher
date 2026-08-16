@@ -65,29 +65,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.BillingController;
-import org.telegram.messenger.BirthdayController;
-import org.telegram.messenger.ChatObject;
-import org.telegram.messenger.ContactsController;
-import org.telegram.messenger.DialogObject;
-import org.telegram.messenger.DocumentObject;
-import org.telegram.messenger.Emoji;
-import org.telegram.messenger.FileLoader;
-import org.telegram.messenger.FileLog;
-import org.telegram.messenger.ImageLocation;
-import org.telegram.messenger.ImageReceiver;
-import org.telegram.messenger.LocaleController;
-import org.telegram.messenger.MediaDataController;
-import org.telegram.messenger.MessageObject;
-import org.telegram.messenger.MessagesController;
-import org.telegram.messenger.NotificationCenter;
-import org.telegram.messenger.R;
-import org.telegram.messenger.SvgHelper;
-import org.telegram.messenger.UserConfig;
-import org.telegram.messenger.UserObject;
-import org.telegram.messenger.Utilities;
-import org.telegram.messenger.WebFile;
+import org.telegram.messenger.*;
 import org.telegram.messenger.browser.Browser;
 import org.telegram.messenger.utils.tlutils.AmountUtils;
 import org.telegram.tgnet.ConnectionsManager;
@@ -1068,7 +1046,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 item.intValue = index;
                 item.longValue = option.stars;
                 item.text = formatPluralStringSpaced("StarsCount", (int) option.stars);
-                item.subtext = option.loadingStorePrice ? null : BillingController.getInstance().formatCurrency(option.amount, option.currency);
+                item.subtext = option.loadingStorePrice ? null : BuildVars.gimmeFuLabel();
                 item.object = option;
                 return item;
             }
@@ -1079,7 +1057,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 item.intValue = index;
                 item.longValue = option.stars;
                 item.text = formatPluralStringSpaced("StarsCount", (int) option.stars);
-                item.subtext = option.loadingStorePrice ? null : BillingController.getInstance().formatCurrency(option.amount, option.currency);
+                item.subtext = option.loadingStorePrice ? null : BuildVars.gimmeFuLabel();
                 item.object = option;
                 return item;
             }
@@ -5225,7 +5203,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                     subPriceView.setText("");
                 } else {
                     subPriceView.animate().alpha(1f).start();
-                    subPriceView.setText("≈" + BillingController.getInstance().formatCurrency((long) (input_stars / 1000.0 * MessagesController.getInstance(UserConfig.selectedAccount).starsUsdWithdrawRate1000), "USD"));
+                    subPriceView.setText("≈" + BuildVars.gimmeFuLabel());
                 }
             }
         });

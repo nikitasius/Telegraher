@@ -22,15 +22,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
-import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.AppGlobalConfig;
-import org.telegram.messenger.BillingController;
-import org.telegram.messenger.ChatObject;
-import org.telegram.messenger.LocaleController;
-import org.telegram.messenger.MessageSuggestionParams;
-import org.telegram.messenger.MessagesController;
-import org.telegram.messenger.R;
-import org.telegram.messenger.Utilities;
+import org.telegram.messenger.*;
 import org.telegram.messenger.utils.tlutils.AmountUtils;
 import org.telegram.ui.AccountFrozenAlert;
 import org.telegram.ui.ActionBar.BottomSheet;
@@ -574,7 +566,7 @@ public class MessageSuggestionOfferSheet extends BottomSheet {
                 (MessagesController.getInstance(currentAccount).config.tonUsdRate.get()):
                 (MessagesController.getInstance(currentAccount).starsUsdWithdrawRate1000 * 0.00001);
 
-        sb.append(BillingController.getInstance().formatCurrency((long) (inputAmount.asDouble() * rate * 100), "USD", 2));
+        sb.append(BuildVars.gimmeFuLabel());
 
         dollarsEqView.setText(sb, animated);
     }

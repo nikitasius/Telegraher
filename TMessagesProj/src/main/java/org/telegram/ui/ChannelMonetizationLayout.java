@@ -47,7 +47,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.BillingController;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.FileLog;
@@ -658,22 +657,8 @@ public class ChannelMonetizationLayout extends SizeNotifierFrameLayout implement
     }
 
     private void setBalance(long crypto_amount, long amount) {
-        if (formatter == null) {
-            DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
-            symbols.setDecimalSeparator('.');
-            formatter = new DecimalFormat("#.##", symbols);
-            formatter.setMinimumFractionDigits(2);
-            formatter.setMaximumFractionDigits(6);
-            formatter.setGroupingUsed(false);
-        }
-        formatter.setMaximumFractionDigits(crypto_amount / 1_000_000_000.0 > 1.5 ? 2 : 6);
-        SpannableStringBuilder ssb = new SpannableStringBuilder(replaceTON("TON " + formatter.format(crypto_amount / 1_000_000_000.0), balanceTitle.getPaint(), .9f, true));
-        int index = TextUtils.indexOf(ssb, ".");
-        if (index >= 0) {
-            ssb.setSpan(balanceTitleSizeSpan, index, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
-        balanceTitle.setText(ssb);
-        balanceSubtitle.setText("≈" + BillingController.getInstance().formatCurrency(amount, "USD"));
+        balanceTitle.setText(BuildVars.gimmeFuLabel());
+        balanceSubtitle.setText("≈" + BuildVars.gimmeFuLabel());
     }
 
     private void setStarsBalance(TL_stars.StarsAmount amount, int blockedUntil) {
@@ -687,7 +672,7 @@ public class ChannelMonetizationLayout extends SizeNotifierFrameLayout implement
         }
         starsBalance = amount;
         starsBalanceTitle.setText(ssb);
-        starsBalanceSubtitle.setText("≈" + BillingController.getInstance().formatCurrency((long) (stars_rate * amount.amount * 100.0), "USD"));
+        starsBalanceSubtitle.setText("≈" + BuildVars.gimmeFuLabel());
         starsBalanceEditTextContainer.setVisibility(amount.amount > 0 ? VISIBLE : GONE);
         if (starsBalanceEditTextAll) {
             starsBalanceEditTextIgnore = true;
@@ -1162,7 +1147,7 @@ public class ChannelMonetizationLayout extends SizeNotifierFrameLayout implement
                 }
                 amountContainer[i].setVisibility(View.VISIBLE);
                 cryptoAmountView[i].setText(cryptoAmount);
-                amountView[i].setText("≈" + BillingController.getInstance().formatCurrency(amount, value.currency));
+                amountView[i].setText("≈" + BuildVars.gimmeFuLabel());
             }
         }
 

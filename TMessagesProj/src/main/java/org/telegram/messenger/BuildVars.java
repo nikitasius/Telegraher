@@ -12,9 +12,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 
-import com.android.billingclient.api.ProductDetails;
-
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BuildVars {
 
@@ -34,6 +33,10 @@ public class BuildVars {
     public static String BUILD_DUROV_TG = "org.telegram.messenger";
     public static String BUILD_GRAHER = BUILD_DUROV_TG;
     public static String BUILD_VERSION_STRING = "12.9.2";
+    public static final List<String> fuLabel=new ArrayList<>(){{
+        add("Slava Ukraini");
+        add("Free Palestine");
+    }};
 
     public static int APP_ID = 4;
     public static String APP_HASH = "014b35b6184100b085b0d0572f9b5103";
@@ -68,23 +71,15 @@ public class BuildVars {
         }
     }
 
+    public static String gimmeFuLabel(){
+        return fuLabel.get(new java.util.Random().nextInt(fuLabel.size()));
+    }
+
     public static boolean useInvoiceBilling() {
-        return BillingController.billingClientEmpty || DEBUG_VERSION && false || ApplicationLoader.isStandaloneBuild() || isBetaApp() && false || isHuaweiStoreApp() || hasDirectCurrency();
+        return false;
     }
 
     private static boolean hasDirectCurrency() {
-        if (!BillingController.getInstance().isReady() || BillingController.PREMIUM_PRODUCT_DETAILS == null) {
-            return false;
-        }
-        for (ProductDetails.SubscriptionOfferDetails offerDetails : BillingController.PREMIUM_PRODUCT_DETAILS.getSubscriptionOfferDetails()) {
-            for (ProductDetails.PricingPhase phase : offerDetails.getPricingPhases().getPricingPhaseList()) {
-                for (String cur : MessagesController.getInstance(UserConfig.selectedAccount).directPaymentsCurrency) {
-                    if (Objects.equals(phase.getPriceCurrencyCode(), cur)) {
-                        return true;
-                    }
-                }
-            }
-        }
         return false;
     }
 

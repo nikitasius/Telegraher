@@ -5160,14 +5160,6 @@ public class MessageObject {
                         messageText = replaceWithLink(AndroidUtilities.replaceTags(getString(R.string.ActionGiftInbound)), "un1", fromObject);
                     }
                     int i = messageText.toString().indexOf("un2");
-                    if (i != -1) {
-                        SpannableStringBuilder sb = SpannableStringBuilder.valueOf(messageText);
-                        CharSequence price = BillingController.getInstance().formatCurrency(messageOwner.action.amount, messageOwner.action.currency);
-                        if ((messageOwner.action.flags & 1) != 0) {
-                            price = String.format("%.2f", (messageOwner.action.cryptoAmount * Math.pow(10, -9))) + " " + messageOwner.action.cryptoCurrency + " (~ " + price + ")";
-                        }
-                        messageText = sb.replace(i, i + 3, price);
-                    }
                 } else if (messageOwner.action instanceof TLRPC.TL_messageActionGiftCode && ((TLRPC.TL_messageActionGiftCode) messageOwner.action).boost_peer != null) {
                     messageText = getString(R.string.BoostingReceivedGiftNoName);
                 } else if (TlUtils.isInstance(messageOwner.action, TLRPC.TL_messageActionGiftPremium.class, TLRPC.TL_messageActionGiftCode.class, TLRPC.TL_messageActionGiftTon.class)) {
@@ -5180,14 +5172,6 @@ public class MessageObject {
                         messageText = replaceWithLink(AndroidUtilities.replaceTags(getString(R.string.ActionGiftInbound)), "un1", fromObject);
                     }
                     int i = messageText.toString().indexOf("un2");
-                    if (i != -1) {
-                        SpannableStringBuilder sb = SpannableStringBuilder.valueOf(messageText);
-                        CharSequence price = BillingController.getInstance().formatCurrency(messageOwner.action.amount, messageOwner.action.currency);
-                        if ((messageOwner.action.flags & 1) != 0) {
-                            price = String.format("%.2f", (messageOwner.action.cryptoAmount * Math.pow(10, -9))) + " " + messageOwner.action.cryptoCurrency + " (~ " + price + ")";
-                        }
-                        messageText = sb.replace(i, i + 3, price);
-                    }
                     messageText = StarsIntroActivity.replaceStars(messageText);
                 } else if (messageOwner.action instanceof TLRPC.TL_messageActionSuggestBirthday) {
                     if (isOutOwner()) {

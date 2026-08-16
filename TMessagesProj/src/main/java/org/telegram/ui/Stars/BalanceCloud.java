@@ -11,12 +11,7 @@ import android.widget.TextView;
 
 import androidx.core.graphics.ColorUtils;
 
-import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.BillingController;
-import org.telegram.messenger.LocaleController;
-import org.telegram.messenger.MessagesController;
-import org.telegram.messenger.NotificationCenter;
-import org.telegram.messenger.R;
+import org.telegram.messenger.*;
 import org.telegram.messenger.utils.tlutils.AmountUtils;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.ColoredImageSpan;
@@ -91,7 +86,7 @@ public class BalanceCloud extends LinearLayout implements NotificationCenter.Not
 
             final StringBuilder sb = new StringBuilder(10);
             sb.append('~');
-            sb.append(BillingController.getInstance().formatCurrency((long) (balance.asDouble() * MessagesController.getInstance(currentAccount).config.tonUsdRate.get() * 100), "USD", 2));
+            sb.append(BuildVars.gimmeFuLabel());
 
             textView2.setTextColor(ColorUtils.blendARGB(Theme.getColor(Theme.key_undo_infoColor, resourcesProvider), Theme.getColor(Theme.key_undo_background, resourcesProvider), 0.33f));
             textView2.setLinkTextColor(ColorUtils.blendARGB(Theme.getColor(Theme.key_undo_infoColor, resourcesProvider), Theme.getColor(Theme.key_undo_background, resourcesProvider), 0.33f));

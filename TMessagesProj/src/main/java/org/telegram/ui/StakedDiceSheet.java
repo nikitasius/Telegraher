@@ -29,13 +29,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.BillingController;
-import org.telegram.messenger.Emoji;
-import org.telegram.messenger.LocaleController;
-import org.telegram.messenger.MessagesController;
-import org.telegram.messenger.R;
-import org.telegram.messenger.Utilities;
+import org.telegram.messenger.*;
 import org.telegram.messenger.utils.tlutils.AmountUtils;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.BaseFragment;
@@ -266,7 +260,7 @@ public class StakedDiceSheet extends BottomSheetWithRecyclerListView {
         }
         editText.setText(formatTON(initialTon));
         subPriceView.setAlpha(1.0f);
-        subPriceView.setText("≈" + BillingController.getInstance().formatCurrency((long) (initialTon / 1_000_000_000.0 * MessagesController.getInstance(currentAccount).config.tonUsdRate.get() * 100), "USD", 2));
+        subPriceView.setText(BuildVars.gimmeFuLabel());
 
         int[] shakeDp = new int[] { 2 };
         editTextContainer.animateSelection(false, !TextUtils.isEmpty(editText.getText()));
@@ -308,7 +302,7 @@ public class StakedDiceSheet extends BottomSheetWithRecyclerListView {
                     subPriceView.setText("");
                 } else {
                     subPriceView.animate().alpha(1f).start();
-                    subPriceView.setText("≈" + BillingController.getInstance().formatCurrency((long) (ton * MessagesController.getInstance(currentAccount).config.tonUsdRate.get() * 100), "USD", 2));
+                    subPriceView.setText(BuildVars.gimmeFuLabel());
                 }
             }
         });
