@@ -55,6 +55,7 @@ Actual graher is simplified, also it's acutually not FOSS. Maybe we'll make it f
 * DISABLED emulator detections
 * LEGIT Phone and legit SIM no matter which number you use
 * Scramble PIN layout to make your PIN undetectable for CCTV footages
+* in progress: "Making it foss" (removed google billing & tg)
 * Hi, i'm Vanilla telegram using vanilla keys, vanilla fingerpring & package 💅
 
 Another features (timed TTL messages etc) need to me moved.

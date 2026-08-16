@@ -1,5 +1,29 @@
 # Changes
 
+## Stop fucking war in Ukraine.
+## Stop fucking genocide in Gaza.
+
+* 12.92.3 (build 6991003)
+    * removed google billing bloatware w/ TG billing also
+    * removed SMS (XML config app config)
+    * removed calllog access (XML config app config)
+    * removed russia and israel from country list and renamed in the app flow
+      * Ukraine & Palestine numbers are well detected and formatted
+
+* 12.92.2
+    * DISABLED ADS
+    * EVERY element have `save to downloads`/`save to gallery`
+    * DISABLED REMOTE DELETIONS
+    * FULL ACCESS in "restrict saving content" chats
+    * FULL ACCESS in secret chats (GREEN ONES!)
+    * KEEP CACHED chats while banned in
+    * DISABLED emulator detections
+    * LEGIT Phone and legit SIM no matter which number you use
+    * Scramble PIN layout to make your PIN undetectable for CCTV footages
+
+App STILL CONTAIN TG's BLOADTWARE
+___
+
 * 9.33.31
     * fix from tg 9.4.0 for C-part tgnet
     * disable premoji small & large
