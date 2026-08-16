@@ -229,7 +229,6 @@
 27;ZA;South Africa;XX XXX XXXX
 20;EG;Egypt;XX XXXX XXXX
 7;KZ;Kazakhstan;XXX XXX XX XX
-7;RU;Russian Federation;XXX XXX XXXX
 1;PR;Puerto Rico;XXX XXX XXXX
 1;DO;Dominican Rep.;XXX XXX XXXX
 1;CA;Canada;XXX XXX XXXX
