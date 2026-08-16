@@ -7,6 +7,10 @@ on:
                 description: Graher version bruh
                 type: string
                 default: '0.0.0'
+            graher-changes:
+                description: Tell me bruh
+                type: string
+                default: 'SLAVA UKRAINI & FREE PALESTINE'
 run-name: Building Graher ${{inputs.graher-version}}
 jobs:
     apk:
@@ -71,6 +75,8 @@ jobs:
                     body: |
                         Graher `${{inputs.graher-version}}` sha256 `${{ steps.locate_apk.outputs.apk_sha256 }}`
                         Thank you, folks, for many years of your support and believing in tomorrow! 🍻
+                        Changes:
+                        ${{inputs.graher-changes}}
                 env:
                     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                     RNAME: Telegraher ${{inputs.graher-version}}
