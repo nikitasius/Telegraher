@@ -44,6 +44,8 @@ different)
 
 There are old README from [8.3](README_old_8.3.1.md) and from 2023th [9.33](README_old_9.33.md).
 
+Latest release is [HERE](https://github.com/nikitasius/Telegraher/releases/latest) on this GITHUB
+
 Actual graher is simplified, also it's acutually not FOSS. Maybe we'll make it foss + add more features.
 
 * DISABLED ADS
@@ -55,7 +57,7 @@ Actual graher is simplified, also it's acutually not FOSS. Maybe we'll make it f
 * DISABLED emulator detections
 * LEGIT Phone and legit SIM no matter which number you use
 * Scramble PIN layout to make your PIN undetectable for CCTV footages
-* in progress: "Making it foss" (removed google billing & tg)
+* in progress: "Making it foss 4/6" (removed google billing & tg, removed fcm trackers)
 * Hi, i'm Vanilla telegram using vanilla keys, vanilla fingerpring & package 💅
 
 Another features (timed TTL messages etc) need to me moved.

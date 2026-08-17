@@ -1,15 +1,17 @@
 # Changes
 
 ## Stop fucking war in Ukraine.
+
 ## Stop fucking genocide in Gaza.
 
+* 12.92.4 (build 6991004)
+    * remove fcm trackers
 * 12.92.3 (build 6991003)
     * removed google billing bloatware w/ TG billing also
     * removed SMS (XML config app config)
     * removed calllog access (XML config app config)
     * removed russia and israel from country list and renamed in the app flow
-      * Ukraine & Palestine numbers are well detected and formatted
-
+        * Ukraine & Palestine numbers are well detected and formatted
 * 12.92.2
     * DISABLED ADS
     * EVERY element have `save to downloads`/`save to gallery`
