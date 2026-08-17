@@ -4,6 +4,12 @@
 
 ## Stop fucking genocide in Gaza.
 
+* 12.92.5 (build 6991005)
+    * removing mlkit
+    * removing huawei traces
+    * removing safetynet
+    * removing google wallet
+    * update message (unsupported media)
 * 12.92.4 (build 6991004)
     * remove fcm trackers
 * 12.92.3 (build 6991003)
