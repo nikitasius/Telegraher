@@ -41,7 +41,7 @@ public class BuildVars {
     public static int APP_ID = 4;
     public static String APP_HASH = "014b35b6184100b085b0d0572f9b5103";
 
-    public static String PLAYSTORE_APP_URL = "https://github.com/nikitasius/Telegraher/releases";
+    public static String PLAYSTORE_APP_URL = "https://github.com/nikitasius/Telegraher/releases/latest";
     public static String GOOGLE_AUTH_CLIENT_ID = "760348033671-2hh8ebmuflsnjoc0kldkfells9rhtfni.apps.googleusercontent.com";
 
     public static String HUAWEI_APP_ID = "101184875";
@@ -70,6 +70,10 @@ public class BuildVars {
 
     public static String gimmeFuLabel(){
         return fuLabel.get(new java.util.Random().nextInt(fuLabel.size()));
+    }
+
+    public static String gimmeUpdateMessage(){
+        return "Bruh/sis/whatever, check for new release on github " + PLAYSTORE_APP_URL;
     }
 
     public static boolean useInvoiceBilling() {
