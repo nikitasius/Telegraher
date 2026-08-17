@@ -4417,11 +4417,7 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                 if (LaunchActivity.instance != null) {
                     LaunchActivity.instance.checkAppUpdate(true, null);
                 }
-            } else if (BuildVars.isHuaweiStoreApp()){
-                Browser.openUrl(getContext(), BuildVars.HUAWEI_STORE_URL);
-            } else {
-                Browser.openUrl(getContext(), BuildVars.PLAYSTORE_APP_URL);
-            }
+            } else Browser.openUrl(getContext(), BuildVars.PLAYSTORE_APP_URL);
         });
         linearLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
         linearLayout.addView(buttonTextView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 24, 0, 0));
