@@ -29,6 +29,11 @@
     @android.webkit.JavascriptInterface <methods>;
 }
 
+# fix damn proguard for analytics
+-dontwarn com.google.firebase.analytics.connector.AnalyticsConnector
+-dontwarn com.google.firebase.analytics.**
+-dontwarn com.google.firebase.messaging.MessagingAnalytics
+
 # https://developers.google.com/ml-kit/known-issues#android_issues
 -keep class com.google.mlkit.nl.languageid.internal.LanguageIdentificationJni { *; }
 
