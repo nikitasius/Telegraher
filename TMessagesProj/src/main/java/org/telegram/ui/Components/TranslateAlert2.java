@@ -53,7 +53,6 @@ import org.json.JSONArray;
 import org.json.JSONTokener;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.Emoji;
-import org.telegram.messenger.LanguageDetector;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.MessagesController;
@@ -521,11 +520,7 @@ public class TranslateAlert2 extends BottomSheet implements NotificationCenter.N
     public static void alternativeTranslate(String text, String fromLng, String toLng, Utilities.Callback2<String, Boolean> done) {
         if (done == null) return;
         if (fromLng == null) {
-            LanguageDetector.detectLanguage(text, lng -> {
-                alternativeTranslate(text, lng, toLng, done);
-            }, e -> {
-                alternativeTranslate(text, "en", toLng, done);
-            });
+            alternativeTranslate(text, "en", toLng, done);
             return;
         }
         final String etext = Uri.encode(text);

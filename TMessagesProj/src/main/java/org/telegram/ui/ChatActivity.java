@@ -161,7 +161,6 @@ import org.telegram.messenger.HashtagSearchController;
 import org.telegram.messenger.ImageLoader;
 import org.telegram.messenger.ImageLocation;
 import org.telegram.messenger.ImageReceiver;
-import org.telegram.messenger.LanguageDetector;
 import org.telegram.messenger.LiteMode;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MediaController;
@@ -31738,69 +31737,6 @@ public class ChatActivity extends BaseFragment implements
                                     updateTopPanel(true);
                                 }
                             });
-                        } else if (LanguageDetector.hasSupport()) {
-                            final String[] fromLang = {null};
-                            cell.setVisibility(View.GONE);
-                            waitForLangDetection.set(true);
-                            LanguageDetector.detectLanguage(
-                                finalMessageText.toString(),
-                                (String lang) -> {
-                                    fromLang[0] = lang;
-                                    if (fromLang[0] != null && (!fromLang[0].equals(toLang) || !fromLang[0].equals(toLangDefault) || fromLang[0].equals(TranslateController.UNKNOWN_LANGUAGE)) && (
-                                        translateEnabled && !RestrictedLanguagesSelectActivity.getRestrictedLanguages().contains(fromLang[0]) ||
-                                        (currentChat != null && (currentChat.has_link || ChatObject.isPublic(currentChat)) || selectedObject.messageOwner.fwd_from != null) && ("uk".equals(fromLang[0]) || "ru".equals(fromLang[0]))
-                                    )) {
-                                        cell.setVisibility(View.VISIBLE);
-                                    }
-                                    waitForLangDetection.set(false);
-                                    if (onLangDetectionDone.get() != null) {
-                                        onLangDetectionDone.get().run();
-                                        onLangDetectionDone.set(null);
-                                    }
-                                },
-                                (Exception e) -> {
-                                    FileLog.e("mlkit: failed to detect language in message");
-                                    waitForLangDetection.set(false);
-                                    if (onLangDetectionDone.get() != null) {
-                                        onLangDetectionDone.get().run();
-                                        onLangDetectionDone.set(null);
-                                    }
-                                }
-                            );
-                            cell.setOnClickListener(e -> {
-                                if (selectedObject == null || i >= options.size() || getParentActivity() == null) {
-                                    return;
-                                }
-                                String toLangValue = fromLang[0] != null && fromLang[0].equals(toLang) ? toLangDefault : toLang;
-                                ArrayList<TLRPC.MessageEntity> entities = selectedObject != null && selectedObject.messageOwner != null ? selectedObject.messageOwner.entities : null;
-                                TranslateAlert2 alert = TranslateAlert2.showAlert(getParentActivity(), this, currentAccount, inputPeer, messageIdToTranslate[0], selectedObject.summarized, fromLang[0], toLangValue, finalMessageText, entities, noforwardsOrPaidMedia, onLinkPress, () -> dimBehindView(false));
-                                alert.setDimBehind(false);
-                                closeMenu(false);
-
-//                                final TranslateAlert3 alert =
-//                                    new TranslateAlert3(getContext(), resourceProvider)
-//                                        .setText(fromLang[0], finalMessageText)
-//                                        .setMessage(dialog_id, shouldTranslateByText ? 0 : messageIdToTranslate[0], selectedObject.summarized)
-//                                        .setToLanguage(fromLang[0] != null && fromLang[0].equals(toLang) ? toLangDefault : toLang)
-//                                        .setNoforwards(noforwardsOrPaidMedia)
-//                                        .setOnLinkPress(onLinkPress);
-//                                alert.setOnDismissListener(() -> dimBehindView(false));
-//                                alert.setDimBehind(false);
-//                                alert.show();
-//                                closeMenu(false);
-
-                                int hintCount = MessagesController.getNotificationsSettings(currentAccount).getInt("dialog_show_translate_count" + getDialogId(), 5);
-                                if (hintCount > 0) {
-                                    hintCount--;
-                                    MessagesController.getNotificationsSettings(currentAccount).edit().putInt("dialog_show_translate_count" + getDialogId(), hintCount).apply();
-                                    updateTopPanel(true);
-                                }
-                            });
-                            cell.postDelayed(() -> {
-                                if (onLangDetectionDone.get() != null) {
-                                    onLangDetectionDone.getAndSet(null).run();
-                                }
-                            }, 250);
                         } else if (translateEnabled) {
                             cell.setOnClickListener(e -> {
                                 if (selectedObject == null || i >= options.size() || getParentActivity() == null) {
@@ -43861,48 +43797,7 @@ public class ChatActivity extends BaseFragment implements
 
     private void updateBotHelpCellClick(BotHelpCell cell) {
         final boolean translateButtonEnabled = MessagesController.getInstance(currentAccount).getTranslateController().isContextTranslateEnabled();
-        if (translateButtonEnabled && LanguageDetector.hasSupport()) {
-            final CharSequence text = cell.getText();
-            LanguageDetector.detectLanguage(text == null ? "" : text.toString(), lang -> {
-                String toLang = LocaleController.getInstance().getCurrentLocale().getLanguage();
-                if (lang != null && (!lang.equals(toLang) || lang.equals("und")) && !RestrictedLanguagesSelectActivity.getRestrictedLanguages().contains(lang)) {
-                    cell.setOnClickListener(e -> {
-
-                        ActionBarPopupWindow.ActionBarPopupWindowLayout layout = new ActionBarPopupWindow.ActionBarPopupWindowLayout(getContext());
-                        Drawable shadowDrawable2 = ContextCompat.getDrawable(getContext(), R.drawable.popup_fixed_alert4).mutate();
-                        shadowDrawable2.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_actionBarDefaultSubmenuBackground), PorterDuff.Mode.MULTIPLY));
-                        layout.setBackground(shadowDrawable2);
-
-                        final Runnable[] dismiss = new Runnable[1];
-                        ActionBarMenuSubItem translateButton = new ActionBarMenuSubItem(getContext(), true, true);
-                        translateButton.setTextAndIcon(LocaleController.getString(R.string.TranslateMessage), R.drawable.msg_translate);
-                        translateButton.setOnClickListener(e2 -> {
-                            TranslateAlert2.showAlert(getContext(), this, currentAccount, lang, toLang, text, null, false, null, null);
-                            if (dismiss[0] != null) {
-                                dismiss[0].run();
-                            }
-                        });
-                        layout.addView(translateButton);
-
-                        ActionBarPopupWindow window = new ActionBarPopupWindow(layout, LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT);
-                        dismiss[0] = () -> window.dismiss();
-                        window.setPauseNotifications(true);
-                        window.setDismissAnimationDuration(220);
-                        window.setOutsideTouchable(true);
-                        window.setClippingEnabled(true);
-                        window.setAnimationStyle(R.style.PopupContextAnimation);
-                        window.setFocusable(true);
-                        window.showAsDropDown(cell, cell.getWidth() / 2 - AndroidUtilities.dp(90), AndroidUtilities.dp(-16), Gravity.BOTTOM | Gravity.LEFT);
-                    });
-                } else {
-                    cell.setClickable(false);
-                }
-            }, err -> {
-                cell.setClickable(false);
-            });
-        } else {
-            cell.setClickable(false);
-        }
+        cell.setClickable(false);
     }
 
     @Override

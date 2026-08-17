@@ -71,7 +71,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.view.menu.MenuItemImpl;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.BotWebViewVibrationEffect;
@@ -151,7 +150,7 @@ public final class FloatingToolbar {
     };
 
     private final Comparator<MenuItem> mMenuItemComparator = (menuItem1, menuItem2) -> menuItem1.getOrder() - menuItem2.getOrder();
-    
+
     private final Theme.ResourcesProvider resourcesProvider;
 
     BlurredBackgroundDrawableViewFactory blurredBackgroundDrawableViewFactory;

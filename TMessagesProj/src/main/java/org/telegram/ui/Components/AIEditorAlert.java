@@ -56,7 +56,6 @@ import org.telegram.messenger.Emoji;
 import org.telegram.messenger.FileLoader;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.ImageLocation;
-import org.telegram.messenger.LanguageDetector;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MediaDataController;
 import org.telegram.messenger.MessageObject;
@@ -689,14 +688,6 @@ public class AIEditorAlert extends BottomSheetWithRecyclerListView implements No
 
     public AIEditorAlert setText(TL_iv.RichMessage richMessage) {
         this.textRich = richMessage;
-        if (LanguageDetector.hasSupport()) {
-            LanguageDetector.detectLanguage(format(textRich), lng -> {
-                from_lang = lng;
-                adapter.update(true);
-            }, e -> {
-                FileLog.e(e);
-            });
-        }
         updateStyles();
         return this;
     }
@@ -896,14 +887,6 @@ public class AIEditorAlert extends BottomSheetWithRecyclerListView implements No
     }
     public AIEditorAlert setText(CharSequence text) {
         this.text = copy(text);
-        if (LanguageDetector.hasSupport()) {
-            LanguageDetector.detectLanguage(text.toString(), lng -> {
-                from_lang = lng;
-                adapter.update(true);
-            }, e -> {
-                FileLog.e(e);
-            });
-        }
         return this;
     }
     public AIEditorAlert setOnUse(Utilities.Callback<CharSequence> onUse) {

@@ -142,7 +142,6 @@ import org.telegram.messenger.FlagSecureReason;
 import org.telegram.messenger.ImageLoader;
 import org.telegram.messenger.ImageLocation;
 import org.telegram.messenger.ImageReceiver;
-import org.telegram.messenger.LanguageDetector;
 import org.telegram.messenger.LiteMode;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MediaController;
@@ -7521,24 +7520,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     })
                     .show();
             };
-            if (withTranslate[0]) {
-                if (LanguageDetector.hasSupport()) {
-                    LanguageDetector.detectLanguage(finalText, (fromLang) -> {
-                        fromLanguage[0] = fromLang;
-                        withTranslate[0] = fromLang != null && (!fromLang.equals(toLang) || fromLang.equals("und")) && (
-                                translateButtonEnabled && !RestrictedLanguagesSelectActivity.getRestrictedLanguages().contains(fromLang) ||
-                                        (currentChat != null && (currentChat.has_link || ChatObject.isPublic(currentChat))) && ("uk".equals(fromLang) || "ru".equals(fromLang)));
-                        showMenu.run();
-                    }, (error) -> {
-                        FileLog.e("mlkit: failed to detect language in selection", error);
-                        showMenu.run();
-                    });
-                } else {
-                    showMenu.run();
-                }
-            } else {
-                showMenu.run();
-            }
+            showMenu.run();
             return true;
         } else if (position == bizHoursRow || position == bizLocationRow) {
             if (getParentActivity() == null || userInfo == null) {
