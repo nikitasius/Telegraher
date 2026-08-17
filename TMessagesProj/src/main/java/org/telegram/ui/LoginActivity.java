@@ -100,7 +100,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.safetynet.SafetyNet;
 import com.google.android.gms.tasks.Task;
 import com.google.android.play.core.integrity.IntegrityManager;
 import com.google.android.play.core.integrity.IntegrityManagerFactory;
@@ -1799,70 +1798,6 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                             FileLog.e("{"+reason+"} Resend firebase sms because integrity threw error", e);
                             resendCodeFromSafetyNet(params, res, reason);
                         });
-                } else {
-                    SafetyNet.getClient(ApplicationLoader.applicationContext).attest(res.type.nonce, BuildVars.SAFETYNET_KEY)
-                    .addOnSuccessListener(attestationResponse -> {
-                        String jws = attestationResponse.getJwsResult();
-
-                        if (jws != null) {
-                            TLRPC.TL_auth_requestFirebaseSms req = new TLRPC.TL_auth_requestFirebaseSms();
-                            req.phone_number = phone;
-                            req.phone_code_hash = res.phone_code_hash;
-                            req.safety_net_token = jws;
-                            req.flags |= 1;
-
-                            String[] spl = jws.split("\\.");
-                            if (spl.length > 0) {
-                                try {
-                                    JSONObject obj = new JSONObject(new String(Base64.decode(spl[1].getBytes(StandardCharsets.UTF_8), 0)));
-                                    final boolean basicIntegrity = obj.optBoolean("basicIntegrity");
-                                    final boolean ctsProfileMatch = obj.optBoolean("ctsProfileMatch");
-                                    if (basicIntegrity && ctsProfileMatch) {
-                                        ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> {
-                                            if (response instanceof TLRPC.TL_boolTrue) {
-                                                needHideProgress(false);
-                                                isRequestingFirebaseSms = false;
-                                                res.type.verifiedFirebase = true;
-                                                AndroidUtilities.runOnUIThread(() -> fillNextCodeParams(params, res, animate));
-                                            } else {
-                                                FileLog.d("{SAFETYNET_REQUESTFIREBASESMS_FALSE} Resend firebase sms because auth.requestFirebaseSms = false");
-                                                resendCodeFromSafetyNet(params, res, "SAFETYNET_REQUESTFIREBASESMS_FALSE");
-                                            }
-                                        }, ConnectionsManager.RequestFlagFailOnServerErrors | ConnectionsManager.RequestFlagWithoutLogin);
-                                    } else {
-                                        if (!basicIntegrity && !ctsProfileMatch) {
-                                            FileLog.d("{SAFETYNET_BASICINTEGRITY_CTSPROFILEMATCH_FALSE} Resend firebase sms because ctsProfileMatch = false and basicIntegrity = false");
-                                            resendCodeFromSafetyNet(params, res, "SAFETYNET_BASICINTEGRITY_CTSPROFILEMATCH_FALSE");
-                                        } else if (!basicIntegrity) {
-                                            FileLog.d("{SAFETYNET_BASICINTEGRITY_FALSE} Resend firebase sms because basicIntegrity = false");
-                                            resendCodeFromSafetyNet(params, res, "SAFETYNET_BASICINTEGRITY_FALSE");
-                                        } else if (!ctsProfileMatch) {
-                                            FileLog.d("{SAFETYNET_CTSPROFILEMATCH_FALSE} Resend firebase sms because ctsProfileMatch = false");
-                                            resendCodeFromSafetyNet(params, res, "SAFETYNET_CTSPROFILEMATCH_FALSE");
-                                        }
-                                    }
-                                } catch (JSONException e) {
-                                    FileLog.e(e);
-
-                                    FileLog.d("{SAFETYNET_JSON_EXCEPTION} Resend firebase sms because of exception");
-                                    resendCodeFromSafetyNet(params, res, "SAFETYNET_JSON_EXCEPTION");
-                                }
-                            } else {
-                                FileLog.d("{SAFETYNET_CANT_SPLIT} Resend firebase sms because can't split JWS token");
-                                resendCodeFromSafetyNet(params, res, "SAFETYNET_CANT_SPLIT");
-                            }
-                        } else {
-                            FileLog.d("{SAFETYNET_NULL_JWS} Resend firebase sms because JWS = null");
-                            resendCodeFromSafetyNet(params, res, "SAFETYNET_NULL_JWS");
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        FileLog.e(e);
-
-                        final String reason = "SAFETYNET_EXCEPTION_" + errorString(e);
-                        FileLog.d("{"+reason+"} Resend firebase sms because of safetynet exception");
-                        resendCodeFromSafetyNet(params, res, reason);
-                    });
                 }
             } else {
                 FileLog.d("{GOOGLE_PLAY_SERVICES_NOT_AVAILABLE} Resend firebase sms because firebase is not available");
@@ -3092,9 +3027,6 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             settings.allow_flashcall = simcardAvailable && allowCall && allowCancelCall && allowReadCallLog;
             settings.allow_missed_call = simcardAvailable && allowCall;
             settings.allow_app_hash = settings.allow_firebase = PushListenerController.GooglePushListenerServiceProvider.INSTANCE.hasServices();
-            if (forceDisableSafetyNet || TextUtils.isEmpty(BuildVars.SAFETYNET_KEY)) {
-                settings.allow_firebase = false;
-            }
 
             ArrayList<TLRPC.TL_auth_authorization> loginTokens = AuthTokensHelper.getSavedLogInTokens();
             if (loginTokens != null) {

@@ -1330,9 +1330,6 @@ void ConnectionsManager::processServerResponse(TLObject *message, int64_t messag
                             request->awaitingCaptchaCheck = false;
                             request->startTime = 0;
                             request->startTimeMillis = 0;
-                            if (delegate != nullptr) {
-                                delegate->onIntegrityCheckClassic(instanceNum, request->requestToken, project, nonce);
-                            }
                         } else if (error->error_code == 403 && error->error_message.find(captchaCheck) != std::string::npos) {
                             discardResponse = true;
                             std::string err = error->error_message;
@@ -2203,33 +2200,6 @@ void ConnectionsManager::failNotRunningRequest(int32_t token) {
                 return true;
             }
         }
-    });
-}
-
-void ConnectionsManager::receivedIntegrityCheckClassic(int32_t requestToken, std::string nonce, std::string token) {
-    scheduleTask([&, requestToken, nonce, token] {
-        for (auto iter = runningRequests.begin(); iter != runningRequests.end(); iter++) {
-            Request *request = iter->get();
-            if (requestToken != 0 && request->requestToken == requestToken) {
-                auto invokeIntegrity = new invokeWithGooglePlayIntegrity();
-                invokeIntegrity->nonce = nonce;
-                invokeIntegrity->token = token;
-                invokeIntegrity->query = std::move(request->rpcRequest);
-                request->rpcRequest = std::unique_ptr<invokeWithGooglePlayIntegrity>(invokeIntegrity);
-                request->serializedLength = request->rpcRequest->getObjectSize();
-
-                request->awaitingIntegrityCheck = false;
-                request->requestFlags &=~ RequestFlagFailOnServerErrors;
-
-                if (LOGS_ENABLED) DEBUG_D("account%d: received integrity token, wrapping %s", instanceNum, token.c_str());
-
-                processRequestQueue(request->connectionType, request->datacenterId);
-
-                return;
-            }
-        }
-
-        if (LOGS_ENABLED) DEBUG_E("account%d: received integrity token but no request %d found", instanceNum, requestToken);
     });
 }
 

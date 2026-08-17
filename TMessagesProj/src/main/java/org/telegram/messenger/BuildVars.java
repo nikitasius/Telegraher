@@ -41,8 +41,6 @@ public class BuildVars {
     public static int APP_ID = 4;
     public static String APP_HASH = "014b35b6184100b085b0d0572f9b5103";
 
-    // SafetyNet key for Google Identity SDK, set it to empty to disable
-    public static String SAFETYNET_KEY = "AIzaSyA-t0jLPjUt2FxrA8VPK2EiYHcYcboIR6k";
     public static String PLAYSTORE_APP_URL = "https://github.com/nikitasius/Telegraher/releases";
     public static String GOOGLE_AUTH_CLIENT_ID = "760348033671-2hh8ebmuflsnjoc0kldkfells9rhtfni.apps.googleusercontent.com";
 
