@@ -132,6 +132,9 @@ public class CodeFieldContainer extends LinearLayout {
                                 codeField[num].startExitAnimation();
                                 codeField[num].setText("");
                                 return true;
+                            } else if (keyCode == KeyEvent.KEYCODE_FORWARD) {
+                                processNextPressed();
+                                return true;
                             } else if (keyCode == KeyEvent.KEYCODE_DEL && codeField[num].length() == 0 && num > 0) {
                                 codeField[num - 1].setSelection(codeField[num - 1].length());
                                 for (int i = 0; i < num; i++) {
@@ -185,9 +188,9 @@ public class CodeFieldContainer extends LinearLayout {
                 int height;
                 int gapSize;
                 if (currentType == TYPE_PASSCODE) {
-                    width = 42;
-                    height = 47;
-                    gapSize = 10;
+                    width = 17;
+                    height = 22;
+                    gapSize = 2;
                 } else if (currentType == LoginActivity.AUTH_TYPE_MISSED_CALL) {
                     width = 28;
                     height = 34;

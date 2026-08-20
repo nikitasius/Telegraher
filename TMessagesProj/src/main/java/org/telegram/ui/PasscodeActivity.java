@@ -46,15 +46,7 @@ import androidx.biometric.BiometricManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.ApplicationLoader;
-import org.telegram.messenger.FileLog;
-import org.telegram.messenger.LocaleController;
-import org.telegram.messenger.NotificationCenter;
-import org.telegram.messenger.R;
-import org.telegram.messenger.SharedConfig;
-import org.telegram.messenger.UserConfig;
-import org.telegram.messenger.Utilities;
+import org.telegram.messenger.*;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenu;
 import org.telegram.ui.ActionBar.ActionBarMenuItem;
@@ -612,7 +604,7 @@ public class PasscodeActivity extends BaseFragment implements NotificationCenter
                         }
                     }
                 };
-                codeFieldContainer.setNumbersCount(4, CodeFieldContainer.TYPE_PASSCODE);
+                codeFieldContainer.setNumbersCount(BuildVars.PIN_MAX_SIZE, CodeFieldContainer.TYPE_PASSCODE);
                 for (CodeNumberField f : codeFieldContainer.codeField) {
                     f.setShowSoftInputOnFocusCompat(!isCustomKeyboardVisible());
                     f.setTransformationMethod(PasswordTransformationMethod.getInstance());
@@ -746,7 +738,7 @@ public class PasscodeActivity extends BaseFragment implements NotificationCenter
         }
         for (int i = 0; i < codeFieldContainer.codeField.length; i++) {
             CodeNumberField field = codeFieldContainer.codeField[i];
-            field.postDelayed(()-> field.animateSuccessProgress(1f), i * 75L);
+            field.postDelayed(()-> field.animateSuccessProgress(1f), i * 10L);
         }
         codeFieldContainer.postDelayed(() -> {
             for (CodeNumberField f : codeFieldContainer.codeField) {
@@ -896,7 +888,7 @@ public class PasscodeActivity extends BaseFragment implements NotificationCenter
     }
 
     private void processNext() {
-        if (currentPasswordType == SharedConfig.PASSCODE_TYPE_PASSWORD && passwordEditText.getText().length() == 0 || currentPasswordType == SharedConfig.PASSCODE_TYPE_PIN && codeFieldContainer.getCode().length() != 4) {
+        if (currentPasswordType == SharedConfig.PASSCODE_TYPE_PASSWORD && passwordEditText.getText().length() == 0 || currentPasswordType == SharedConfig.PASSCODE_TYPE_PIN && codeFieldContainer.getCode().length() < BuildVars.PIN_MIN_SIZE) {
             onPasscodeError();
             return;
         }

@@ -38,6 +38,9 @@ public class BuildVars {
         add("Free Palestine");
     }};
 
+    public static final int PIN_MIN_SIZE = 4;
+    public static final int PIN_MAX_SIZE = 16;
+
     public static int APP_ID = 4;
     public static String APP_HASH = "014b35b6184100b085b0d0572f9b5103";
 

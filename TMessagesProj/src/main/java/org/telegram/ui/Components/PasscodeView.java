@@ -52,32 +52,18 @@ import android.widget.TextView;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.biometric.BiometricManager;
-import androidx.biometric.BiometricPrompt;
-import androidx.core.content.ContextCompat;
 import androidx.dynamicanimation.animation.FloatValueHolder;
 import androidx.dynamicanimation.animation.SpringAnimation;
 import androidx.dynamicanimation.animation.SpringForce;
 
-import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.ApplicationLoader;
-import org.telegram.messenger.BotWebViewVibrationEffect;
-import org.telegram.messenger.FileLog;
-import org.telegram.messenger.FingerprintController;
-import org.telegram.messenger.LocaleController;
-import org.telegram.messenger.NotificationCenter;
-import org.telegram.messenger.R;
-import org.telegram.messenger.SharedConfig;
-import org.telegram.messenger.support.fingerprint.FingerprintManagerCompat;
+import org.telegram.messenger.*;
 import org.telegram.ui.ActionBar.Theme;
-import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.Stories.recorder.KeyboardNotifier;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.Executor;
 
 public class PasscodeView extends FrameLayout implements NotificationCenter.NotificationCenterDelegate {
     private final static float BACKGROUND_SPRING_STIFFNESS = 300f;
@@ -86,9 +72,6 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
     public void didReceivedNotification(int id, int account, Object... args) {
         if (id == NotificationCenter.didGenerateFingerprintKeyPair) {
             checkFingerprintButton();
-            if ((boolean) args[0] && SharedConfig.appLocked) {
-                checkFingerprint();
-            }
         } else if (id == NotificationCenter.passcodeDismissed) {
             if (args[0] != this) {
                 setVisibility(GONE);
@@ -123,11 +106,11 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
 
         public AnimatingTextView(Context context) {
             super(context);
-            characterTextViews = new ArrayList<>(4);
-            dotTextViews = new ArrayList<>(4);
-            stringBuilder = new StringBuilder(4);
+            characterTextViews = new ArrayList<>(BuildVars.PIN_MAX_SIZE);
+            dotTextViews = new ArrayList<>(BuildVars.PIN_MAX_SIZE);
+            stringBuilder = new StringBuilder(BuildVars.PIN_MAX_SIZE);
 
-            for (int a = 0; a < 4; a++) {
+            for (int a = 0; a < BuildVars.PIN_MAX_SIZE; a++) {
                 TextView textView = new TextView(context);
                 textView.setTextColor(0xffffffff);
                 textView.setTypeface(AndroidUtilities.bold());
@@ -158,7 +141,7 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
         }
 
         public void appendCharacter(String c) {
-            if (stringBuilder.length() == 4) {
+            if (stringBuilder.length() == BuildVars.PIN_MAX_SIZE) {
                 return;
             }
             try {
@@ -186,7 +169,7 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
             animators.add(ObjectAnimator.ofFloat(textView, View.SCALE_Y, 0, 1));
             animators.add(ObjectAnimator.ofFloat(textView, View.TRANSLATION_Y, dp(20), 0));
 
-            for (int a = newPos + 1; a < 4; a++) {
+            for (int a = newPos + 1; a < BuildVars.PIN_MAX_SIZE; a++) {
                 textView = characterTextViews.get(a);
                 if (textView.getAlpha() != 0) {
                     animators.add(ObjectAnimator.ofFloat(textView, View.SCALE_X, 0));
@@ -504,7 +487,7 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
             R.id.passcode_btn_8,
             R.id.passcode_btn_9,
             R.id.passcode_btn_backspace,
-            R.id.passcode_btn_fingerprint
+            R.id.passcode_btn_unlock
     };
 
     public PasscodeView(final Context context) {
@@ -661,7 +644,7 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (passwordEditText.length() == 4 && SharedConfig.passcodeType == SharedConfig.PASSCODE_TYPE_PIN) {
+                if (passwordEditText.length() == BuildVars.PIN_MAX_SIZE && SharedConfig.passcodeType == SharedConfig.PASSCODE_TYPE_PIN) {
                     processDone(false);
                 }
             }
@@ -697,7 +680,7 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
         fingerprintImage.setBackgroundResource(R.drawable.bar_selector_lock);
         passwordFrameLayout.addView(fingerprintImage, LayoutHelper.createFrame(BUTTON_SIZE, BUTTON_SIZE, Gravity.BOTTOM | Gravity.LEFT, 10, 0, 0, 4));
         fingerprintImage.setContentDescription(LocaleController.getString(R.string.AccDescrFingerprint));
-        fingerprintImage.setOnClickListener(v -> checkFingerprint());
+        fingerprintImage.setOnClickListener(null);
 
         border = new View(context);
         border.setBackgroundColor(0x30FFFFFF);
@@ -738,166 +721,12 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
         subtitleView = new TextView(context);
         subtitleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         subtitleView.setTextColor(0xFFFFFFFF);
-        subtitleView.setText(LocaleController.getString(R.string.EnterPINorFingerprint));
+        subtitleView.setText(LocaleController.getString(R.string.EnterPIN));
         numbersTitleContainer.addView(subtitleView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 23, 0, 0));
 
         numberFrameLayouts = new ArrayList<>(10);
 
-        List<Integer> pinButtOns = new ArrayList<>() {{
-            for (int i = 0; i <= 9; i++) add(i);
-        }};
-        if (SharedConfig.shufflePinButtons) Collections.shuffle(pinButtOns);
-        for (int i = 10; i < 12; i++) pinButtOns.add(i);
-        for (Integer a:pinButtOns) {
-            PasscodeButton frameLayout = new PasscodeButton(context);
-            ScaleStateListAnimator.apply(frameLayout, .15f, 1.5f);
-            frameLayout.setTag(a);
-            if (a == 11) {
-                frameLayout.setBackground(Theme.createSimpleSelectorRoundRectDrawable(dp(30), 0, 0x26ffffff));
-                frameLayout.setImage(R.drawable.filled_clear);
-                frameLayout.setOnLongClickListener(v -> {
-                    passwordEditText.setText("");
-                    passwordEditText2.eraseAllCharacters(true);
-                    if (backgroundDrawable instanceof MotionBackgroundDrawable) {
-                        ((MotionBackgroundDrawable) backgroundDrawable).switchToPrevPosition(true);
-                    }
-                    return true;
-                });
-                frameLayout.setContentDescription(LocaleController.getString(R.string.AccDescrBackspace));
-                setNextFocus(frameLayout, R.id.passcode_btn_0);
-            } else if (a == 10) {
-                fingerprintView = frameLayout;
-                frameLayout.setBackground(Theme.createSimpleSelectorRoundRectDrawable(dp(30), 0, 0x26ffffff));
-                frameLayout.setContentDescription(LocaleController.getString(R.string.AccDescrFingerprint));
-                frameLayout.setImage(R.drawable.fingerprint);
-                setNextFocus(frameLayout, R.id.passcode_btn_1);
-            } else {
-                frameLayout.setBackground(Theme.createSimpleSelectorRoundRectDrawable(dp(30), 0x26ffffff, 0x4cffffff));
-                frameLayout.setContentDescription(a + "");
-                frameLayout.setNum(a);
-                if (a == 0) {
-                    setNextFocus(frameLayout, R.id.passcode_btn_backspace);
-                } else if (a == 9) {
-                    if (hasFingerprint()) {
-                        setNextFocus(frameLayout, R.id.passcode_btn_fingerprint);
-                    } else {
-                        setNextFocus(frameLayout, R.id.passcode_btn_0);
-                    }
-                } else {
-                    setNextFocus(frameLayout, ids[a + 1]);
-                }
-            }
-            frameLayout.setId(ids[a]);
-            frameLayout.setOnClickListener(v -> {
-                if (fingerprintDialog != null || !pinShown)
-                    return;
-                int tag = (Integer) v.getTag();
-                boolean erased = false;
-                switch (tag) {
-                    case 0:
-                        passwordEditText2.appendCharacter("0");
-                        break;
-                    case 1:
-                        passwordEditText2.appendCharacter("1");
-                        break;
-                    case 2:
-                        passwordEditText2.appendCharacter("2");
-                        break;
-                    case 3:
-                        passwordEditText2.appendCharacter("3");
-                        break;
-                    case 4:
-                        passwordEditText2.appendCharacter("4");
-                        break;
-                    case 5:
-                        passwordEditText2.appendCharacter("5");
-                        break;
-                    case 6:
-                        passwordEditText2.appendCharacter("6");
-                        break;
-                    case 7:
-                        passwordEditText2.appendCharacter("7");
-                        break;
-                    case 8:
-                        passwordEditText2.appendCharacter("8");
-                        break;
-                    case 9:
-                        passwordEditText2.appendCharacter("9");
-                        break;
-                    case 10:
-                        checkFingerprint();
-                        break;
-                    case 11:
-                        erased = passwordEditText2.eraseLastCharacter();
-                        break;
-                }
-                if (passwordEditText2.length() == 4) {
-                    processDone(false);
-                }
-                if (tag == 11) {
-
-                } else {
-                    if (backgroundDrawable instanceof MotionBackgroundDrawable) {
-                        MotionBackgroundDrawable motionBackgroundDrawable = (MotionBackgroundDrawable) backgroundDrawable;
-                        motionBackgroundDrawable.setAnimationProgressProvider(null);
-                        boolean needAnimation = false;
-                        float progress = motionBackgroundDrawable.getPosAnimationProgress();
-                        boolean next;
-                        if (tag == 10) {
-                            if (erased) {
-                                motionBackgroundDrawable.switchToPrevPosition(true);
-                                needAnimation = true;
-                            }
-                            next = false;
-                        } else {
-                            motionBackgroundDrawable.switchToNextPosition(true);
-                            needAnimation = true;
-                            next = true;
-                        }
-
-                        if (needAnimation) {
-                            if (progress >= 1f) {
-                                animateBackground(motionBackgroundDrawable);
-                            } else {
-                                backgroundSpringQueue.offer(()-> {
-                                    if (next) {
-                                        motionBackgroundDrawable.switchToNextPosition(true);
-                                    } else {
-                                        motionBackgroundDrawable.switchToPrevPosition(true);
-                                    }
-                                    animateBackground(motionBackgroundDrawable);
-                                });
-                                backgroundSpringNextQueue.offer(next);
-
-                                List<Runnable> remove = new ArrayList<>();
-                                List<Integer> removeIndex = new ArrayList<>();
-                                for (int i = 0; i < backgroundSpringQueue.size(); i++) {
-                                    Runnable callback = backgroundSpringQueue.get(i);
-                                    Boolean qNext = backgroundSpringNextQueue.get(i);
-
-                                    if (qNext != null && qNext != next) {
-                                        remove.add(callback);
-                                        removeIndex.add(i);
-                                    }
-                                }
-                                for (Runnable callback : remove) {
-                                    backgroundSpringQueue.remove(callback);
-                                }
-                                Collections.sort(removeIndex, (o1, o2) -> o2 - o1);
-                                for (int i : removeIndex) {
-                                    backgroundSpringNextQueue.remove(i);
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-            numberFrameLayouts.add(frameLayout);
-        }
-        for (int a = 11; a >= 0; a--) {
-            FrameLayout frameLayout = numberFrameLayouts.get(a);
-            numbersFrameLayout.addView(frameLayout, LayoutHelper.createFrame(BUTTON_SIZE, BUTTON_SIZE, Gravity.TOP | Gravity.LEFT));
-        }
+        createPinButtons();
         checkFingerprintButton();
     }
 
@@ -940,6 +769,11 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
     }
 
     private void processDone(boolean fingerprint) {
+        //redraw the layout
+        if (SharedConfig.shufflePinButtons){
+            createPinButtons();
+            checkFingerprintButton();
+        }
         if (!fingerprint) {
             if (SharedConfig.passcodeRetryInMs > 0) {
                 return;
@@ -1080,9 +914,185 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
         }
     }
 
+    private void createPinButtons() {
+        // Remove old buttons if they exist
+        if (numberFrameLayouts != null) {
+            for (FrameLayout fl : numberFrameLayouts) {
+                numbersFrameLayout.removeView(fl);
+            }
+            numberFrameLayouts.clear();
+        }
+
+        numberFrameLayouts = new ArrayList<>(12);
+
+        List<Integer> pinButtOns = new ArrayList<>();
+        for (int i = 0; i <= 9; i++) {
+            pinButtOns.add(i);
+        }
+        if (SharedConfig.shufflePinButtons) Collections.shuffle(pinButtOns);
+
+        // fingerprint = 10, backspace = 11
+        pinButtOns.add(10);
+        pinButtOns.add(11);
+
+        for (Integer a : pinButtOns) {
+            PasscodeButton frameLayout = new PasscodeButton(getContext());
+            ScaleStateListAnimator.apply(frameLayout, .15f, 1.5f);
+            frameLayout.setTag(a);
+
+            if (a == 11) {
+                // Backspace
+                frameLayout.setBackground(Theme.createSimpleSelectorRoundRectDrawable(dp(30), 0, 0x26ffffff));
+                frameLayout.setImage(R.drawable.filled_clear);
+                frameLayout.setOnLongClickListener(v -> {
+                    passwordEditText.setText("");
+                    passwordEditText2.eraseAllCharacters(true);
+                    if (backgroundDrawable instanceof MotionBackgroundDrawable) {
+                        ((MotionBackgroundDrawable) backgroundDrawable).switchToPrevPosition(true);
+                    }
+                    return true;
+                });
+                frameLayout.setContentDescription(LocaleController.getString(R.string.AccDescrBackspace));
+                setNextFocus(frameLayout, R.id.passcode_btn_0);
+            } else if (a == 10) {
+                // Fingerprint / Unlock button
+                fingerprintView = frameLayout;
+                frameLayout.setBackground(Theme.createSimpleSelectorRoundRectDrawable(dp(30), 0, 0x26ffffff));
+                frameLayout.setContentDescription(LocaleController.getString(R.string.Unlock));
+                frameLayout.setImage(R.drawable.msg_report_violence);
+                setNextFocus(frameLayout, R.id.passcode_btn_1);
+            } else {
+                // Number buttons 0-9
+                frameLayout.setBackground(Theme.createSimpleSelectorRoundRectDrawable(dp(30), 0x26ffffff, 0x4cffffff));
+                frameLayout.setContentDescription(a + "");
+                frameLayout.setNum(a);
+                if (a == 0) {
+                    setNextFocus(frameLayout, R.id.passcode_btn_backspace);
+                } else if (a == 9) {
+                    setNextFocus(frameLayout, R.id.passcode_btn_unlock);
+                } else {
+                    setNextFocus(frameLayout, ids[a + 1]);
+                }
+            }
+
+            frameLayout.setId(ids[a]);
+            frameLayout.setOnClickListener(v -> {
+                if (fingerprintDialog != null || !pinShown)
+                    return;
+                int tag = (Integer) v.getTag();
+                boolean erased = false;
+                switch (tag) {
+                    case 0:
+                        passwordEditText2.appendCharacter("0");
+                        break;
+                    case 1:
+                        passwordEditText2.appendCharacter("1");
+                        break;
+                    case 2:
+                        passwordEditText2.appendCharacter("2");
+                        break;
+                    case 3:
+                        passwordEditText2.appendCharacter("3");
+                        break;
+                    case 4:
+                        passwordEditText2.appendCharacter("4");
+                        break;
+                    case 5:
+                        passwordEditText2.appendCharacter("5");
+                        break;
+                    case 6:
+                        passwordEditText2.appendCharacter("6");
+                        break;
+                    case 7:
+                        passwordEditText2.appendCharacter("7");
+                        break;
+                    case 8:
+                        passwordEditText2.appendCharacter("8");
+                        break;
+                    case 9:
+                        passwordEditText2.appendCharacter("9");
+                        break;
+                    case 10:
+                        processDone(false);
+                        break;
+                    case 11:
+                        erased = passwordEditText2.eraseLastCharacter();
+                        break;
+                }
+                if (tag != 11) {
+                    if (backgroundDrawable instanceof MotionBackgroundDrawable) {
+                        MotionBackgroundDrawable motionBackgroundDrawable = (MotionBackgroundDrawable) backgroundDrawable;
+                        motionBackgroundDrawable.setAnimationProgressProvider(null);
+                        boolean needAnimation = false;
+                        float progress = motionBackgroundDrawable.getPosAnimationProgress();
+                        boolean next;
+                        if (tag == 10) {
+                            if (erased) {
+                                motionBackgroundDrawable.switchToPrevPosition(true);
+                                needAnimation = true;
+                            }
+                            next = false;
+                        } else {
+                            motionBackgroundDrawable.switchToNextPosition(true);
+                            needAnimation = true;
+                            next = true;
+                        }
+
+                        if (needAnimation) {
+                            if (progress >= 1f) {
+                                animateBackground(motionBackgroundDrawable);
+                            } else {
+                                backgroundSpringQueue.offer(() -> {
+                                    if (next) {
+                                        motionBackgroundDrawable.switchToNextPosition(true);
+                                    } else {
+                                        motionBackgroundDrawable.switchToPrevPosition(true);
+                                    }
+                                    animateBackground(motionBackgroundDrawable);
+                                });
+                                backgroundSpringNextQueue.offer(next);
+
+                                List<Runnable> remove = new ArrayList<>();
+                                List<Integer> removeIndex = new ArrayList<>();
+                                for (int i = 0; i < backgroundSpringQueue.size(); i++) {
+                                    Runnable callback = backgroundSpringQueue.get(i);
+                                    Boolean qNext = backgroundSpringNextQueue.get(i);
+
+                                    if (qNext != null && qNext != next) {
+                                        remove.add(callback);
+                                        removeIndex.add(i);
+                                    }
+                                }
+                                for (Runnable callback : remove) {
+                                    backgroundSpringQueue.remove(callback);
+                                }
+                                Collections.sort(removeIndex, (o1, o2) -> o2 - o1);
+                                for (int i : removeIndex) {
+                                    backgroundSpringNextQueue.remove(i);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            numberFrameLayouts.add(frameLayout);
+        }
+
+        // Add buttons in reverse order (same as original)
+        for (int a = 11; a >= 0; a--) {
+            FrameLayout frameLayout = numberFrameLayouts.get(a);
+            numbersFrameLayout.addView(frameLayout, LayoutHelper.createFrame(BUTTON_SIZE, BUTTON_SIZE, Gravity.TOP | Gravity.LEFT));
+        }
+
+        requestLayout();
+    }
+
     private void onPasscodeError() {
         BotWebViewVibrationEffect.NOTIFICATION_ERROR.vibrate();
         shakeTextView(2, 0);
+        createPinButtons();
+        checkFingerprintButton();
     }
 
     int resumeCount = 0;
@@ -1101,7 +1111,6 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
                     }
                 }, 200);
             }
-            checkFingerprint();
         }
     }
 
@@ -1186,84 +1195,17 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
         pinAnimator.start();
     }
 
-    private void checkFingerprint() {
-        if (Build.VERSION.SDK_INT < 23) {
-            return;
-        }
-        Activity parentActivity = AndroidUtilities.findActivity(getContext());
-        if (parentActivity != null && fingerprintView.getVisibility() == VISIBLE && !ApplicationLoader.mainInterfacePaused && (!(parentActivity instanceof LaunchActivity) || ((LaunchActivity) parentActivity).allowShowFingerprintDialog(this))) {
-            try {
-                if (BiometricManager.from(getContext()).canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG) == BiometricManager.BIOMETRIC_SUCCESS && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()) {
-                    final Executor executor = ContextCompat.getMainExecutor(getContext());
-                    BiometricPrompt prompt = new BiometricPrompt(LaunchActivity.instance, executor, new BiometricPrompt.AuthenticationCallback() {
-                        @Override
-                        public void onAuthenticationError(int errMsgId, @NonNull CharSequence errString) {
-                            FileLog.d("PasscodeView onAuthenticationError " + errMsgId + " \"" + errString + "\"");
-                            showPin(true);
-                        }
-
-                        @Override
-                        public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
-                            FileLog.d("PasscodeView onAuthenticationSucceeded");
-                            processDone(true);
-                        }
-
-                        @Override
-                        public void onAuthenticationFailed() {
-                            FileLog.d("PasscodeView onAuthenticationFailed");
-                            showPin(true);
-                        }
-                    });
-                    final BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
-                            .setTitle(LocaleController.getString(R.string.UnlockToUse))
-                            .setNegativeButtonText(LocaleController.getString(R.string.UsePIN))
-                            .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
-                            .build();
-                    prompt.authenticate(promptInfo);
-                    showPin(false);
-                }
-            } catch (Exception e) {
-                FileLog.e(e);
-            }
-        }
-    }
-
     public void onShow(boolean fingerprint, boolean animated) {
         onShow(fingerprint, animated, -1, -1, null, null);
     }
 
     private boolean hasFingerprint() {
-        Activity parentActivity = AndroidUtilities.findActivity(getContext());
-        if (Build.VERSION.SDK_INT >= 23 && parentActivity != null && SharedConfig.useFingerprintLock) {
-            try {
-                FingerprintManagerCompat fingerprintManager = FingerprintManagerCompat.from(ApplicationLoader.applicationContext);
-                return fingerprintManager.isHardwareDetected() && fingerprintManager.hasEnrolledFingerprints() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged();
-            } catch (Throwable e) {
-                FileLog.e(e);
-            }
-        }
         return false;
     }
 
     private void checkFingerprintButton() {
         boolean hasFingerprint = false;
-        Activity parentActivity = AndroidUtilities.findActivity(getContext());
-        if (Build.VERSION.SDK_INT >= 23 && parentActivity != null && SharedConfig.useFingerprintLock) {
-            try {
-                FingerprintManagerCompat fingerprintManager = FingerprintManagerCompat.from(ApplicationLoader.applicationContext);
-                if (fingerprintManager.isHardwareDetected() && fingerprintManager.hasEnrolledFingerprints() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()) {
-                    hasFingerprint = true;
-                    fingerprintView.setVisibility(VISIBLE);
-                } else {
-                    fingerprintView.setVisibility(GONE);
-                }
-            } catch (Throwable e) {
-                FileLog.e(e);
-                fingerprintView.setVisibility(GONE);
-            }
-        } else {
-            fingerprintView.setVisibility(GONE);
-        }
+        fingerprintView.setVisibility(VISIBLE);
         if (SharedConfig.passcodeType == SharedConfig.PASSCODE_TYPE_PASSWORD) {
             fingerprintImage.setVisibility(fingerprintView.getVisibility());
         }

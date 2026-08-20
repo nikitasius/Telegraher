@@ -34,6 +34,7 @@ public class CustomPhoneKeyboardView extends ViewGroup {
     private final static int SIDE_PADDING = 10, BUTTON_PADDING = 6;
 
     private final ImageView backButton;
+    private final ImageView confirmButton;
     private EditText editText;
     private final View[] views = new View[12];
 
@@ -54,6 +55,22 @@ public class CustomPhoneKeyboardView extends ViewGroup {
 
         if (runningLongClick) {
             postDelayed(this.onBackButton, 50);
+        }
+    };
+
+    private final Runnable onConfirmButton = () -> {
+        checkFindEditText();
+        if (editText == null || editText.length() == 0 && !dispatchBackWhenEmpty) return;
+
+        try {
+            performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+            playSoundEffect(SoundEffectConstants.CLICK);
+        } catch (Exception ignore) {}
+        editText.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_FORWARD));
+        editText.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_FORWARD));
+
+        if (runningLongClick) {
+            postDelayed(this.onConfirmButton, 50);
         }
     };
 
@@ -156,7 +173,31 @@ public class CustomPhoneKeyboardView extends ViewGroup {
         int pad = dp(11);
         backButton.setPadding(pad, pad, pad, pad);
         backButton.setOnClickListener(v -> {});
-        addView(views[11] = backButton);
+        addView(views[9] = backButton);
+
+        GestureDetectorCompat confirmDetector = confirmButtonDetector(context);
+        confirmButton = new ImageView(context) {
+            @SuppressLint("ClickableViewAccessibility")
+            @Override
+            public boolean onTouchEvent(MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
+                    if (postedLongClick || runningLongClick) {
+                        postedLongClick = false;
+                        runningLongClick = false;
+                        removeCallbacks(detectLongClick);
+                        removeCallbacks(onBackButton);
+                    }
+                }
+                super.onTouchEvent(event);
+                return confirmDetector.onTouchEvent(event);
+            }
+        };
+        confirmButton.setImageResource(R.drawable.msg_arrow_forward);
+        confirmButton.setColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+        pad = dp(11);
+        confirmButton.setPadding(pad, pad, pad, pad);
+        confirmButton.setOnClickListener(v -> {});
+        addView(views[11] = confirmButton);
 
         for (int a = 0; a < views.length; a++) {
             final View v = views[a];
@@ -196,6 +237,33 @@ public class CustomPhoneKeyboardView extends ViewGroup {
                     runningLongClick = false;
                     removeCallbacks(detectLongClick);
                     removeCallbacks(onBackButton);
+                }
+                return false;
+            }
+        });
+    }
+
+    private GestureDetectorCompat confirmButtonDetector(Context context) {
+        int touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
+        return new GestureDetectorCompat(context, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onDown(@NonNull MotionEvent e) {
+                if (postedLongClick) {
+                    removeCallbacks(detectLongClick);
+                }
+                postedLongClick = true;
+                postDelayed(detectLongClick, 200);
+                onConfirmButton.run();
+                return true;
+            }
+
+            @Override
+            public boolean onScroll(MotionEvent e1, @NonNull MotionEvent e2, float distanceX, float distanceY) {
+                if ((postedLongClick || runningLongClick) && (Math.abs(distanceX) >= touchSlop || Math.abs(distanceY) >= touchSlop)) {
+                    postedLongClick = false;
+                    runningLongClick = false;
+                    removeCallbacks(detectLongClick);
+                    removeCallbacks(onConfirmButton);
                 }
                 return false;
             }
