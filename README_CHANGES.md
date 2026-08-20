@@ -4,6 +4,10 @@
 
 ## Stop fucking genocide in Gaza.
 
+* 12.92.6 (build 6991006)
+    * graher app pin flow
+    * rollback the fcm token
+    * gradle & CI/CD updates
 * 12.92.5 (build 6991005)
     * removing mlkit
     * removing huawei traces
