@@ -30,6 +30,18 @@ jobs:
                 uses: gradle/actions/setup-gradle@v6
                 with:
                     gradle-version: '8.14.5'
+            -   name: Cache native CMake / NDK build
+                uses: actions/cache@v5
+                with:
+                    path: |
+                        TMessagesProj/.cxx
+                        TMessagesProj/build/intermediates/cxx
+                        TMessagesProj/build/intermediates/cmake
+                        TMessagesProj/build/intermediates/ndkBuild
+                    key: ${{ runner.os }}-ndk-27.2.12479018-${{ hashFiles('TMessagesProj/jni/**', 'TMessagesProj/**/CMakeLists.txt') }}
+                    restore-keys: |
+                        ${{ runner.os }}-ndk-27.2.12479018-
+                        ${{ runner.os }}-ndk-
             -   name: Enable Graher keystore
                 env:
                     GRAHER_KEYSTORE_BASE64: ${{secrets.GRAHER_KEYSTORE_BASE64}}
