@@ -11,6 +11,13 @@ on:
                 description: Tell me bruh
                 type: string
                 default: 'SLAVA UKRAINI & FREE PALESTINE'
+            multi-pass:
+                description: 'Multipass?'
+                type: choice
+                options:
+                    - Korben Dallas
+                    - Multipass
+                default: 'Korben Dallas'
 run-name: Building Graher ${{inputs.graher-version}}
 jobs:
     apk:
@@ -31,6 +38,7 @@ jobs:
                 with:
                     gradle-version: '8.14.5'
             -   name: Cache native CMake / NDK build
+                if: ${{ inputs.multi-pass == 'Korben Dallas' }}
                 uses: actions/cache@v5
                 with:
                     path: |
@@ -43,6 +51,7 @@ jobs:
                         ${{ runner.os }}-ndk-27.2.12479018-
                         ${{ runner.os }}-ndk-
             -   name: Enable Graher keystore
+                if: ${{ inputs.multi-pass == 'Korben Dallas' }}
                 env:
                     GRAHER_KEYSTORE_BASE64: ${{secrets.GRAHER_KEYSTORE_BASE64}}
                     GRAHER_RELEASE_STORE_PASSWORD: ${{secrets.GRAHER_RELEASE_STORE_PASSWORD}}
@@ -58,7 +67,7 @@ jobs:
             -   name: Build APK
                 run: gradle :TMessagesProj_AppStandalone:assembleStandalone
             -   name: Disable Graher keystore
-                if: always()
+                if: ${{ always() && inputs.multi-pass == 'Korben Dallas' }}
                 run: |
                     rm /home/runner/work/Telegraher/Telegraher/TMessagesProj/config/release.keystore
                     mv /home/runner/work/Telegraher/Telegraher/TMessagesProj/config/release.keystore.old /home/runner/work/Telegraher/Telegraher/TMessagesProj/config/release.keystore
