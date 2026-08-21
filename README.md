@@ -94,13 +94,15 @@ Actual graher is simplified, also it's acutually not FOSS. Maybe we'll make it f
 **If you're a donut**
 
 1) Hey buddy, how are you?
-2) You need to create a github account
-3) Then you need to fork graher (graher it's a short of telegraher) using big white (or black) fork button
-4) Then you can go to Actions where you click on `sudo bring me a beer`
-5) Once you clicked, cause NO BEER = NO GRAHER you have to click on `Run workflow`
-6) `Graher version bruh` - any version, `Tell me bruh` - the text you wanna share on release, `Multipass?` here you pick
+2) Nice to see you!
+3) You're so smart and clever if you're interrested in graher ❤️
+4) You need to create a github account
+5) Then you need to fork graher (graher it's a short of telegraher) using big white (or black) fork button
+6) Then you can go to Actions where you click on `sudo bring me a beer`
+7) Once you clicked, cause NO BEER = NO GRAHER, you have to click on `Run workflow`
+8) `Graher version bruh` - any version, `Tell me bruh` - the text you wanna share on release, `Multipass?` here you pick
    `Multipass?`. If you pick `Korben Dallas` you won't board that spaceship!
-7) It will work between 40min and 1h and build you your own babygraher 🎉
+9) It will work somehow around 40min or an 1h and build you your own babygraher 🎉
 
 You can still use docker TG offer for official build, just build a **Standalone** app
 
