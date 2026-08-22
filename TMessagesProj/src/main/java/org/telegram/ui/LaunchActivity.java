@@ -167,6 +167,8 @@ import org.telegram.ui.ActionBar.BottomSheetTabsOverlay;
 import org.telegram.ui.ActionBar.DrawerLayoutContainer;
 import org.telegram.ui.ActionBar.INavigationLayout;
 import org.telegram.ui.ActionBar.Theme;
+
+import tw.gram.telegraher.helpers.MonetHelper;
 import org.telegram.ui.Cells.ChatMessageCell;
 import org.telegram.ui.Cells.LanguageCell;
 import org.telegram.ui.Components.ActivityWindowEmptyBackgroundDrawable;
@@ -6946,6 +6948,10 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         }
         if (Theme.selectedAutoNightType == Theme.AUTO_NIGHT_TYPE_SYSTEM) {
             Theme.checkAutoNightThemeConditions();
+        }
+        // Refresco automatico de colores Monet si cambio el wallpaper
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            MonetHelper.refreshMonetThemeIfChanged();
         }
         checkWasMutedByAdmin(true);
         //FileLog.d("UI resume time = " + (SystemClock.elapsedRealtime() - ApplicationLoader.startTime));
