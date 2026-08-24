@@ -177,9 +177,6 @@ public class MonetHelper {
         return Blend.harmonize(baseColor, accentColor);
     }
 
-    public static int harmonizeColor(int baseColor) {
-        return getHarmonizedAvatarColor(baseColor);
-    }
 
     private static int softenColorForDarkText(int color) {
         int neutralTextColor = resolveColor("n1_50");
