@@ -11,6 +11,13 @@ on:
                 description: Tell me bruh
                 type: string
                 default: 'SLAVA UKRAINI & FREE PALESTINE'
+            use-cache:
+                description: 'Cache to speedup?'
+                type: choice
+                options:
+                    - Yep
+                    - Nah
+                default: 'Nah'
             multi-pass:
                 description: 'Multipass?'
                 type: choice
@@ -40,7 +47,7 @@ jobs:
                 with:
                     gradle-version: '8.14.5'
             -   name: Cache native CMake / NDK build
-                if: ${{ inputs.multi-pass == 'Korben Dallas' }}
+                if: ${{ inputs.use-cache == 'Yep' }}
                 uses: actions/cache@v5
                 with:
                     path: |
