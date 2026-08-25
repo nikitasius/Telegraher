@@ -1821,7 +1821,6 @@ public class MessagesController extends BaseController implements NotificationCe
             }
         }
         scheduleTranscriptionUpdate();
-        BuildVars.GOOGLE_AUTH_CLIENT_ID = mainPreferences.getString("googleAuthClientId", BuildVars.GOOGLE_AUTH_CLIENT_ID);
         if (mainPreferences.contains("dcDomainName2")) {
             dcDomainName = mainPreferences.getString("dcDomainName2", "apv3.stel.com");
         } else {
@@ -2818,17 +2817,8 @@ public class MessagesController extends BaseController implements NotificationCe
                     }
                     break;
                 }
-                case "login_google_oauth_client_id": {
-                    if (value.value instanceof TLRPC.TL_jsonString) {
-                        String str = ((TLRPC.TL_jsonString) value.value).value;
-                        if (!Objects.equals(BuildVars.GOOGLE_AUTH_CLIENT_ID, str)) {
-                            BuildVars.GOOGLE_AUTH_CLIENT_ID = str;
-                            editor.putString("googleAuthClientId", BuildVars.GOOGLE_AUTH_CLIENT_ID);
-                            changed = true;
-                        }
-                    }
+                case "login_google_oauth_client_id":
                     break;
-                }
                 case "premium_playmarket_direct_currency_list": {
                     if (value.value instanceof TLRPC.TL_jsonArray) {
                         TLRPC.TL_jsonArray arr = (TLRPC.TL_jsonArray) value.value;
