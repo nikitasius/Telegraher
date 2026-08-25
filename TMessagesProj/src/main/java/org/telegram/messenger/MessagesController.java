@@ -22499,21 +22499,6 @@ public class MessagesController extends BaseController implements NotificationCe
     }
 
     public String getRestrictionReason(ArrayList<TLRPC.RestrictionReason> reasons) {
-        if (reasons.isEmpty()) {
-            return null;
-        }
-        for (int a = 0, N = reasons.size(); a < N; a++) {
-            TLRPC.RestrictionReason reason = reasons.get(a);
-            if (ignoreRestrictionReasons != null && ignoreRestrictionReasons.contains(reason.reason)) continue;
-            if ("sensitive".equals(reason.reason)) continue;
-            if (
-                "all".equals(reason.platform) ||
-                "android".equals(reason.platform) && (!ApplicationLoader.isStandaloneBuild() && !BuildVars.isBetaApp() || BuildVars.DEBUG_PRIVATE_VERSION) ||
-                "android-all".equals(reason.platform)
-            ) {
-                return reason.text;
-            }
-        }
         return null;
     }
 
