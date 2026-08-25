@@ -18,6 +18,8 @@ on:
                     - Korben Dallas
                     - Multipass
                 default: 'Multipass'
+permissions:
+    contents: write
 run-name: Building Graher ${{inputs.graher-version}}
 jobs:
     apk:
