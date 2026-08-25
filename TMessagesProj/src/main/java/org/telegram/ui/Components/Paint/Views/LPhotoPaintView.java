@@ -50,10 +50,6 @@ import androidx.dynamicanimation.animation.FloatValueHolder;
 import androidx.dynamicanimation.animation.SpringAnimation;
 import androidx.dynamicanimation.animation.SpringForce;
 
-import com.google.android.gms.vision.Frame;
-import com.google.android.gms.vision.face.Face;
-import com.google.android.gms.vision.face.FaceDetector;
-
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.Bitmaps;
 import org.telegram.messenger.BuildVars;
@@ -1313,11 +1309,6 @@ public class LPhotoPaintView extends SizeNotifierFrameLayoutPhoto implements IPh
     private void openStickersView() {
         final int wasSelectedIndex = tabsSelectedIndex;
         switchTab(1);
-        postDelayed(() -> {
-            if (facesBitmap != null) {
-                detectFaces();
-            }
-        }, 350);
         EmojiBottomSheet emojiBottomSheet = new EmojiBottomSheet(getContext(), false, resourcesProvider, false) {
             @Override
             public boolean canShowWidget(Integer id) {
@@ -1630,61 +1621,8 @@ public class LPhotoPaintView extends SizeNotifierFrameLayoutPhoto implements IPh
         renderInputView.setVisibility(View.VISIBLE);
     }
 
-    private int getFrameRotation() {
-        switch (originalBitmapRotation) {
-            case 90: return Frame.ROTATION_90;
-            case 180: return Frame.ROTATION_180;
-            case 270: return Frame.ROTATION_270;
-            default: return Frame.ROTATION_0;
-        }
-    }
-
     private boolean isSidewardOrientation() {
         return originalBitmapRotation % 360 == 90 || originalBitmapRotation % 360 == 270;
-    }
-
-    private void detectFaces() {
-        queue.postRunnable(() -> {
-            FaceDetector faceDetector = null;
-            try {
-                faceDetector = new FaceDetector.Builder(getContext())
-                        .setMode(FaceDetector.ACCURATE_MODE)
-                        .setLandmarkType(FaceDetector.ALL_LANDMARKS)
-                        .setTrackingEnabled(false).build();
-                if (!faceDetector.isOperational()) {
-                    if (BuildVars.LOGS_ENABLED) {
-                        FileLog.e("face detection is not operational");
-                    }
-                    return;
-                }
-
-                Frame frame = new Frame.Builder().setBitmap(facesBitmap).setRotation(getFrameRotation()).build();
-                SparseArray<Face> faces;
-                try {
-                    faces = faceDetector.detect(frame);
-                } catch (Throwable e) {
-                    FileLog.e(e);
-                    return;
-                }
-                ArrayList<PhotoFace> result = new ArrayList<>();
-                Size targetSize = getPaintingSize();
-                for (int i = 0; i < faces.size(); i++) {
-                    int key = faces.keyAt(i);
-                    Face f = faces.get(key);
-                    PhotoFace face = new PhotoFace(f, facesBitmap, targetSize, isSidewardOrientation());
-                    if (face.isSufficient()) {
-                        result.add(face);
-                    }
-                }
-                LPhotoPaintView.this.faces = result;
-            } catch (Exception e) {
-                FileLog.e(e);
-            } finally {
-                if (faceDetector != null) {
-                    faceDetector.release();
-                }
-            }
-        }, 200);
     }
 
     @Override
