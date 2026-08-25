@@ -8,6 +8,8 @@
 
 > 3rd generation
 
+![Telegraher](/telegraher.512px.png)
+
 * **No one gets to decide** what i run on my device
 * **No one gets to decide** where i run my app
 * **No one gets to decide** what must be deleted
@@ -121,6 +123,16 @@ Probably it's a good thing 😃
 
 ### [Changes](README_CHANGES.md)
 
+### Big thanks 🍻 :
+
+* [xMAXIMx ](https://t.me/xMAXIMx) - chat bot maker, angry mod and support from 1-st days
+* [fru2nyanya](https://t.me/fru2nyanya) - FAQ maker, user helper
+* [redditOwner](https://t.me/redditOwner) - phone number supporter and extreme multiacc tester
+* [Wolfsschanze44](https://t.me/Wolfsschanze44) - graher gen-2 notification icon designer
+* [Scarlet4th](https://t.me/Scarlet4th) - chat keeper, english corrector
+* [kolomviano](https://t.me/kolomviano) - making features and pushing PRs
+* [scrizza](https://t.me/scrizza) - long time tester, extra fan (Humpee told that)
+
 ### Code mirrors
 
 * Github: [https://github.com/nikitasius/Telegraher](https://github.com/nikitasius/Telegraher)
@@ -136,9 +148,16 @@ Probably it's a good thing 😃
 ### Coffee
 
 * Here is my [PayPal](https://paypal.me/nikitasius) `https://paypal.me/nikitasius`
-* Here is
-  my [BTC](bitcoin:bc1q5egmj6vjejmsu4lu3nmdshvx6p0kcajlw5u9a0?message=github_telegraher)
-  `bc1q5egmj6vjejmsu4lu3nmdshvx6p0kcajlw5u9a0`
+* Cryptos
+    * [BTC](bitcoin:bc1qhdxuuud5cy494m7s2gg3gy9pgz052wjtvrgu6m?message=github_telegraher)
+      `bc1qhdxuuud5cy494m7s2gg3gy9pgz052wjtvrgu6m`
+    * [XMR](monero:85jHELdPDbZSsJAUccud3aRmoF3oJszxCCJ3zEETM85AHeRfpEbQKnRFAkwHtdxfWhX5DaZf4v8NEGz6Wa6WHgQBGQXnYhr?message=github_telegraher)
+      `85jHELdPDbZSsJAUccud3aRmoF3oJszxCCJ3zEETM85AHeRfpEbQKnRFAkwHtdxfWhX5DaZf4v8NEGz6Wa6WHgQBGQXnYhr` (best crypto
+      ever, back in [old days](https://github.com/monero-project/monero/issues/6151))
+    * [ETH](eth:0x00008672BC75707d897264a3dBB85036BCdE4CB3?message=github_telegraher)
+      `0x00008672BC75707d897264a3dBB85036BCdE4CB3` and `USDT` on Ethereum
+    * [SOL](solana:7ds9H5jFqnrZ1CemzDhqQnPvwiEuFVbW153bZihnF1dB?message=github_telegraher)
+      `7ds9H5jFqnrZ1CemzDhqQnPvwiEuFVbW153bZihnF1dB` and `USDT` on Solana
 * Here is
   my [Yoomoney](https://yoomoney.ru/to/410015481871381) `https://yoomoney.ru/to/410015481871381`
 
