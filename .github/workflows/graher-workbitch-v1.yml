@@ -17,7 +17,7 @@ on:
                 options:
                     - Korben Dallas
                     - Multipass
-                default: 'Korben Dallas'
+                default: 'Multipass'
 run-name: Building Graher ${{inputs.graher-version}}
 jobs:
     apk:
