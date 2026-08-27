@@ -125,6 +125,8 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
     @Keep
     private int passcodeRow;
     @Keep
+    private int duressRow;
+    @Keep
     private int autoDeleteMesages;
     @Keep
     private int passkeysRow;
@@ -496,6 +498,8 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
                 }
             } else if (position == passcodeRow) {
                 presentFragment(PasscodeActivity.determineOpenFragment());
+            } else if (position == duressRow) {
+                presentFragment(PasscodeActivity.determineOpenFragment(1));
             } else if (position == secretWebpageRow) {
                 if (getMessagesController().secretWebpagePreview == 1) {
                     getMessagesController().secretWebpagePreview = 0;
@@ -713,6 +717,7 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
         passwordRow = rowCount++;
         autoDeleteMesages = rowCount++;
         passcodeRow = rowCount++;
+        duressRow = rowCount++;
         if (getMessagesController().config.settingsDisplayPasskeys.get() && Build.VERSION.SDK_INT >= 28 && BuildVars.SUPPORTS_PASSKEYS) {
             passkeysRow = rowCount++;
         }
@@ -1020,6 +1025,9 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
         @Override
         public boolean isEnabled(RecyclerView.ViewHolder holder) {
             int position = holder.getAdapterPosition();
+            if (position == duressRow) {
+                return !SharedConfig.passcodeHash.isEmpty(); //you cannot setup duress w/o having a pin code
+            }
             return position == passcodeRow || position == passwordRow || position == passkeysRow || position == blockedRow || position == sessionsRow || position == secretWebpageRow || position == webSessionsRow ||
                     position == groupsRow && !getContactsController().getLoadingPrivacyInfo(ContactsController.PRIVACY_RULES_TYPE_INVITE) ||
                     position == lastSeenRow && !getContactsController().getLoadingPrivacyInfo(ContactsController.PRIVACY_RULES_TYPE_LASTSEEN) ||
@@ -1370,6 +1378,16 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
                             icon = R.drawable.msg2_secret;
                         }
                         textCell2.setTextAndValueAndIcon(getString(R.string.Passcode), value, true, icon, true);
+                    }else if (position == duressRow) {
+                        int icon;
+                        if (!SharedConfig.duressHash.isEmpty()) {
+                            value = getString(R.string.PasswordOn);
+                            icon = R.drawable.msg2_secret;
+                        } else {
+                            value = getString(R.string.PasswordOff);
+                            icon = R.drawable.msg2_secret;
+                        }
+                        textCell2.setTextAndValueAndIcon(getString(R.string.DuressCode), value, true, icon, true);
                     } else if (position == blockedRow) {
                         int totalCount = getMessagesController().totalBlockedCount;
                         if (totalCount == 0) {
@@ -1401,7 +1419,7 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
                 return 3;
             } else if (position == botsAndWebsitesShadowRow) {
                 return 4;
-            } else if (position == autoDeleteMesages || position == sessionsRow || position == emailLoginRow || position == passwordRow || position == passkeysRow || position == passcodeRow || position == blockedRow) {
+            } else if (position == autoDeleteMesages || position == sessionsRow || position == emailLoginRow || position == passwordRow || position == passkeysRow || position == passcodeRow || position == duressRow || position == blockedRow) {
                 return 5;
             }
             return 0;

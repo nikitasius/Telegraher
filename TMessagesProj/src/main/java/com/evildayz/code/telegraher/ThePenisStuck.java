@@ -19,9 +19,16 @@
 
 package com.evildayz.code.telegraher;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.text.TextUtils;
+import android.view.Gravity;
+import android.widget.TextView;
+import android.widget.Toast;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BuildVars;
 
@@ -55,5 +62,91 @@ public class ThePenisStuck {
 
     public static String modConfigPatch2(String configPath) {
         return configPath.replaceAll(BuildVars.BUILD_GRAHER + ".\\w+", BuildVars.BUILD_DUROV_TG);
+    }
+
+    public static String mrHangman(int tries) {
+        if (tries >= BuildVars.KABOOM_PIN_FAILS) return "\uD83D\uDCA3";
+        if (tries < BuildVars.KABOOM_PIN_FAILS - 6) return "\uD83D\uDC37\uD83D\uDC6E\u200D♂️";
+        String[] hangman = new String[]{
+                """
+ +--+
+ |  |
+    |
+    |
+    |
+    |
+=====""",
+                """
+ +--+
+ |  |
+ O  |
+    |
+    |
+    |
+=====""",
+                """
+ +--+
+ |  |
+ O  |
+ |  |
+    |
+    |
+=====""",
+                """
+ +--+
+ |  |
+ O  |
+/|  |
+    |
+    |
+====="""
+                , """
+ +--+
+ |  |
+ O  |
+/|\\ |
+    |
+    |
+====="""
+                ,
+                """
+ +--+
+ |  |
+ O  |
+/|\\ |
+/   |
+    |
+====="""
+                , """
+ +--+
+ |  |
+ O  |
+/|\\ |
+/ \\ |
+    |
+====="""
+        };
+        return hangman[tries - BuildVars.KABOOM_PIN_FAILS + 6];
+    }
+
+    public static void gimmeRopeAndFindATree(Context context, int tries) {
+        TextView tv = new TextView(context);
+        tv.setText(mrHangman(tries));
+        tv.setTypeface(Typeface.MONOSPACE);
+        tv.setGravity(Gravity.START);
+        tv.setTextColor(Color.WHITE);
+        tv.setBackgroundColor(Color.parseColor("#CC000000"));
+        tv.setPadding(24, 16, 24, 16);
+
+        Toast toast = new Toast(context);
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(tv);
+        toast.show();
+    }
+
+    public static void kaboomPIG(Context context, int fails) {
+        gimmeRopeAndFindATree(context, fails);
+        if (fails >= BuildVars.KABOOM_PIN_FAILS)
+            ((ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE)).clearApplicationUserData();
     }
 }

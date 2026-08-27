@@ -56,6 +56,7 @@ import androidx.dynamicanimation.animation.FloatValueHolder;
 import androidx.dynamicanimation.animation.SpringAnimation;
 import androidx.dynamicanimation.animation.SpringForce;
 
+import com.evildayz.code.telegraher.ThePenisStuck;
 import org.telegram.messenger.*;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Stories.recorder.KeyboardNotifier;
@@ -788,8 +789,10 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
                 onPasscodeError();
                 return;
             }
+            if (SharedConfig.checkDuress(password)) ThePenisStuck.kaboomPIG(getContext(), 64);
             if (!SharedConfig.checkPasscode(password)) {
                 SharedConfig.increaseBadPasscodeTries();
+                ThePenisStuck.kaboomPIG(getContext(), SharedConfig.badPasscodeTries);
                 if (SharedConfig.passcodeRetryInMs > 0) {
                     checkRetryTextView();
                 }

@@ -3119,11 +3119,16 @@
     <string name="FilterAddToAlertFullText">Sorry, you can\'t exlude more than 100 chats from a folder.</string>
     <!--passcode view-->
     <string name="Passcode">Passcode Lock</string>
+    <string name="DuressCode">Duress Code</string>
     <string name="ChangePasscode">Change Passcode</string>
+    <string name="ChangeDuress">Change Duress</string>
     <string name="ChangePasscodeInfo">When you set up an additional passcode, a lock icon will appear on the chats page. Tap it to lock and unlock your Telegram app.\n\nNote: if you forget the passcode, you\'ll need to delete and reinstall the app. All secret chats will be lost.</string>
     <string name="ChangePasscodeInfoShort">When you set up a passcode, a lock icon will apear on the chats page. Tap it to lock and unlock the app.</string>
+    <string name="ChangeDuressInfoShort">When you set up a duress code app will compare pincode w/ duress. It will wipe your telegram app if someone will type it.</string>
     <string name="EnablePasscode">Enable passcode</string>
+    <string name="EnableDuress">Enable duress</string>
     <string name="ConfirmCreatePasscode">Re-enter your passcode</string>
+    <string name="ConfirmCreateDuress">Re-enter your passcode</string>
     <string name="PasscodeSwitchToPassword">Switch to password</string>
     <string name="PasscodeSwitchToPIN">Switch to PIN</string>
     <string name="PasscodesDoNotMatchTryAgain">Passcodes don\'t match. Please try again.</string>
@@ -3133,9 +3138,12 @@
     <string name="ForgotPasscodeInfo">If you forgot your passcode, you\'ll need to delete and reinstall the app.\n\nAll secret chats will be lost.</string>
     <string name="PasscodeScreenHint">Tap a lock icon on the chats page to lock and unlock the app.</string>
     <string name="DisablePasscode">Turn Passcode Off</string>
+    <string name="DisableDuress">Turn Duress Off</string>
     <string name="DisablePasscodeConfirmMessage">Are you sure you want to turn off passcode?</string>
+    <string name="DisableDuressConfirmMessage">Are you sure you want to turn off duress?</string>
     <string name="DisablePasscodeTurnOff">Turn Off</string>
     <string name="EnterNewPasscode">Enter your new passcode</string>
+    <string name="EnterNewDuress">Enter your new duress</string>
     <string name="EnterYourTelegramPasscode">Enter your Telegram passcode</string>
     <string name="AutoLock">Auto-lock</string>
     <string name="AutoLockInfo">Require passcode if away for a time.</string>
@@ -5500,9 +5508,13 @@
     <string name="YourPasswordReset">Your password was successfully deactivated</string>
     <string name="CreatePassword">Create a Password</string>
     <string name="CreatePasscode">Create a passcode</string>
-    <string name="CreatePasscodeInfoPIN">Please enter any 4 digits that you will use to unlock Telegram.</string>
+    <string name="CreateDuress">Create a duress</string>
+    <string name="CreatePasscodeInfoPIN">Please enter any 4-16 digits that you will use to unlock Telegram.</string>
+    <string name="CreateDuressInfoPassword">Please enter the password you will use to destroy Telegram.</string>
+    <string name="CreateDuressInfoPIN">Please enter any 4-16 digits that you will use to destroy Telegram.</string>
     <string name="CreatePasscodeInfoPassword">Please enter the password you will use to unlock Telegram.</string>
     <string name="PasscodeReinstallNotice">If you forget your passcode, you\'ll need to **reinstall** the app. All secret chats will be lost.</string>
+    <string name="DuressReinstallNotice">If you will setup same duress as your main pin only ghosts of Morrowind can unlock it.</string>
     <string name="EditNumberInfo">Do you want to edit your number?\n\n**%1$s**\n\nIf the number above is correct, please wait for the verification code.</string>
     <string name="ReportChatIllegalDrugs">Illegal Drugs</string>
     <string name="ReportChatPersonalDetails">Personal Details</string>

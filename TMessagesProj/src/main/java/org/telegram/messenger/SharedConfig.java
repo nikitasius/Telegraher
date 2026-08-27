@@ -223,6 +223,7 @@ public class SharedConfig {
     @PasscodeType
     public static int passcodeType;
     public static String passcodeHash = "";
+    public static String duressHash = "";
     public static long passcodeRetryInMs;
     public static long lastUptimeMillis;
     public static int badPasscodeTries;
@@ -433,6 +434,7 @@ public class SharedConfig {
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putBoolean("saveIncomingPhotos", saveIncomingPhotos);
                 editor.putString("passcodeHash1", passcodeHash);
+                editor.putString("duressHash", duressHash);
                 editor.putString("passcodeSalt", passcodeSalt.length > 0 ? Base64.encodeToString(passcodeSalt, Base64.DEFAULT) : "");
                 editor.putBoolean("appLocked", appLocked);
                 editor.putInt("passcodeType", passcodeType);
@@ -513,6 +515,7 @@ public class SharedConfig {
             SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("userconfing", Context.MODE_PRIVATE);
             saveIncomingPhotos = preferences.getBoolean("saveIncomingPhotos", false);
             passcodeHash = preferences.getString("passcodeHash1", "");
+            duressHash = preferences.getString("duressHash", "");
             appLocked = preferences.getBoolean("appLocked", false);
             passcodeType = preferences.getInt("passcodeType", 0);
             passcodeRetryInMs = preferences.getLong("passcodeRetryInMs", 0);
@@ -707,26 +710,7 @@ public class SharedConfig {
     public static void increaseBadPasscodeTries() {
         badPasscodeTries++;
         if (badPasscodeTries >= 3) {
-            switch (badPasscodeTries) {
-                case 3:
-                    passcodeRetryInMs = 5000;
-                    break;
-                case 4:
-                    passcodeRetryInMs = 10000;
-                    break;
-                case 5:
-                    passcodeRetryInMs = 15000;
-                    break;
-                case 6:
-                    passcodeRetryInMs = 20000;
-                    break;
-                case 7:
-                    passcodeRetryInMs = 25000;
-                    break;
-                default:
-                    passcodeRetryInMs = 30000;
-                    break;
-            }
+            passcodeRetryInMs = 3000;
             lastUptimeMillis = SystemClock.elapsedRealtime();
         }
         saveConfig();
@@ -827,6 +811,15 @@ public class SharedConfig {
     }
 
     public static boolean checkPasscode(String passcode) {
+        return checkPasscode(passcodeHash, passcode);
+    }
+
+    public static boolean checkDuress(String passcode) {
+        if (duressHash.isEmpty()) return false;
+        return checkPasscode(duressHash, passcode);
+    }
+
+    public static boolean checkPasscode(String sha256, String passcode) {
         try {
             byte[] passcodeBytes = passcode.getBytes("UTF-8");
             byte[] bytes = new byte[32 + passcodeBytes.length];
@@ -834,7 +827,7 @@ public class SharedConfig {
             System.arraycopy(passcodeBytes, 0, bytes, 16, passcodeBytes.length);
             System.arraycopy(passcodeSalt, 0, bytes, passcodeBytes.length + 16, 16);
             String hash = Utilities.bytesToHex(Utilities.computeSHA256(bytes, 0, bytes.length));
-            return passcodeHash.equals(hash);
+            return sha256.equals(hash);
         } catch (Exception e) {
             FileLog.e(e);
         }
@@ -849,6 +842,7 @@ public class SharedConfig {
         lastUptimeMillis = 0;
         badPasscodeTries = 0;
         passcodeHash = "";
+        duressHash = "";
         passcodeSalt = new byte[0];
         autoLockIn = 60 * 60;
         lastPauseTime = 0;
