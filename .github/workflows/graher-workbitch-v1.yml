@@ -49,14 +49,27 @@ jobs:
             -   name: Pin CMake 3.22.1 and NDK 27.2.12479018
                 run: |
                     set -euo pipefail
+                    SDKMANAGER="${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager"
                     CMAKE_DIR="${ANDROID_HOME}/cmake/3.22.1"
                     NDK_DIR="${ANDROID_HOME}/ndk/27.2.12479018"
+
+                    install_pkg() {
+                      local pkg="$1"
+                      set +o pipefail
+                      echo y | "${SDKMANAGER}" --install "${pkg}"
+                      set -o pipefail
+                    }
+
                     if [ ! -x "${CMAKE_DIR}/bin/cmake" ]; then
-                      yes | "${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager" "cmake;3.22.1"
+                      install_pkg "cmake;3.22.1"
                     fi
                     if [ ! -d "${NDK_DIR}" ]; then
-                      yes | "${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager" "ndk;27.2.12479018"
+                      install_pkg "ndk;27.2.12479018"
                     fi
+                    test -x "${CMAKE_DIR}/bin/cmake"
+                    test -x "${CMAKE_DIR}/bin/ninja"
+                    test -d "${NDK_DIR}"
+
                     printf 'sdk.dir=%s\ncmake.dir=%s\nndk.dir=%s\n' \
                       "${ANDROID_HOME}" "${CMAKE_DIR}" "${NDK_DIR}" > local.properties
                     echo "ANDROID_NDK_HOME=${NDK_DIR}" >> "${GITHUB_ENV}"
