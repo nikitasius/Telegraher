@@ -57,12 +57,9 @@ public class ThePenisStuck {
     }
 
     public static String modConfigPatch(String configPath) {
-        return configPath;
+        return configPath.replace(BuildVars.BUILD_GRAHER, BuildVars.BUILD_DUROV);
     }
 
-    public static String modConfigPatch2(String configPath) {
-        return configPath.replaceAll(BuildVars.BUILD_GRAHER + ".\\w+", BuildVars.BUILD_DUROV_TG);
-    }
 
     public static String mrHangman(int tries) {
         if (tries >= BuildVars.KABOOM_PIN_FAILS) return "\uD83D\uDCA3";
