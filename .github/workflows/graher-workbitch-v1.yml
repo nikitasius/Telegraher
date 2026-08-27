@@ -46,6 +46,10 @@ jobs:
                 uses: gradle/actions/setup-gradle@v6
                 with:
                     gradle-version: '8.14.5'
+            -   name: Install pinned NDK / CMake
+                run: |
+                    yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" \
+                      "ndk;27.2.12479018" "cmake;3.22.1"
             -   name: Cache native CMake / NDK build
                 if: ${{ inputs.use-cache == 'Yep' }}
                 uses: actions/cache@v5
@@ -58,7 +62,23 @@ jobs:
                     key: ${{ runner.os }}-ndk-27.2.12479018-${{ hashFiles('TMessagesProj/jni/**', 'TMessagesProj/**/CMakeLists.txt') }}
                     restore-keys: |
                         ${{ runner.os }}-ndk-27.2.12479018-
-                        ${{ runner.os }}-ndk-
+            -   name: Rebase native cache mtimes
+                if: ${{ inputs.use-cache == 'Yep' }}
+                run: |
+                    for d in \
+                      TMessagesProj/.cxx \
+                      TMessagesProj/build/intermediates/cxx \
+                      TMessagesProj/build/intermediates/cmake \
+                      TMessagesProj/build/intermediates/ndkBuild
+                    do
+                      [ -d "$d" ] && find "$d" -exec touch -m {} +
+                    done
+                    if [ -d TMessagesProj/.cxx ]; then
+                      echo "Restored cxx trees:"
+                      find TMessagesProj/.cxx -maxdepth 3 -type d | head -50
+                    else
+                      echo "No .cxx tree restored (cold cache). Next run can reuse this build."
+                    fi
             -   name: Enable Graher keystore
                 if: ${{ inputs.multi-pass == 'Korben Dallas' }}
                 env:
