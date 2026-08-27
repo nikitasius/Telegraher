@@ -46,6 +46,23 @@ jobs:
                 uses: gradle/actions/setup-gradle@v6
                 with:
                     gradle-version: '8.14.5'
+            -   name: Pin CMake 3.22.1 and NDK 27.2.12479018
+                run: |
+                    set -euo pipefail
+                    CMAKE_DIR="${ANDROID_HOME}/cmake/3.22.1"
+                    NDK_DIR="${ANDROID_HOME}/ndk/27.2.12479018"
+                    if [ ! -x "${CMAKE_DIR}/bin/cmake" ]; then
+                      yes | "${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager" "cmake;3.22.1"
+                    fi
+                    if [ ! -d "${NDK_DIR}" ]; then
+                      yes | "${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager" "ndk;27.2.12479018"
+                    fi
+                    printf 'sdk.dir=%s\ncmake.dir=%s\nndk.dir=%s\n' \
+                      "${ANDROID_HOME}" "${CMAKE_DIR}" "${NDK_DIR}" > local.properties
+                    echo "ANDROID_NDK_HOME=${NDK_DIR}" >> "${GITHUB_ENV}"
+                    echo "CMAKE_DIR=${CMAKE_DIR}" >> "${GITHUB_ENV}"
+                    "${CMAKE_DIR}/bin/cmake" --version
+                    "${CMAKE_DIR}/bin/ninja" --version
             -   name: Cache native CMake / NDK build
                 if: ${{ inputs.use-cache == 'Yep' }}
                 uses: actions/cache@v5
@@ -71,29 +88,16 @@ jobs:
                       [ -d "$d" ] && find "$d" -exec touch -m {} +
                     done
 
-                    NINJA="$(find "${ANDROID_HOME}/cmake" -name ninja -type f 2>/dev/null | sort | tail -n1 || true)"
-                    if [ -z "${NINJA}" ]; then
-                      NINJA="$(command -v ninja || true)"
-                    fi
+                    NINJA="${ANDROID_HOME}/cmake/3.22.1/bin/ninja"
                     echo "ninja=${NINJA}"
+                    find TMessagesProj/.cxx -name build.ninja | while read -r f; do
+                      dir="$(dirname "$f")"
+                      echo "ninja -t restat in ${dir}"
+                      "${NINJA}" -C "${dir}" -t restat || true
+                    done
 
-                    if [ -n "${NINJA}" ]; then
-                      find TMessagesProj/.cxx -name build.ninja | while read -r f; do
-                        dir="$(dirname "$f")"
-                        echo "ninja -t restat in ${dir}"
-                        "${NINJA}" -C "${dir}" -t restat || true
-                      done
-                    else
-                      echo "ninja not found; restat skipped"
-                    fi
-
-                    echo "cxx trees:"
-                    if [ -d TMessagesProj/.cxx ]; then
-                      find TMessagesProj/.cxx -maxdepth 3 -type d
-                    else
-                      echo "No .cxx tree restored (cold cache)."
-                    fi
-
+                    echo "cxx trees before gradle:"
+                    find TMessagesProj/.cxx -maxdepth 3 -type d
                     CACHE_TXT="$(find TMessagesProj/.cxx -name CMakeCache.txt | head -n1 || true)"
                     if [ -n "${CACHE_TXT}" ]; then
                       echo "--- ${CACHE_TXT} ---"
@@ -115,6 +119,11 @@ jobs:
                     sed -i "s/RELEASE_KEY_PASSWORD=android/RELEASE_KEY_PASSWORD=$GRAHER_RELEASE_KEY_PASSWORD/g" /home/runner/work/Telegraher/Telegraher/gradle.properties
             -   name: Build APK
                 run: gradle :TMessagesProj_AppStandalone:assembleStandalone
+            -   name: Show cxx trees after build
+                if: ${{ always() && inputs.use-cache == 'Yep' }}
+                run: |
+                    echo "cxx trees after gradle:"
+                    find TMessagesProj/.cxx -maxdepth 3 -type d || true
             -   name: Disable Graher keystore
                 if: ${{ always() && inputs.multi-pass == 'Korben Dallas' }}
                 run: |
