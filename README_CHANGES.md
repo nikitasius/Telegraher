@@ -4,6 +4,15 @@
 
 ## Stop fucking genocide in Gaza.
 
+* 12.92.7 (build 6991007)
+    * removed leftovers
+    * Monet theme for android 12+ by @soyelmismo (github)
+    * restrictions fix for messages (old stuff i forgotten to add)
+    * removed google vision
+    * removed google login
+    * some XML cleanups w/ IDE
+    * fix for CI/CD cause it's failed on new forks due github changes
+    * duress pin code & new unlock flow
 * 12.92.6 (build 6991006)
     * graher app pin flow
     * rollback the fcm token

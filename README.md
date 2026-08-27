@@ -69,11 +69,15 @@ Actual graher is simplified, also it's acutually not FOSS. Maybe we'll make it f
 * DISABLED emulator detections gives you LEGIT phone
 * No SIM force TG send you code by mail/session/via SMS to avoid you sending the SMS (sometimes TG wanna force people to
   TYPE email and TYPE the CODE and SEND the SMS - thats bad behaviour and it happens on vanilla also)
-* Removed trackers, it still contain some google libs like for FCM (need more cleaning but i doubt it will be 100%
-  foss/floss/dentalfloss)
+* Removed trackers, google vision/login, it still contain some google libs like for FCM (need more cleaning but i doubt
+  it will be 100% foss/floss/dentalfloss)
 * Scramble PIN layout to make your PIN undetectable for CCTV footages (PLEASE USE IT!)
 * PIN size can be between 4 and 16 digits you decice (and as vanilla it support raw passwords)
 * Fingerprint/FaceID are disabled, so pigs won't use your hands/face to unlock graher
+* Added Monet theme for android 12+ by @soyelmismo (github)
+* Added the duress code to trigger KABOOM on your client (read more about duress
+  idea [here](https://grapheneos.org/features#duress) on grapheneos website)
+* Pin retry time reduced to 3 seconds, after 10 fails KABOOM
 * Hi, i'm Vanilla telegram using vanilla keys, vanilla fingerpring & package 💅
 
 ### TODO
@@ -132,6 +136,7 @@ Probably it's a good thing 😃
 * [Scarlet4th](https://t.me/Scarlet4th) - chat keeper, english corrector
 * [kolomviano](https://t.me/kolomviano) - making features and pushing PRs
 * [scrizza](https://t.me/scrizza) - long time tester, extra fan (Humpee told that)
+* ping [me](https://t.me/nikitasius) if i forgot someone
 
 ### Code mirrors
 
