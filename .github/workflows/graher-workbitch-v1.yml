@@ -70,8 +70,8 @@ jobs:
                     test -x "${CMAKE_DIR}/bin/ninja"
                     test -d "${NDK_DIR}"
 
-                    printf 'sdk.dir=%s\ncmake.dir=%s\nndk.dir=%s\n' \
-                      "${ANDROID_HOME}" "${CMAKE_DIR}" "${NDK_DIR}" > local.properties
+                    printf 'sdk.dir=%s\ncmake.dir=%s\n' \
+                      "${ANDROID_HOME}" "${CMAKE_DIR}" > local.properties
                     echo "ANDROID_NDK_HOME=${NDK_DIR}" >> "${GITHUB_ENV}"
                     echo "CMAKE_DIR=${CMAKE_DIR}" >> "${GITHUB_ENV}"
                     "${CMAKE_DIR}/bin/cmake" --version
@@ -92,6 +92,11 @@ jobs:
                 if: ${{ inputs.use-cache == 'Yep' }}
                 run: |
                     set -euo pipefail
+                    if [ ! -d TMessagesProj/.cxx ]; then
+                      echo "Cold cache: no .cxx yet. Gradle will create it; Actions will save it after the job."
+                      exit 0
+                    fi
+
                     for d in \
                       TMessagesProj/.cxx \
                       TMessagesProj/build/intermediates/cxx \
