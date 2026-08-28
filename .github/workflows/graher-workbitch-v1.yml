@@ -33,6 +33,12 @@ jobs:
         name: Generate APK
         runs-on: ubuntu-latest
         environment: graherkeys
+        env:
+            CCACHE_DIR: ${{github.workspace}}/.ccache
+            CCACHE_MAXSIZE: 2G
+            CCACHE_COMPILERCHECK: content
+            CCACHE_NOHASHDIR: "1"
+            CCACHE_SLOPPINESS: file_stat_matches,include_file_mtime,include_file_ctime,time_macros
         steps:
             -   name: Checkout
                 uses: actions/checkout@v6
@@ -52,77 +58,39 @@ jobs:
                     SDKMANAGER="${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager"
                     CMAKE_DIR="${ANDROID_HOME}/cmake/3.22.1"
                     NDK_DIR="${ANDROID_HOME}/ndk/27.2.12479018"
-
                     install_pkg() {
-                      local pkg="$1"
                       set +o pipefail
-                      echo y | "${SDKMANAGER}" --install "${pkg}"
+                      echo y | "${SDKMANAGER}" --install "$1"
                       set -o pipefail
                     }
-
-                    if [ ! -x "${CMAKE_DIR}/bin/cmake" ]; then
-                      install_pkg "cmake;3.22.1"
-                    fi
-                    if [ ! -d "${NDK_DIR}" ]; then
-                      install_pkg "ndk;27.2.12479018"
-                    fi
-                    test -x "${CMAKE_DIR}/bin/cmake"
-                    test -x "${CMAKE_DIR}/bin/ninja"
-                    test -d "${NDK_DIR}"
-
-                    printf 'sdk.dir=%s\ncmake.dir=%s\n' \
-                      "${ANDROID_HOME}" "${CMAKE_DIR}" > local.properties
+                    if [ ! -x "${CMAKE_DIR}/bin/cmake" ]; then install_pkg "cmake;3.22.1"; fi
+                    if [ ! -d "${NDK_DIR}" ]; then install_pkg "ndk;27.2.12479018"; fi
+                    printf 'sdk.dir=%s\ncmake.dir=%s\n' "${ANDROID_HOME}" "${CMAKE_DIR}" > local.properties
                     echo "ANDROID_NDK_HOME=${NDK_DIR}" >> "${GITHUB_ENV}"
-                    echo "CMAKE_DIR=${CMAKE_DIR}" >> "${GITHUB_ENV}"
                     "${CMAKE_DIR}/bin/cmake" --version
-                    "${CMAKE_DIR}/bin/ninja" --version
-            -   name: Cache native CMake / NDK build
-                if: ${{ inputs.use-cache == 'Yep' }}
+            -   name: Install ccache
+                run: |
+                    sudo apt-get update
+                    sudo apt-get install -y ccache
+                    mkdir -p "${CCACHE_DIR}"
+                    ccache -s
+            -   name: Cache ccache
+                if: ${{inputs.use-cache == 'Yep'}}
                 uses: actions/cache@v5
                 with:
-                    path: |
-                        TMessagesProj/.cxx
-                        TMessagesProj/build/intermediates/cxx
-                        TMessagesProj/build/intermediates/cmake
-                        TMessagesProj/build/intermediates/ndkBuild
-                    key: ${{ runner.os }}-ndk-27.2.12479018-${{ hashFiles('TMessagesProj/jni/**', 'TMessagesProj/**/CMakeLists.txt') }}
+                    path: ${{github.workspace}}/.ccache
+                    key: ${{runner.os}}-ccache-ws-ndk-27.2.12479018-${{hashFiles('TMessagesProj/jni/**', 'TMessagesProj/**/CMakeLists.txt')}}
                     restore-keys: |
-                        ${{ runner.os }}-ndk-27.2.12479018-
-            -   name: Rebase native cache mtimes
-                if: ${{ inputs.use-cache == 'Yep' }}
+                        ${{runner.os}}-ccache-ws-ndk-27.2.12479018-
+            -   name: ccache before build
+                if: ${{inputs.use-cache == 'Yep'}}
                 run: |
-                    set -euo pipefail
-                    if [ ! -d TMessagesProj/.cxx ]; then
-                      echo "Cold cache: no .cxx yet. Gradle will create it; Actions will save it after the job."
-                      exit 0
-                    fi
-
-                    for d in \
-                      TMessagesProj/.cxx \
-                      TMessagesProj/build/intermediates/cxx \
-                      TMessagesProj/build/intermediates/cmake \
-                      TMessagesProj/build/intermediates/ndkBuild
-                    do
-                      [ -d "$d" ] && find "$d" -exec touch -m {} +
-                    done
-
-                    NINJA="${ANDROID_HOME}/cmake/3.22.1/bin/ninja"
-                    echo "ninja=${NINJA}"
-                    find TMessagesProj/.cxx -name build.ninja | while read -r f; do
-                      dir="$(dirname "$f")"
-                      echo "ninja -t restat in ${dir}"
-                      "${NINJA}" -C "${dir}" -t restat || true
-                    done
-
-                    echo "cxx trees before gradle:"
-                    find TMessagesProj/.cxx -maxdepth 3 -type d
-                    CACHE_TXT="$(find TMessagesProj/.cxx -name CMakeCache.txt | head -n1 || true)"
-                    if [ -n "${CACHE_TXT}" ]; then
-                      echo "--- ${CACHE_TXT} ---"
-                      grep -E 'CMAKE_COMMAND|CMAKE_MAKE_PROGRAM|ANDROID_NDK' "${CACHE_TXT}" | head -20
-                    fi
+                    ccache -z
+                    echo "CCACHE_DIR=${CCACHE_DIR}"
+                    du -sh "${CCACHE_DIR}" || true
+                    ccache -s
             -   name: Enable Graher keystore
-                if: ${{ inputs.multi-pass == 'Korben Dallas' }}
+                if: ${{inputs.multi-pass == 'Korben Dallas'}}
                 env:
                     GRAHER_KEYSTORE_BASE64: ${{secrets.GRAHER_KEYSTORE_BASE64}}
                     GRAHER_RELEASE_STORE_PASSWORD: ${{secrets.GRAHER_RELEASE_STORE_PASSWORD}}
@@ -137,13 +105,14 @@ jobs:
                     sed -i "s/RELEASE_KEY_PASSWORD=android/RELEASE_KEY_PASSWORD=$GRAHER_RELEASE_KEY_PASSWORD/g" /home/runner/work/Telegraher/Telegraher/gradle.properties
             -   name: Build APK
                 run: gradle :TMessagesProj_AppStandalone:assembleStandalone
-            -   name: Show cxx trees after build
-                if: ${{ always() && inputs.use-cache == 'Yep' }}
+            -   name: ccache stats
+                if: ${{always()}}
                 run: |
-                    echo "cxx trees after gradle:"
-                    find TMessagesProj/.cxx -maxdepth 3 -type d || true
+                    echo "CCACHE_DIR=${CCACHE_DIR}"
+                    du -sh "${CCACHE_DIR}" || true
+                    ccache -s || true
             -   name: Disable Graher keystore
-                if: ${{ always() && inputs.multi-pass == 'Korben Dallas' }}
+                if: ${{always() && inputs.multi-pass == 'Korben Dallas'}}
                 run: |
                     rm /home/runner/work/Telegraher/Telegraher/TMessagesProj/config/release.keystore
                     mv /home/runner/work/Telegraher/Telegraher/TMessagesProj/config/release.keystore.old /home/runner/work/Telegraher/Telegraher/TMessagesProj/config/release.keystore
@@ -154,27 +123,25 @@ jobs:
                 run: |
                     APK_PATH="/home/runner/work/Telegraher/Telegraher/TMessagesProj_AppStandalone/build/outputs/apk/afat/standalone/app.apk"
                     if [ ! -f "$APK_PATH" ]; then
-                       echo "Expected APK not found at $APK_PATH — listing actual output tree:" >&2
                        find /home/runner/work/Telegraher/Telegraher/TMessagesProj_AppStandalone/build/outputs -type f >&2
                        exit 1
                     fi
                     GRAHERAPK="/home/runner/work/Telegraher/Telegraher/TMessagesProj_AppStandalone/build/outputs/apk/afat/standalone/Telegraher.${{inputs.graher-version}}.apk"
                     mv "$APK_PATH" "$GRAHERAPK"
-                    GRAHERHASH=$(sha256sum "$GRAHERAPK" | awk '{print $1}')
                     echo "apk_path=$GRAHERAPK" >> "$GITHUB_OUTPUT"
-                    echo "apk_sha256=$GRAHERHASH" >> "$GITHUB_OUTPUT"
+                    echo "apk_sha256=$(sha256sum "$GRAHERAPK" | awk '{print $1}')" >> "$GITHUB_OUTPUT"
             -   name: Create Release and Upload APK
                 uses: softprops/action-gh-release@v3
                 with:
                     tag_name: ${{env.TNAME}}
                     name: ${{env.RNAME}}
-                    files: ${{ steps.locate_apk.outputs.apk_path }}
+                    files: ${{steps.locate_apk.outputs.apk_path}}
                     body: |
-                        Graher `${{inputs.graher-version}}` sha256 `${{ steps.locate_apk.outputs.apk_sha256 }}`
+                        Graher `${{inputs.graher-version}}` sha256 `${{steps.locate_apk.outputs.apk_sha256}}`
                         Thank you, folks, for many years of your support and believing in tomorrow! 🍻
                         Changes:
                         ${{inputs.graher-changes}}
                 env:
-                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                    GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
                     RNAME: Telegraher ${{inputs.graher-version}}
                     TNAME: graher_${{inputs.graher-version}}
