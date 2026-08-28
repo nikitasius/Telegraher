@@ -1,4 +1,4 @@
-name: sudo bring me a beer
+name: sudo bring me a beer - do not run me
 
 on:
     workflow_dispatch:
