@@ -37,7 +37,7 @@ jobs:
             CCACHE_DIR: ${{github.workspace}}/.ccache
             CCACHE_MAXSIZE: 2G
             CCACHE_COMPILERCHECK: content
-            CCACHE_HASHDIR: "false"
+            CCACHE_NOHASHDIR: "1"
             CCACHE_SLOPPINESS: file_stat_matches,include_file_mtime,include_file_ctime,time_macros
         steps:
             -   name: Checkout
