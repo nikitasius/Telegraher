@@ -1,4 +1,4 @@
-name: sudo bring me a beer - do not run me
+name: building local cache - do not run me
 
 on:
     workflow_dispatch:
