@@ -1,0 +1,158 @@
+name: sudo bring me a beer
+
+on:
+    workflow_dispatch:
+        inputs:
+            graher-version:
+                description: Graher version bruh
+                type: string
+                default: '0.0.0'
+            graher-changes:
+                description: Tell me bruh
+                type: string
+                default: 'SLAVA UKRAINI & FREE PALESTINE'
+            use-cache:
+                description: 'Cache to speedup?'
+                type: choice
+                options:
+                    - Yep
+                    - Nah
+                default: 'Nah'
+            multi-pass:
+                description: 'Multipass?'
+                type: choice
+                options:
+                    - Korben Dallas
+                    - Multipass
+                default: 'Multipass'
+permissions:
+    contents: write
+run-name: Building Graher ${{inputs.graher-version}}
+jobs:
+    apk:
+        name: Generate APK
+        runs-on: ubuntu-latest
+        environment: graherkeys
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v6
+            -   name: Set up AWS Corretto 21
+                uses: actions/setup-java@v5
+                with:
+                    java-version: '21'
+                    distribution: 'corretto'
+                    architecture: x64
+            -   name: Setup Gradle 8.14.5
+                uses: gradle/actions/setup-gradle@v6
+                with:
+                    gradle-version: '8.14.5'
+            -   name: Pin CMake 3.22.1 and NDK 27.2.12479018
+                run: |
+                    set -euo pipefail
+                    SDKMANAGER="${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager"
+                    CMAKE_DIR="${ANDROID_HOME}/cmake/3.22.1"
+                    NDK_DIR="${ANDROID_HOME}/ndk/27.2.12479018"
+
+                    install_pkg() {
+                      local pkg="$1"
+                      set +o pipefail
+                      echo y | "${SDKMANAGER}" --install "${pkg}"
+                      set -o pipefail
+                    }
+
+                    if [ ! -x "${CMAKE_DIR}/bin/cmake" ]; then
+                      install_pkg "cmake;3.22.1"
+                    fi
+                    if [ ! -d "${NDK_DIR}" ]; then
+                      install_pkg "ndk;27.2.12479018"
+                    fi
+                    test -x "${CMAKE_DIR}/bin/cmake"
+                    test -x "${CMAKE_DIR}/bin/ninja"
+                    test -d "${NDK_DIR}"
+
+                    printf 'sdk.dir=%s\ncmake.dir=%s\n' \
+                      "${ANDROID_HOME}" "${CMAKE_DIR}" > local.properties
+                    echo "ANDROID_NDK_HOME=${NDK_DIR}" >> "${GITHUB_ENV}"
+                    echo "CMAKE_DIR=${CMAKE_DIR}" >> "${GITHUB_ENV}"
+                    "${CMAKE_DIR}/bin/cmake" --version
+                    "${CMAKE_DIR}/bin/ninja" --version
+            -   name: Install ccache
+                run: |
+                    set -euo pipefail
+                    sudo apt-get update
+                    sudo apt-get install -y ccache
+                    mkdir -p "${HOME}/.cache/ccache" "${HOME}/.config/ccache"
+                    cat > "${HOME}/.config/ccache/ccache.conf" <<'EOF'
+                    max_size = 2G
+                    compiler_check = content
+                    hash_dir = false
+                    sloppiness = file_stat_matches,include_file_mtime,include_file_ctime,time_macros
+                    EOF
+                    sed -i 's/^[[:space:]]*//' "${HOME}/.config/ccache/ccache.conf"
+                    echo "CCACHE_DIR=${HOME}/.cache/ccache" >> "${GITHUB_ENV}"
+                    echo "CCACHE_CONFIGPATH=${HOME}/.config/ccache/ccache.conf" >> "${GITHUB_ENV}"
+                    ccache -z
+                    ccache -s
+            -   name: Cache ccache
+                if: ${{inputs.use-cache == 'Yep'}}
+                uses: actions/cache@v5
+                with:
+                    path: ~/.cache/ccache
+                    key: ${{runner.os}}-ccache-ndk-27.2.12479018-${{hashFiles('TMessagesProj/jni/**', 'TMessagesProj/**/CMakeLists.txt')}}
+                    restore-keys: |
+                        ${{runner.os}}-ccache-ndk-27.2.12479018-
+            -   name: Enable Graher keystore
+                if: ${{inputs.multi-pass == 'Korben Dallas'}}
+                env:
+                    GRAHER_KEYSTORE_BASE64: ${{secrets.GRAHER_KEYSTORE_BASE64}}
+                    GRAHER_RELEASE_STORE_PASSWORD: ${{secrets.GRAHER_RELEASE_STORE_PASSWORD}}
+                    GRAHER_RELEASE_KEY_ALIAS: ${{secrets.GRAHER_RELEASE_KEY_ALIAS}}
+                    GRAHER_RELEASE_KEY_PASSWORD: ${{secrets.GRAHER_RELEASE_KEY_PASSWORD}}
+                run: |
+                    mv /home/runner/work/Telegraher/Telegraher/TMessagesProj/config/release.keystore /home/runner/work/Telegraher/Telegraher/TMessagesProj/config/release.keystore.old
+                    echo "$GRAHER_KEYSTORE_BASE64" | base64 --decode > /home/runner/work/Telegraher/Telegraher/TMessagesProj/config/release.keystore
+                    cp /home/runner/work/Telegraher/Telegraher/gradle.properties /home/runner/work/Telegraher/Telegraher/gradle.properties.old
+                    sed -i "s/RELEASE_STORE_PASSWORD=android/RELEASE_STORE_PASSWORD=$GRAHER_RELEASE_STORE_PASSWORD/g" /home/runner/work/Telegraher/Telegraher/gradle.properties
+                    sed -i "s/RELEASE_KEY_ALIAS=androidkey/RELEASE_KEY_ALIAS=$GRAHER_RELEASE_KEY_ALIAS/g" /home/runner/work/Telegraher/Telegraher/gradle.properties
+                    sed -i "s/RELEASE_KEY_PASSWORD=android/RELEASE_KEY_PASSWORD=$GRAHER_RELEASE_KEY_PASSWORD/g" /home/runner/work/Telegraher/Telegraher/gradle.properties
+            -   name: Build APK
+                run: gradle :TMessagesProj_AppStandalone:assembleStandalone
+            -   name: ccache stats
+                if: ${{always()}}
+                run: ccache -s || true
+            -   name: Disable Graher keystore
+                if: ${{always() && inputs.multi-pass == 'Korben Dallas'}}
+                run: |
+                    rm /home/runner/work/Telegraher/Telegraher/TMessagesProj/config/release.keystore
+                    mv /home/runner/work/Telegraher/Telegraher/TMessagesProj/config/release.keystore.old /home/runner/work/Telegraher/Telegraher/TMessagesProj/config/release.keystore
+                    rm /home/runner/work/Telegraher/Telegraher/gradle.properties
+                    mv /home/runner/work/Telegraher/Telegraher/gradle.properties.old /home/runner/work/Telegraher/Telegraher/gradle.properties
+            -   name: Verify APK exists
+                id: locate_apk
+                run: |
+                    APK_PATH="/home/runner/work/Telegraher/Telegraher/TMessagesProj_AppStandalone/build/outputs/apk/afat/standalone/app.apk"
+                    if [ ! -f "$APK_PATH" ]; then
+                       echo "Expected APK not found at $APK_PATH — listing actual output tree:" >&2
+                       find /home/runner/work/Telegraher/Telegraher/TMessagesProj_AppStandalone/build/outputs -type f >&2
+                       exit 1
+                    fi
+                    GRAHERAPK="/home/runner/work/Telegraher/Telegraher/TMessagesProj_AppStandalone/build/outputs/apk/afat/standalone/Telegraher.${{inputs.graher-version}}.apk"
+                    mv "$APK_PATH" "$GRAHERAPK"
+                    GRAHERHASH=$(sha256sum "$GRAHERAPK" | awk '{print $1}')
+                    echo "apk_path=$GRAHERAPK" >> "$GITHUB_OUTPUT"
+                    echo "apk_sha256=$GRAHERHASH" >> "$GITHUB_OUTPUT"
+            -   name: Create Release and Upload APK
+                uses: softprops/action-gh-release@v3
+                with:
+                    tag_name: ${{env.TNAME}}
+                    name: ${{env.RNAME}}
+                    files: ${{ steps.locate_apk.outputs.apk_path }}
+                    body: |
+                        Graher `${{inputs.graher-version}}` sha256 `${{steps.locate_apk.outputs.apk_sha256}}`
+                        Thank you, folks, for many years of your support and believing in tomorrow! 🍻
+                        Changes:
+                        ${{inputs.graher-changes}}
+                env:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                    RNAME: Telegraher ${{inputs.graher-version}}
+                    TNAME: graher_${{inputs.graher-version}}
