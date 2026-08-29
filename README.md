@@ -8,6 +8,9 @@
 
 > 3rd generation
 
+[TOP 3](https://github.com/DrKLO/Telegram/forks?include=active&page=1&period=&sort_by=stargazer_counts) Telegram Android
+fork! ([screenshot](top3_tg_forks_2026-08-29.jpg)'2026-08-29)
+
 ![Telegraher](/telegraher.512px.png)
 
 * **No one gets to decide** what i run on my device
@@ -78,6 +81,8 @@ Actual graher is simplified, also it's acutually not FOSS. Maybe we'll make it f
 * Added the duress code to trigger KABOOM on your client (read more about duress
   idea [here](https://grapheneos.org/features#duress) on grapheneos website)
 * Pin retry time reduced to 3 seconds, after 10 fails KABOOM
+* Brand unlimited multiacc
+* You can login with same phone multiple times in same app (tg won't ask for a code, just 2FA if you have it)
 * Hi, i'm Vanilla telegram using vanilla keys, vanilla fingerpring & package 💅
 
 ### TODO

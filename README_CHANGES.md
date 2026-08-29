@@ -4,6 +4,9 @@
 
 ## Stop fucking genocide in Gaza.
 
+* 12.92.8 (build 6991008)
+    * brand new unlimited multiacc
+    * you can login with same number multiple times
 * 12.92.7 (build 6991007)
     * removed leftovers
     * Monet theme for android 12+ by @soyelmismo (github)
