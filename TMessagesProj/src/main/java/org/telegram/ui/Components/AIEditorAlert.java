@@ -49,25 +49,7 @@ import androidx.core.math.MathUtils;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.telegram.messenger.AiTonesController;
-import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.CodeHighlighting;
-import org.telegram.messenger.Emoji;
-import org.telegram.messenger.FileLoader;
-import org.telegram.messenger.FileLog;
-import org.telegram.messenger.ImageLocation;
-import org.telegram.messenger.LocaleController;
-import org.telegram.messenger.MediaDataController;
-import org.telegram.messenger.MessageObject;
-import org.telegram.messenger.MessagesController;
-import org.telegram.messenger.NotificationCenter;
-import org.telegram.messenger.R;
-import org.telegram.messenger.RichMessageLayout;
-import org.telegram.messenger.SendMessagesHelper;
-import org.telegram.messenger.TranslateController;
-import org.telegram.messenger.UserConfig;
-import org.telegram.messenger.UserObject;
-import org.telegram.messenger.Utilities;
+import org.telegram.messenger.*;
 import org.telegram.messenger.browser.Browser;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLObject;
@@ -1794,7 +1776,7 @@ public class AIEditorAlert extends BottomSheetWithRecyclerListView implements No
 
                 int accountForEmoji = currentAccount;
                 if (ConnectionsManager.getInstance(accountForEmoji).isTestBackend()) {
-                    for (int i = 0; i < UserConfig.MAX_ACCOUNT_COUNT; ++i) {
+                    for (int i : SharedConfig.activeAccounts) {
                         if (UserConfig.getInstance(i).isClientActivated() && !ConnectionsManager.getInstance(i).isTestBackend()) {
                             accountForEmoji = i;
                             break;

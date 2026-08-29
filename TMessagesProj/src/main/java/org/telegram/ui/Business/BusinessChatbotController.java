@@ -1,35 +1,18 @@
 package org.telegram.ui.Business;
 
-import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.MessagesController;
-import org.telegram.messenger.NotificationCenter;
-import org.telegram.messenger.UserConfig;
-import org.telegram.messenger.Utilities;
+import org.telegram.messenger.*;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.tl.TL_account;
 
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class BusinessChatbotController {
 
-    private static volatile BusinessChatbotController[] Instance = new BusinessChatbotController[UserConfig.MAX_ACCOUNT_COUNT];
-    private static final Object[] lockObjects = new Object[UserConfig.MAX_ACCOUNT_COUNT];
-    static {
-        for (int i = 0; i < UserConfig.MAX_ACCOUNT_COUNT; i++) {
-            lockObjects[i] = new Object();
-        }
-    }
+    private static final ConcurrentHashMap<Integer, BusinessChatbotController> Instance = new ConcurrentHashMap<>();
+
     public static BusinessChatbotController getInstance(int num) {
-        BusinessChatbotController localInstance = Instance[num];
-        if (localInstance == null) {
-            synchronized (lockObjects[num]) {
-                localInstance = Instance[num];
-                if (localInstance == null) {
-                    Instance[num] = localInstance = new BusinessChatbotController(num);
-                }
-            }
-        }
-        return localInstance;
+        return Instance.computeIfAbsent(num, BusinessChatbotController::new);
     }
 
     private final int currentAccount;

@@ -26,6 +26,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.pm.ShortcutManagerCompat;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.SerializedData;
@@ -41,13 +42,8 @@ import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public class SharedConfig {
     /**
@@ -353,6 +349,9 @@ public class SharedConfig {
     public static boolean isFloatingDebugActive;
     public static LiteMode liteMode;
 
+    public static final CopyOnWriteArraySet<Integer> activeAccounts = new CopyOnWriteArraySet<>();
+    public static int loginingAccount = -1;
+
     private static final int[] LOW_SOC = {
             -1775228513, // EXYNOS 850
             802464304,  // EXYNOS 7872
@@ -502,6 +501,37 @@ public class SharedConfig {
             value = lastLocalId--;
         }
         return value;
+    }
+
+    public static void saveAccounts() {
+        FileLog.d("Save accounts: " + activeAccounts);
+        ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE).edit()
+                .putString("active_accounts", StringUtils.join(activeAccounts, ","))
+                .apply();
+    }
+
+    public static void loadAccounts(SharedPreferences preferences) {
+        activeAccounts.clear();
+        String raw = preferences.getString("active_accounts", "");
+        if (!raw.isEmpty()) {
+            for (String part : raw.split(",")) {
+                if (StringUtils.isBlank(part)) continue;
+                try {
+                    activeAccounts.add(Integer.parseInt(part.trim()));
+                } catch (NumberFormatException ignored) {}
+            }
+            return;
+        }
+        for (int i = 0; i < 4; i++) {
+            UserConfig uc = UserConfig.getInstance(i);
+            uc.loadConfig();
+            if (uc.isClientActivated()) {
+                activeAccounts.add(i);
+            }
+        }
+        if (!activeAccounts.isEmpty()) {
+            saveAccounts();
+        }
     }
 
     public static void loadConfig() {
@@ -658,6 +688,7 @@ public class SharedConfig {
             emojiInteractionsHintCount = preferences.getInt("emojiInteractionsHintCount", 3);
             dayNightThemeSwitchHintCount = preferences.getInt("dayNightThemeSwitchHintCount", 3);
             stealthModeSendMessageConfirm = preferences.getInt("stealthModeSendMessageConfirm", 2);
+            loadAccounts(preferences);
             mediaColumnsCount = preferences.getInt("mediaColumnsCount", 3);
             storiesColumnsCount = preferences.getInt("storiesColumnsCount", 3);
             fastScrollHintCount = preferences.getInt("fastScrollHintCount", 3);

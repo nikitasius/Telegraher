@@ -193,10 +193,13 @@ public class ApplicationLoader extends Application {
         applicationInited = true;
         NativeLoader.initNativeLibs(ApplicationLoader.applicationContext);
 
+        SharedConfig.loadConfig();
+        SharedPrefsHelper.init(applicationContext);
+
         try {
-            LocaleController.getInstance(); //TODO improve
+            LocaleController.getInstance();
         } catch (Exception e) {
-            e.printStackTrace();
+            FileLog.e(e);
         }
 
         try {
@@ -207,29 +210,30 @@ public class ApplicationLoader extends Application {
                     try {
                         currentNetworkInfo = connectivityManager.getActiveNetworkInfo();
                     } catch (Throwable ignore) {
-
                     }
-
                     boolean isSlow = isConnectionSlow();
-                    for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
+                    for (int a : SharedConfig.activeAccounts) {
                         ConnectionsManager.getInstance(a).checkConnection();
                         FileLoader.getInstance(a).onNetworkChanged(isSlow);
+                    }
+                    if (SharedConfig.loginingAccount != -1) {
+                        ConnectionsManager.getInstance(SharedConfig.loginingAccount).checkConnection();
+                        FileLoader.getInstance(SharedConfig.loginingAccount).onNetworkChanged(isSlow);
                     }
                 }
             };
             IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
             ApplicationLoader.applicationContext.registerReceiver(networkStateReceiver, filter);
         } catch (Exception e) {
-            e.printStackTrace();
+            FileLog.e(e);
         }
 
         try {
             final IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
             filter.addAction(Intent.ACTION_SCREEN_OFF);
-            final BroadcastReceiver mReceiver = new ScreenReceiver();
-            applicationContext.registerReceiver(mReceiver, filter);
+            applicationContext.registerReceiver(new ScreenReceiver(), filter);
         } catch (Exception e) {
-            e.printStackTrace();
+            FileLog.e(e);
         }
 
         try {
@@ -239,16 +243,17 @@ public class ApplicationLoader extends Application {
                 FileLog.d("screen state = " + isScreenOn);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            FileLog.e(e);
         }
 
-        SharedConfig.loadConfig();
-        SharedPrefsHelper.init(applicationContext);
-        for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) { //TODO improve account
+        boolean pushInited = false;
+        for (int a : SharedConfig.activeAccounts) {
             UserConfig.getInstance(a).loadConfig();
             MessagesController.getInstance(a);
-            if (a == 0) {
-                SharedConfig.pushStringStatus = "__FIREBASE_GENERATING_SINCE_" + ConnectionsManager.getInstance(a).getCurrentTime() + "__";
+            if (!pushInited) {
+                SharedConfig.pushStringStatus = "__FIREBASE_GENERATING_SINCE_"
+                        + ConnectionsManager.getInstance(a).getCurrentTime() + "__";
+                pushInited = true;
             } else {
                 ConnectionsManager.getInstance(a);
             }
@@ -259,14 +264,13 @@ public class ApplicationLoader extends Application {
             }
         }
 
-        ApplicationLoader app = (ApplicationLoader) ApplicationLoader.applicationContext;
-        app.initPushServices();
+        ((ApplicationLoader) ApplicationLoader.applicationContext).initPushServices();
         if (BuildVars.LOGS_ENABLED) {
             FileLog.d("app initied");
         }
 
         MediaController.getInstance();
-        for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) { //TODO improve account
+        for (int a : SharedConfig.activeAccounts) {
             ContactsController.getInstance(a).checkAppAccount();
             DownloadController.getInstance(a);
         }

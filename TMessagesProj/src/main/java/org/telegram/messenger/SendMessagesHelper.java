@@ -119,10 +119,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -310,7 +307,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                 uploadSet.remove(path);
             }
         }
-        
+
         private void addUploadProgress(String path, long sz, float progress) {
             uploadProgresses.put(path, progress);
             uploadSize.put(path, sz);
@@ -824,7 +821,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                 retriedToSendArray[index] = value;
             }
         }
-        
+
         public int topMessageId;
 
         public TLRPC.InputMedia inputUploadMedia;
@@ -944,18 +941,10 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
         }
     }
 
-    private static volatile SendMessagesHelper[] Instance = new SendMessagesHelper[UserConfig.MAX_ACCOUNT_COUNT];
+    private static final ConcurrentHashMap<Integer, SendMessagesHelper> Instance = new ConcurrentHashMap();
+
     public static SendMessagesHelper getInstance(int num) {
-        SendMessagesHelper localInstance = Instance[num];
-        if (localInstance == null) {
-            synchronized (SendMessagesHelper.class) {
-                localInstance = Instance[num];
-                if (localInstance == null) {
-                    Instance[num] = localInstance = new SendMessagesHelper(num);
-                }
-            }
-        }
-        return localInstance;
+        return Instance.computeIfAbsent(num, SendMessagesHelper::new);
     }
 
     public SendMessagesHelper(int instance) {

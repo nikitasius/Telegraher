@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class NotificationCenter {
 
@@ -415,21 +416,12 @@ public class NotificationCenter {
 
     private int currentAccount;
     private int currentHeavyOperationFlags;
-    private static volatile NotificationCenter[] Instance = new NotificationCenter[UserConfig.MAX_ACCOUNT_COUNT];
+    private static final ConcurrentHashMap<Integer, NotificationCenter> Instance = new ConcurrentHashMap();
     private static volatile NotificationCenter globalInstance;
 
     @UiThread
     public static NotificationCenter getInstance(int num) {
-        NotificationCenter localInstance = Instance[num];
-        if (localInstance == null) {
-            synchronized (NotificationCenter.class) {
-                localInstance = Instance[num];
-                if (localInstance == null) {
-                    Instance[num] = localInstance = new NotificationCenter(num);
-                }
-            }
-        }
-        return localInstance;
+        return Instance.computeIfAbsent(num, NotificationCenter::new);
     }
 
     @UiThread

@@ -5,16 +5,7 @@ import android.text.TextUtils;
 import org.telegram.SQLite.SQLiteCursor;
 import org.telegram.SQLite.SQLiteDatabase;
 import org.telegram.SQLite.SQLitePreparedStatement;
-import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.DownloadController;
-import org.telegram.messenger.FileLog;
-import org.telegram.messenger.MediaDataController;
-import org.telegram.messenger.MessageObject;
-import org.telegram.messenger.MessagesController;
-import org.telegram.messenger.MessagesStorage;
-import org.telegram.messenger.NotificationCenter;
-import org.telegram.messenger.UserConfig;
-import org.telegram.messenger.Utilities;
+import org.telegram.messenger.*;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.NativeByteBuffer;
 import org.telegram.tgnet.TLRPC;
@@ -25,6 +16,7 @@ import org.telegram.ui.ChatActivity;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class QuickRepliesController {
 
@@ -34,24 +26,10 @@ public class QuickRepliesController {
         return GREETING.equalsIgnoreCase(name) || AWAY.equalsIgnoreCase(name);
     }
 
-    private static volatile QuickRepliesController[] Instance = new QuickRepliesController[UserConfig.MAX_ACCOUNT_COUNT];
-    private static final Object[] lockObjects = new Object[UserConfig.MAX_ACCOUNT_COUNT];
-    static {
-        for (int i = 0; i < UserConfig.MAX_ACCOUNT_COUNT; i++) {
-            lockObjects[i] = new Object();
-        }
-    }
+    private static final ConcurrentHashMap<Integer, QuickRepliesController> Instance = new ConcurrentHashMap<>();
+
     public static QuickRepliesController getInstance(int num) {
-        QuickRepliesController localInstance = Instance[num];
-        if (localInstance == null) {
-            synchronized (lockObjects[num]) {
-                localInstance = Instance[num];
-                if (localInstance == null) {
-                    Instance[num] = localInstance = new QuickRepliesController(num);
-                }
-            }
-        }
-        return localInstance;
+        return Instance.computeIfAbsent(num, QuickRepliesController::new);
     }
 
     public final int currentAccount;

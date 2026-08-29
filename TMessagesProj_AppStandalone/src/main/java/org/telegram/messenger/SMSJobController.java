@@ -50,27 +50,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SMSJobController implements NotificationCenter.NotificationCenterDelegate {
 
-    private static volatile SMSJobController[] Instance = new SMSJobController[UserConfig.MAX_ACCOUNT_COUNT];
-    private static final Object[] lockObjects = new Object[UserConfig.MAX_ACCOUNT_COUNT];
-    static {
-        for (int i = 0; i < UserConfig.MAX_ACCOUNT_COUNT; i++) {
-            lockObjects[i] = new Object();
-        }
-    }
+    private static final ConcurrentHashMap<Integer, SMSJobController> Instance = new ConcurrentHashMap<>();
+
     public static SMSJobController getInstance(int num) {
-        SMSJobController localInstance = Instance[num];
-        if (localInstance == null) {
-            synchronized (lockObjects[num]) {
-                localInstance = Instance[num];
-                if (localInstance == null) {
-                    Instance[num] = localInstance = new SMSJobController(num);
-                }
-            }
-        }
-        return localInstance;
+        return Instance.computeIfAbsent(num, SMSJobController::new);
     }
 
     public final static int STATE_NONE = 0;

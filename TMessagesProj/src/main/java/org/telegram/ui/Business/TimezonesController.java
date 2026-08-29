@@ -3,12 +3,7 @@ package org.telegram.ui.Business;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 
-import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.LocaleController;
-import org.telegram.messenger.MessagesController;
-import org.telegram.messenger.NotificationCenter;
-import org.telegram.messenger.UserConfig;
-import org.telegram.messenger.Utilities;
+import org.telegram.messenger.*;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.SerializedData;
 import org.telegram.tgnet.TLRPC;
@@ -19,27 +14,14 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TimezonesController {
 
-    private static volatile TimezonesController[] Instance = new TimezonesController[UserConfig.MAX_ACCOUNT_COUNT];
-    private static final Object[] lockObjects = new Object[UserConfig.MAX_ACCOUNT_COUNT];
-    static {
-        for (int i = 0; i < UserConfig.MAX_ACCOUNT_COUNT; i++) {
-            lockObjects[i] = new Object();
-        }
-    }
+    private static final ConcurrentHashMap<Integer, TimezonesController> Instance = new ConcurrentHashMap();
+
     public static TimezonesController getInstance(int num) {
-        TimezonesController localInstance = Instance[num];
-        if (localInstance == null) {
-            synchronized (lockObjects[num]) {
-                localInstance = Instance[num];
-                if (localInstance == null) {
-                    Instance[num] = localInstance = new TimezonesController(num);
-                }
-            }
-        }
-        return localInstance;
+        return Instance.computeIfAbsent(num, TimezonesController::new);
     }
 
     public final int currentAccount;

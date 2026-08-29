@@ -94,6 +94,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 
@@ -176,25 +177,10 @@ public class NotificationsController extends BaseController implements Notificat
         audioManager = (AudioManager) ApplicationLoader.applicationContext.getSystemService(Context.AUDIO_SERVICE);
     }
 
-    private static volatile NotificationsController[] Instance = new NotificationsController[UserConfig.MAX_ACCOUNT_COUNT];
-    private static final Object[] lockObjects = new Object[UserConfig.MAX_ACCOUNT_COUNT];
-    static {
-        for (int i = 0; i < UserConfig.MAX_ACCOUNT_COUNT; i++) {
-            lockObjects[i] = new Object();
-        }
-    }
+    private static final ConcurrentHashMap<Integer,NotificationsController> Instance = new ConcurrentHashMap<>();
 
     public static NotificationsController getInstance(int num) {
-        NotificationsController localInstance = Instance[num];
-        if (localInstance == null) {
-            synchronized (lockObjects[num]) {
-                localInstance = Instance[num];
-                if (localInstance == null) {
-                    Instance[num] = localInstance = new NotificationsController(num);
-                }
-            }
-        }
-        return localInstance;
+        return Instance.computeIfAbsent(num, NotificationsController::new);
     }
 
     public NotificationsController(int instance) {
@@ -1721,7 +1707,7 @@ public class NotificationsController extends BaseController implements Notificat
 
     private int getTotalAllUnreadCount() {
         int count = 0;
-        for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
+        for (int a : SharedConfig.activeAccounts) {
             if (!UserConfig.getInstance(a).isClientActivated()) {
                 continue;
             }

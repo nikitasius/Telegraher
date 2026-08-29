@@ -19,6 +19,8 @@
 #include <memory>
 #include <string>
 #include <cinttypes>
+#include <mutex>
+#include <vector>
 #include "ConnectionsManager.h"
 #include "FileLog.h"
 #include "EventObject.h"
@@ -37,7 +39,7 @@
 #ifdef ANDROID
 #include <jni.h>
 JavaVM *javaVm = nullptr;
-JNIEnv *jniEnv[MAX_ACCOUNT_COUNT];
+std::vector<JNIEnv*> jniEnv(10);
 jclass jclass_ByteBuffer = nullptr;
 jmethodID jclass_ByteBuffer_allocateDirect = nullptr;
 #endif
@@ -135,25 +137,25 @@ ConnectionsManager::~ConnectionsManager() {
     pthread_mutex_destroy(&mutex);
 }
 
+std::vector<ConnectionsManager*> ConnectionsManager::_instances = std::vector<ConnectionsManager*>(10);
 ConnectionsManager& ConnectionsManager::getInstance(int32_t instanceNum) {
-    switch (instanceNum) {
-        case 0:
-            static ConnectionsManager instance0(0);
-            return instance0;
-        case 1:
-            static ConnectionsManager instance1(1);
-            return instance1;
-        case 2:
-            static ConnectionsManager instance2(2);
-            return instance2;
-        case 3:
-            static ConnectionsManager instance3(3);
-            return instance3;
-        case 4:
-        default:
-            static ConnectionsManager instance4(4);
-            return instance4;
+    if (instanceNum < 0) {
+        instanceNum = 0;
     }
+    static std::mutex mutex;
+    std::lock_guard<std::mutex> lock(mutex);
+    if ((size_t) instanceNum >= _instances.size()) {
+        _instances.resize(instanceNum + 10, nullptr);
+    }
+#ifdef ANDROID
+    if ((size_t) instanceNum >= jniEnv.size()) {
+        jniEnv.resize(instanceNum + 10, nullptr);
+    }
+#endif
+    if (_instances[instanceNum] == nullptr) {
+        _instances[instanceNum] = new ConnectionsManager(instanceNum);
+    }
+    return *_instances[instanceNum];
 }
 
 int ConnectionsManager::callEvents(int64_t now) {

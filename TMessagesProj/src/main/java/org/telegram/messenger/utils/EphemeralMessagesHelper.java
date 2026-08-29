@@ -14,6 +14,7 @@ import org.telegram.tgnet.tl.TL_bots;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class EphemeralMessagesHelper extends BaseController {
     public static TLRPC.TL_message convertEphemeralToFakeDefault(TLRPC.EphemeralMessage ephemeralMessage) {
@@ -251,17 +252,9 @@ public class EphemeralMessagesHelper extends BaseController {
         super(currentAccount);
     }
 
-    private static volatile EphemeralMessagesHelper[] Instance = new EphemeralMessagesHelper[UserConfig.MAX_ACCOUNT_COUNT];
+    private static final ConcurrentHashMap<Integer, EphemeralMessagesHelper> Instance = new ConcurrentHashMap();
+
     public static EphemeralMessagesHelper getInstance(final int num) {
-        EphemeralMessagesHelper localInstance = Instance[num];
-        if (localInstance == null) {
-            synchronized (EphemeralMessagesHelper.class) {
-                localInstance = Instance[num];
-                if (localInstance == null) {
-                    Instance[num] = localInstance = new EphemeralMessagesHelper(num);
-                }
-            }
-        }
-        return localInstance;
+        return Instance.computeIfAbsent(num, EphemeralMessagesHelper::new);
     }
 }

@@ -19,10 +19,11 @@ import org.telegram.ui.Cells.UserCell;
 import org.telegram.ui.Components.RecyclerListView;
 
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class UserListPoller {
 
-    private static UserListPoller[] istances = new UserListPoller[UserConfig.MAX_ACCOUNT_COUNT];
+    private static final ConcurrentHashMap<Integer, UserListPoller> istances = new ConcurrentHashMap();
 
     final int currentAccount;
 
@@ -31,10 +32,7 @@ public class UserListPoller {
     }
 
     public static UserListPoller getInstance(int account) {
-        if (istances[account] == null) {
-            istances[account] = new UserListPoller(account);
-        }
-        return istances[account];
+        return istances.computeIfAbsent(account, UserListPoller::new);
     }
 
     LongSparseLongArray userPollLastTime = new LongSparseLongArray();

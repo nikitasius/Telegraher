@@ -3,7 +3,6 @@ package org.telegram.ui;
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.AndroidUtilities.lerp;
 import static org.telegram.messenger.LocaleController.getString;
-import static org.telegram.ui.Components.Premium.LimitReachedBottomSheet.TYPE_ACCOUNTS;
 
 import android.animation.Animator;
 import android.content.Context;
@@ -52,7 +51,6 @@ import org.telegram.ui.Components.FolderDrawable;
 import org.telegram.ui.Components.HintsController;
 import org.telegram.ui.Components.ItemOptions;
 import org.telegram.ui.Components.LayoutHelper;
-import org.telegram.ui.Components.Premium.LimitReachedBottomSheet;
 import org.telegram.ui.Components.blur3.BlurredBackgroundDrawableViewFactory;
 import org.telegram.ui.Components.blur3.BlurredBackgroundWithFadeDrawable;
 import org.telegram.ui.Components.blur3.RenderNodeWithHash;
@@ -588,7 +586,7 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         final ArrayList<Integer> accountNumbers = new ArrayList<>();
 
         accountNumbers.clear();
-        for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
+        for (int a : SharedConfig.activeAccounts) {
             if (UserConfig.getInstance(a).isClientActivated()) {
                 accountNumbers.add(a);
             }
@@ -605,28 +603,13 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         });
 
         ItemOptions o = ItemOptions.makeOptions(this, button);
-        if (UserConfig.getActivatedAccountsCount() < UserConfig.MAX_ACCOUNT_COUNT) {
-            o.add(R.drawable.msg_addbot, getString(R.string.AddAccount), () -> {
-                int freeAccounts = 0;
-                Integer availableAccount = null;
-                for (int a = UserConfig.MAX_ACCOUNT_COUNT - 1; a >= 0; a--) {
-                    if (!UserConfig.getInstance(a).isClientActivated()) {
-                        freeAccounts++;
-                        if (availableAccount == null) {
-                            availableAccount = a;
-                        }
-                    }
-                }
-                if (!UserConfig.hasPremiumOnAccounts()) {
-                    freeAccounts -= (UserConfig.MAX_ACCOUNT_COUNT - UserConfig.MAX_ACCOUNT_DEFAULT_COUNT);
-                }
-                if (freeAccounts > 0 && availableAccount != null) {
-                    presentFragment(new LoginActivity(availableAccount));
-                } else if (!UserConfig.hasPremiumOnAccounts()) {
-                    showDialog(new LimitReachedBottomSheet(this, getContext(), TYPE_ACCOUNTS, currentAccount, null));
-                }
-            });
-        }
+        o.add(R.drawable.msg_addbot, getString(R.string.AddAccount), () -> {
+            int freeAccount = 0;
+            while (SharedConfig.activeAccounts.contains(freeAccount)) {
+                freeAccount++;
+            }
+            presentFragment(new LoginActivity(freeAccount));
+        });
 
         if (BuildVars.DEBUG_PRIVATE_VERSION) {
             o.add(R.drawable.menu_download_round, "Dump Canvas", () -> AndroidUtilities.runOnUIThread(this::dumpCanvas, 1000));

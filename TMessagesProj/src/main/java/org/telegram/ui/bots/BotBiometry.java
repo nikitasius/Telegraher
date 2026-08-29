@@ -25,17 +25,7 @@ import androidx.lifecycle.LifecycleRegistry;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.ApplicationLoader;
-import org.telegram.messenger.FileLog;
-import org.telegram.messenger.LocaleController;
-import org.telegram.messenger.MessagesController;
-import org.telegram.messenger.MessagesStorage;
-import org.telegram.messenger.R;
-import org.telegram.messenger.SRPHelper;
-import org.telegram.messenger.UserConfig;
-import org.telegram.messenger.UserObject;
-import org.telegram.messenger.Utilities;
+import org.telegram.messenger.*;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.Components.Text;
 import org.telegram.ui.LaunchActivity;
@@ -490,7 +480,7 @@ public class BotBiometry {
     public static void clear() {
         Context context = ApplicationLoader.applicationContext;
         if (context == null) return;
-        for (int i = 0; i < UserConfig.MAX_ACCOUNT_COUNT; ++i) {
+        for (int i : SharedConfig.activeAccounts) {
             final SharedPreferences prefs = context.getSharedPreferences(PREF + i, Activity.MODE_PRIVATE);
             prefs.edit().clear().apply();
         }

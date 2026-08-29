@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import me.vkryl.core.reference.ReferenceList;
 import me.vkryl.core.reference.ReferenceMap;
@@ -762,18 +763,9 @@ public class GiftAuctionController extends BaseController {
         super(num);
     }
 
-    private static volatile GiftAuctionController[] Instance = new GiftAuctionController[UserConfig.MAX_ACCOUNT_COUNT];
+    private static final ConcurrentHashMap<Integer, GiftAuctionController> Instance = new ConcurrentHashMap();
 
     public static GiftAuctionController getInstance(int num) {
-        GiftAuctionController localInstance = Instance[num];
-        if (localInstance == null) {
-            synchronized (GiftAuctionController.class) {
-                localInstance = Instance[num];
-                if (localInstance == null) {
-                    Instance[num] = localInstance = new GiftAuctionController(num);
-                }
-            }
-        }
-        return localInstance;
+        return Instance.computeIfAbsent(num, GiftAuctionController::new);
     }
 }

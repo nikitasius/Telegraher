@@ -17,10 +17,12 @@ import org.telegram.messenger.web.R;
 import org.telegram.tgnet.TL_smsjobs;
 import org.telegram.ui.LaunchActivity;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 public class SMSJobsNotification extends Service {
 
-    private static SMSJobsNotification[] instance = new SMSJobsNotification[UserConfig.MAX_ACCOUNT_COUNT];
-    private static Intent[] service = new Intent[UserConfig.MAX_ACCOUNT_COUNT];
+    private static final ConcurrentHashMap<Integer, SMSJobsNotification> instance = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<Integer, Intent> service = new ConcurrentHashMap<>();
 
     public int currentAccount;
     public boolean shown;
@@ -32,7 +34,7 @@ public class SMSJobsNotification extends Service {
     public static boolean check() {
         if (true) return false;
         boolean shown = false;
-        for (int i = 0; i < UserConfig.MAX_ACCOUNT_COUNT; ++i) {
+        for (int i : SharedConfig.activeAccounts) {
             shown = check(i) || shown;
         }
         return shown;
@@ -44,38 +46,39 @@ public class SMSJobsNotification extends Service {
             showNotification = MessagesController.getInstance(currentAccount).smsjobsStickyNotificationEnabled;
         }
         if (showNotification) {
-            showNotification = (
-                SMSJobController.getInstance(currentAccount).getState() == SMSJobController.STATE_JOINED &&
-                SMSJobController.getInstance(currentAccount).currentStatus != null
-            );
+            SMSJobController c = SMSJobController.getInstance(currentAccount);
+            showNotification = c.getState() == SMSJobController.STATE_JOINED && c.currentStatus != null;
         }
 
-        final boolean shownNow = instance[currentAccount] != null && instance[currentAccount].shown;
+        SMSJobsNotification running = instance.get(currentAccount);
+        final boolean shownNow = running != null && running.shown;
         if (shownNow != showNotification) {
             if (showNotification) {
-                service[currentAccount] = new Intent(ApplicationLoader.applicationContext, SMSJobsNotification.class);
-                service[currentAccount].putExtra("account", currentAccount);
+                Intent intent = new Intent(ApplicationLoader.applicationContext, SMSJobsNotification.class);
+                intent.putExtra("account", currentAccount);
+                service.put(currentAccount, intent);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    ApplicationLoader.applicationContext.startForegroundService(service[currentAccount]);
+                    ApplicationLoader.applicationContext.startForegroundService(intent);
                 } else {
-                    ApplicationLoader.applicationContext.startService(service[currentAccount]);
+                    ApplicationLoader.applicationContext.startService(intent);
                 }
             } else {
-                if (service[currentAccount] != null) {
-                    ApplicationLoader.applicationContext.stopService(service[currentAccount]);
-                    service[currentAccount] = null;
+                Intent intent = service.remove(currentAccount);
+                if (intent != null) {
+                    ApplicationLoader.applicationContext.stopService(intent);
                 }
             }
         } else if (shownNow) {
-            instance[currentAccount].update();
+            running.update();
         }
-
         return showNotification;
     }
 
     @Override
     public void onDestroy() {
         shown = false;
+        instance.remove(currentAccount, this);
+        service.remove(currentAccount);
         super.onDestroy();
         try {
             stopForeground(true);
@@ -97,10 +100,10 @@ public class SMSJobsNotification extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         currentAccount = intent.getIntExtra("account", UserConfig.selectedAccount);
 
-        if (instance[currentAccount] != this && instance[currentAccount] != null) {
-            instance[currentAccount].stopSelf();
+        SMSJobsNotification prev = instance.put(currentAccount, this);
+        if (prev != null && prev != this) {
+            prev.stopSelf();
         }
-        instance[currentAccount] = this;
         shown = true;
 
         if (builder == null) {

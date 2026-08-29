@@ -34,6 +34,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DownloadController extends BaseController implements NotificationCenter.NotificationCenterDelegate {
 
@@ -239,20 +240,11 @@ public class DownloadController extends BaseController implements NotificationCe
     public int currentMobilePreset;
     public int currentWifiPreset;
     public int currentRoamingPreset;
-    
-    private static volatile DownloadController[] Instance = new DownloadController[UserConfig.MAX_ACCOUNT_COUNT];
+
+    private static final ConcurrentHashMap<Integer, DownloadController> Instance = new ConcurrentHashMap<>();
 
     public static DownloadController getInstance(int num) {
-        DownloadController localInstance = Instance[num];
-        if (localInstance == null) {
-            synchronized (DownloadController.class) {
-                localInstance = Instance[num];
-                if (localInstance == null) {
-                    Instance[num] = localInstance = new DownloadController(num);
-                }
-            }
-        }
-        return localInstance;
+        return Instance.computeIfAbsent(num, DownloadController::new);
     }
 
     public DownloadController(int instance) {

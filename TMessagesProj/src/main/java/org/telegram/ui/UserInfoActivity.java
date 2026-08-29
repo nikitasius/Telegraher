@@ -2,12 +2,9 @@ package org.telegram.ui;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.AndroidUtilities.replaceArrows;
-import static org.telegram.messenger.AndroidUtilities.replaceSingleLink;
-import static org.telegram.messenger.AndroidUtilities.replaceSingleTag;
 import static org.telegram.messenger.LocaleController.formatString;
 import static org.telegram.messenger.LocaleController.getString;
 import static org.telegram.ui.Cells.TextCell.applyNewSpan;
-import static org.telegram.ui.Components.Premium.LimitReachedBottomSheet.TYPE_ACCOUNTS;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -27,18 +24,7 @@ import android.widget.TextView;
 import androidx.annotation.Keep;
 
 import org.telegram.PhoneFormat.PhoneFormat;
-import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.BotWebViewVibrationEffect;
-import org.telegram.messenger.BuildVars;
-import org.telegram.messenger.ChatObject;
-import org.telegram.messenger.ContactsController;
-import org.telegram.messenger.LocaleController;
-import org.telegram.messenger.MessagesController;
-import org.telegram.messenger.NotificationCenter;
-import org.telegram.messenger.R;
-import org.telegram.messenger.UserConfig;
-import org.telegram.messenger.UserObject;
-import org.telegram.messenger.Utilities;
+import org.telegram.messenger.*;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
@@ -301,7 +287,7 @@ public class UserInfoActivity extends UniversalFragment implements NotificationC
     private final ArrayList<Integer> accountNumbers = new ArrayList<>();
     private void updateAccounts() {
         accountNumbers.clear();
-        for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
+        for (int a : SharedConfig.activeAccounts) {
             if (UserConfig.getInstance(a).isClientActivated() && currentAccount != a) {
                 accountNumbers.add(a);
             }
@@ -419,31 +405,14 @@ public class UserInfoActivity extends UniversalFragment implements NotificationC
             items.add(SettingsActivity.SettingCell.Factory.of(BUTTON_AI, IconBackgroundColors.PURPLE.top, IconBackgroundColors.PURPLE.bottom, R.drawable.premium_ai_editor, applyNewSpan(getString(R.string.EditProfileChatAutomation))));
         }
         items.add(UItem.asShadow(-3, getString(R.string.EditProfileChatAutomationInfo)));
-        final boolean hasAddAccount = UserConfig.getActivatedAccountsCount() < UserConfig.MAX_ACCOUNT_COUNT;
-        if (hasAddAccount) {
-            addAccountRow = items.size();
-            items.add(InfoCell.Factory.of(BUTTON_ADD_ACCOUNT, R.drawable.outline_add_account, getString(R.string.AddAccount), null, 0).accent());
-        }
+
+        addAccountRow = items.size();
+        items.add(InfoCell.Factory.of(BUTTON_ADD_ACCOUNT, R.drawable.outline_add_account, getString(R.string.AddAccount), null, 0).accent());
         if (!accountNumbers.isEmpty()) {
-            if (!hasAddAccount) {
-                items.add(UItem.asHeader(getString(R.string.SettingsAccounts)));
-            }
             for (int i = 0; i < accountNumbers.size(); ++i) {
                 items.add(SettingsActivity.AccountCell.Factory.of(i, accountNumbers.get(i)));
             }
-            if (!UserConfig.hasPremiumOnAccounts()) {
-                final int moreAccounts = Math.max(0, UserConfig.getMaxAccountCount() - UserConfig.getActivatedAccountsCount());
-                items.add(UItem.asShadow(
-                    TextUtils.concat(
-                        moreAccounts > 0 ? LocaleController.formatPluralStringComma("AddAccountInfo1", moreAccounts) + " " : "",
-                        replaceSingleTag(LocaleController.formatPluralStringComma("AddAccountInfo2", UserConfig.getMaxAccountCount()), () -> {
-                            presentFragment(new PremiumPreviewFragment("add_account"));
-                        })
-                    )
-                ));
-            } else {
-                items.add(UItem.asShadow(null));
-            }
+            items.add(UItem.asShadow(null));
         }
         logoutRow = items.size();
         items.add(InfoCell.Factory.of(BUTTON_LOGOUT, R.drawable.msg_leave, getString(R.string.LogOut), null, 0).red());
@@ -471,24 +440,14 @@ public class UserInfoActivity extends UniversalFragment implements NotificationC
     @Override
     protected void onClick(UItem item, View view, int position, float x, float y) {
         if (item.id == BUTTON_ADD_ACCOUNT) {
-            int freeAccounts = 0;
-            Integer availableAccount = null;
-            for (int a = UserConfig.MAX_ACCOUNT_COUNT - 1; a >= 0; a--) {
-                if (!UserConfig.getInstance(a).isClientActivated()) {
-                    freeAccounts++;
-                    if (availableAccount == null) {
-                        availableAccount = a;
-                    }
+            int freeAccount = -1;
+            for (int a = 0; ; a++) {
+                if (!SharedConfig.activeAccounts.contains(a)) {
+                    freeAccount = a;
+                    break;
                 }
             }
-            if (!UserConfig.hasPremiumOnAccounts()) {
-                freeAccounts -= (UserConfig.MAX_ACCOUNT_COUNT - UserConfig.MAX_ACCOUNT_DEFAULT_COUNT);
-            }
-            if (freeAccounts > 0 && availableAccount != null) {
-                presentFragment(new LoginActivity(availableAccount));
-            } else if (!UserConfig.hasPremiumOnAccounts()) {
-                showDialog(new LimitReachedBottomSheet(this, getContext(), TYPE_ACCOUNTS, currentAccount, null));
-            }
+            presentFragment(new LoginActivity(freeAccount));
         } else if (item.instanceOf(SettingsActivity.AccountCell.Factory.class)) {
             final int account = item.intValue;
             if (LaunchActivity.instance != null) {

@@ -24,16 +24,7 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 
-import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.ApplicationLoader;
-import org.telegram.messenger.BuildVars;
-import org.telegram.messenger.ContactsController;
-import org.telegram.messenger.FileLog;
-import org.telegram.messenger.LocaleController;
-import org.telegram.messenger.MessagesController;
-import org.telegram.messenger.R;
-import org.telegram.messenger.UserConfig;
-import org.telegram.messenger.XiaomiUtilities;
+import org.telegram.messenger.*;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.tl.TL_phone;
@@ -579,7 +570,7 @@ public class VoIPPreNotificationService { // } extends Service implements AudioM
         nm.cancel(VoIPService.ID_INCOMING_CALL_PRENOTIFICATION);
         stopRinging();
         if (!answered) {
-            for (int i = 0; i < UserConfig.MAX_ACCOUNT_COUNT; ++i) {
+            for (int i : SharedConfig.activeAccounts) {
                 MessagesController.getInstance(i).ignoreSetOnline = false;
             }
             AndroidUtilities.runOnUIThread(() -> {

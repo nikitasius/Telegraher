@@ -140,6 +140,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SelectAnimatedEmojiDialog extends FrameLayout implements NotificationCenter.NotificationCenterDelegate {
 
@@ -943,7 +944,7 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
         emojiSearchGridView.setVisibility(View.GONE);
         gridViewContainer.addView(emojiSearchGridView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.FILL, 0, 0, 0, 0));
         contentView.addView(gridViewContainer, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.TOP, 0, type == TYPE_EXPANDABLE_REACTIONS || type == TYPE_STICKER_SET_EMOJI || type == TYPE_EFFECTS ? 0 : 36 + (1 / AndroidUtilities.density), 0, 0));
-        
+
         scrollHelper = new RecyclerAnimationScrollHelper(emojiGridView, layoutManager);
         scrollHelper.setAnimationCallback(new RecyclerAnimationScrollHelper.AnimationCallback() {
             @Override
@@ -3637,13 +3638,13 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
         }
     }
 
-    private static boolean[] preloaded = new boolean[UserConfig.MAX_ACCOUNT_COUNT];
+    private static final ConcurrentHashMap<Integer, Boolean> preloaded = new ConcurrentHashMap<>();
 
     public static void preload(int account) {
-        if (preloaded[account] || MediaDataController.getInstance(account) == null) {
+        if (Boolean.TRUE.equals(preloaded.get(account)) || MediaDataController.getInstance(account) == null) {
             return;
         }
-        preloaded[account] = true;
+        preloaded.put(account, true);
         MediaDataController.getInstance(account).checkStickers(MediaDataController.TYPE_EMOJIPACKS);
         MediaDataController.getInstance(account).fetchEmojiStatuses(0, true);
         MediaDataController.getInstance(account).checkReactions();

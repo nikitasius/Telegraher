@@ -449,12 +449,14 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
     public LoginActivity() {
         super();
+        SharedConfig.loginingAccount = currentAccount;
     }
 
     public LoginActivity(int account) {
         super();
         currentAccount = account;
         newAccount = true;
+        SharedConfig.loginingAccount = account;
     }
 
     public LoginActivity changeEmail(Runnable onFinishCallback) {
@@ -493,6 +495,9 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
     @Override
     public void onFragmentDestroy() {
+        if (SharedConfig.loginingAccount == currentAccount) {
+            SharedConfig.loginingAccount = -1;
+        }
         super.onFragmentDestroy();
         for (int a = 0; a < views.length; a++) {
             if (views[a] != null) {
@@ -1640,6 +1645,9 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         UserConfig.getInstance(currentAccount).syncContacts = syncContacts;
         UserConfig.getInstance(currentAccount).setCurrentUser(res.user);
         UserConfig.getInstance(currentAccount).saveConfig(true);
+        SharedConfig.activeAccounts.add(currentAccount);
+        SharedConfig.saveAccounts();
+        SharedConfig.loginingAccount = -1;
         MessagesStorage.getInstance(currentAccount).cleanup(true);
         ArrayList<TLRPC.User> users = new ArrayList<>();
         users.add(res.user);
@@ -2993,7 +3001,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             String phone = PhoneFormat.stripExceptNumbers("" + codeField.getText() + phoneField.getText());
             if (activityMode == MODE_LOGIN) {
                 if (getParentActivity() instanceof LaunchActivity) {
-                    for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
+                    for (int a : SharedConfig.activeAccounts) {
                         UserConfig userConfig = UserConfig.getInstance(a);
                         if (!userConfig.isClientActivated()) {
                             continue;
@@ -3369,7 +3377,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     return;
                 }
                 if (userId != 0 && getParentActivity() instanceof LaunchActivity) {
-                    for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
+                    for (int a : SharedConfig.activeAccounts) {
                         UserConfig userConfig = UserConfig.getInstance(a);
                         if (!userConfig.isClientActivated()) {
                             continue;

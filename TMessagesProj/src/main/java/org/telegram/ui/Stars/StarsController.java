@@ -13,6 +13,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.LongSparseArray;
+import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.View;
 
@@ -23,28 +24,7 @@ import org.json.JSONObject;
 import org.telegram.SQLite.SQLiteCursor;
 import org.telegram.SQLite.SQLiteDatabase;
 import org.telegram.SQLite.SQLitePreparedStatement;
-import org.telegram.messenger.AccountInstance;
-import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.AppGlobalConfig;
-import org.telegram.messenger.ApplicationLoader;
-import org.telegram.messenger.BirthdayController;
-import org.telegram.messenger.BuildVars;
-import org.telegram.messenger.ChatObject;
-import org.telegram.messenger.ContactsController;
-import org.telegram.messenger.DialogObject;
-import org.telegram.messenger.FileLog;
-import org.telegram.messenger.FileRefController;
-import org.telegram.messenger.LocaleController;
-import org.telegram.messenger.MessageObject;
-import org.telegram.messenger.MessagesController;
-import org.telegram.messenger.MessagesStorage;
-import org.telegram.messenger.NotificationCenter;
-import org.telegram.messenger.R;
-import org.telegram.messenger.SendMessagesHelper;
-import org.telegram.messenger.TopicsController;
-import org.telegram.messenger.UserConfig;
-import org.telegram.messenger.UserObject;
-import org.telegram.messenger.Utilities;
+import org.telegram.messenger.*;
 import org.telegram.messenger.utils.tlutils.AmountUtils;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.NativeByteBuffer;
@@ -90,15 +70,13 @@ public class StarsController {
     public static final int PERIOD_MINUTE = 60;
     public static final int PERIOD_5MINUTES = 300;
 
-    private static volatile StarsController[][] Instance = new StarsController[2][UserConfig.MAX_ACCOUNT_COUNT];
-    private static final Object[][] lockObjects = new Object[2][UserConfig.MAX_ACCOUNT_COUNT];
+    private static final ConcurrentHashMap<Integer, StarsController>[] Instance = new ConcurrentHashMap[2];
+
     static {
-        for (int a = 0; a < 2; ++a) {
-            for (int i = 0; i < UserConfig.MAX_ACCOUNT_COUNT; i++) {
-                lockObjects[a][i] = new Object();
-            }
-        }
+        Instance[0] = new ConcurrentHashMap<>();
+        Instance[1] = new ConcurrentHashMap<>();
     }
+
 
     public static StarsController getTonInstance(int num) {
         return getInstance(num, true);
@@ -113,16 +91,7 @@ public class StarsController {
     }
 
     public static StarsController getInstance(int num, boolean ton) {
-        StarsController localInstance = Instance[ton ? 1 : 0][num];
-        if (localInstance == null) {
-            synchronized (lockObjects[ton ? 1 : 0][num]) {
-                localInstance = Instance[ton ? 1 : 0][num];
-                if (localInstance == null) {
-                    Instance[ton ? 1 : 0][num] = localInstance = new StarsController(num, ton);
-                }
-            }
-        }
-        return localInstance;
+        return Instance[ton ? 1 : 0].computeIfAbsent(num, n -> new StarsController(n, ton));
     }
 
     public final int currentAccount;

@@ -15,28 +15,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class BirthdayController {
 
-    private static volatile BirthdayController[] Instance = new BirthdayController[UserConfig.MAX_ACCOUNT_COUNT];
-    private static final Object[] lockObjects = new Object[UserConfig.MAX_ACCOUNT_COUNT];
-    static {
-        for (int i = 0; i < UserConfig.MAX_ACCOUNT_COUNT; i++) {
-            lockObjects[i] = new Object();
-        }
-    }
+    private static final ConcurrentHashMap<Integer, BirthdayController> Instance = new ConcurrentHashMap<>();
 
     public static BirthdayController getInstance(int num) {
-        BirthdayController localInstance = Instance[num];
-        if (localInstance == null) {
-            synchronized (lockObjects[num]) {
-                localInstance = Instance[num];
-                if (localInstance == null) {
-                    Instance[num] = localInstance = new BirthdayController(num);
-                }
-            }
-        }
-        return localInstance;
+        return Instance.computeIfAbsent(num, BirthdayController::new);
     }
 
     private final int currentAccount;

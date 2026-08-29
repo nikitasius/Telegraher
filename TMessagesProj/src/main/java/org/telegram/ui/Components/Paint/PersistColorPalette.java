@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PersistColorPalette {
 
@@ -49,7 +50,7 @@ public class PersistColorPalette {
     public final static int COLORS_COUNT = MODIFIABLE_COLORS_COUNT + PRESET_COLORS_COUNT;
 
     private final static int BRUSH_TEXT = -1;
-    private static PersistColorPalette[] instances = new PersistColorPalette[UserConfig.MAX_ACCOUNT_COUNT];
+    private static final ConcurrentHashMap<Integer, PersistColorPalette> instances = new ConcurrentHashMap();
 
     private final SharedPreferences mConfig;
     private final List<Integer> colors = new ArrayList<>(COLORS_COUNT);
@@ -78,10 +79,7 @@ public class PersistColorPalette {
     }
 
     public static PersistColorPalette getInstance(int currentAccount) {
-        if (instances[currentAccount] == null) {
-            instances[currentAccount] = new PersistColorPalette(currentAccount);
-        }
-        return instances[currentAccount];
+        return instances.computeIfAbsent(currentAccount, PersistColorPalette::new);
     }
 
     public int getCurrentTextType() {

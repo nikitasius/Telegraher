@@ -25,16 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.common.collect.Sets;
 
-import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.ApplicationLoader;
-import org.telegram.messenger.FileLog;
-import org.telegram.messenger.LocaleController;
-import org.telegram.messenger.MessagesController;
-import org.telegram.messenger.NotificationCenter;
-import org.telegram.messenger.R;
-import org.telegram.messenger.TranslateController;
-import org.telegram.messenger.UserConfig;
-import org.telegram.messenger.Utilities;
+import org.telegram.messenger.*;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenu;
 import org.telegram.ui.ActionBar.ActionBarMenuItem;
@@ -552,10 +543,9 @@ public class RestrictedLanguagesSelectActivity extends BaseFragment implements N
                 edit.putInt("translate_button_restricted_languages_version", LAST_DO_NOT_TRANSLATE_VERSION).apply();
                 invalidateRestrictedLanguages();
 
-                for (int i = 0; i < UserConfig.MAX_ACCOUNT_COUNT; ++i) {
-                    final int account = i;
+                for (int i : SharedConfig.activeAccounts) {
                     try {
-                        MessagesController.getInstance(account).getTranslateController().checkRestrictedLanguagesUpdate();
+                        MessagesController.getInstance(i).getTranslateController().checkRestrictedLanguagesUpdate();
                     } catch (Exception ignore) {}
                 }
             });

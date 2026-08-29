@@ -228,19 +228,10 @@ public class FileLoader extends BaseController {
     private int lastReferenceId;
     private final ConcurrentHashMap<Integer, Object> parentObjectReferences = new ConcurrentHashMap<>();
 
-    private static final FileLoader[] Instance = new FileLoader[UserConfig.MAX_ACCOUNT_COUNT];
+    private static final ConcurrentHashMap<Integer, FileLoader> Instance = new ConcurrentHashMap();
 
     public static FileLoader getInstance(int num) {
-        FileLoader localInstance = Instance[num];
-        if (localInstance == null) {
-            synchronized (FileLoader.class) {
-                localInstance = Instance[num];
-                if (localInstance == null) {
-                    Instance[num] = localInstance = new FileLoader(num);
-                }
-            }
-        }
-        return localInstance;
+        return Instance.computeIfAbsent(num, FileLoader::new);
     }
 
     public FileLoader(int instance) {

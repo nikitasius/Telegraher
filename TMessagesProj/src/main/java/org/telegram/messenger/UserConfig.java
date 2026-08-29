@@ -20,6 +20,7 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.tl.TL_account;
 
 import java.util.Arrays;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class UserConfig extends BaseController {
 
@@ -84,24 +85,16 @@ public class UserConfig extends BaseController {
     LongSparseArray<SaveToGallerySettingsHelper.DialogException> groupsSaveGalleryExceptions;
 
 
-    private static volatile UserConfig[] Instance = new UserConfig[UserConfig.MAX_ACCOUNT_COUNT];
+    private static final ConcurrentHashMap<Integer, UserConfig> Instance = new ConcurrentHashMap();
+
     public static UserConfig getInstance(int num) {
-        UserConfig localInstance = Instance[num];
-        if (localInstance == null) {
-            synchronized (UserConfig.class) {
-                localInstance = Instance[num];
-                if (localInstance == null) {
-                    Instance[num] = localInstance = new UserConfig(num);
-                }
-            }
-        }
-        return localInstance;
+        return Instance.computeIfAbsent(num, UserConfig::new);
     }
 
     public static int getActivatedAccountsCount() {
         int count = 0;
-        for (int a = 0; a < MAX_ACCOUNT_COUNT; a++) {
-            if (AccountInstance.getInstance(a).getUserConfig().isClientActivated()) {
+        for (int a : SharedConfig.activeAccounts) {
+            if (getInstance(a).isClientActivated()) {
                 count++;
             }
         }
@@ -113,8 +106,9 @@ public class UserConfig extends BaseController {
     }
 
     public static boolean hasPremiumOnAccounts() {
-        for (int a = 0; a < MAX_ACCOUNT_COUNT; a++) {
-            if (AccountInstance.getInstance(a).getUserConfig().isClientActivated() && AccountInstance.getInstance(a).getUserConfig().getUserConfig().isPremium()) {
+        for (int a : SharedConfig.activeAccounts) {
+            UserConfig uc = getInstance(a);
+            if (uc.isClientActivated() && uc.isPremium()) {
                 return true;
             }
         }
@@ -231,7 +225,7 @@ public class UserConfig extends BaseController {
     }
 
     public static boolean isValidAccount(int num) {
-         return num >= 0 && num < UserConfig.MAX_ACCOUNT_COUNT && getInstance(num).isClientActivated();
+        return SharedConfig.activeAccounts.contains(num) && getInstance(num).isClientActivated();
     }
 
     public boolean isClientActivated() {
@@ -496,8 +490,8 @@ public class UserConfig extends BaseController {
         lastHintsSyncTime = (int) (System.currentTimeMillis() / 1000) - 25 * 60 * 60;
         resetSavedPassword();
         boolean hasActivated = false;
-        for (int a = 0; a < MAX_ACCOUNT_COUNT; a++) {
-            if (AccountInstance.getInstance(a).getUserConfig().isClientActivated()) {
+        for (int a : SharedConfig.activeAccounts) {
+            if (a != currentAccount && getInstance(a).isClientActivated()) {
                 hasActivated = true;
                 break;
             }
@@ -619,10 +613,15 @@ public class UserConfig extends BaseController {
     }
 
     public static int getProductionAccount() {
-        for (int i = -1; i < MAX_ACCOUNT_COUNT; ++i) {
-            final int account = i < 0 ? selectedAccount : i;
-            if (getInstance(account).isClientActivated() && !ConnectionsManager.getInstance(account).isTestBackend())
-                return account;
+        if (getInstance(selectedAccount).isClientActivated()
+                && !ConnectionsManager.getInstance(selectedAccount).isTestBackend()) {
+            return selectedAccount;
+        }
+        for (int a : SharedConfig.activeAccounts) {
+            if (getInstance(a).isClientActivated()
+                    && !ConnectionsManager.getInstance(a).isTestBackend()) {
+                return a;
+            }
         }
         return selectedAccount;
     }

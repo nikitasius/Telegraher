@@ -19,15 +19,7 @@ import androidx.annotation.Nullable;
 
 import com.google.android.gms.wearable.Wearable;
 
-import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.ApplicationLoader;
-import org.telegram.messenger.Emoji;
-import org.telegram.messenger.FileLog;
-import org.telegram.messenger.MediaDataController;
-import org.telegram.messenger.NotificationCenter;
-import org.telegram.messenger.R;
-import org.telegram.messenger.MessagesController;
-import org.telegram.messenger.UserConfig;
+import org.telegram.messenger.*;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
@@ -201,7 +193,7 @@ public class WearAuthSheet {
         int nonTestAccount = UserConfig.selectedAccount;
         final ArrayList<Integer> accountNumbers = new ArrayList<>();
         accountNumbers.clear();
-        for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
+        for (int a : SharedConfig.activeAccounts) {
             if (UserConfig.getInstance(a).isClientActivated()) {
                 if (!ConnectionsManager.getInstance(a).isTestBackend()) {
                     nonTestAccount = a;

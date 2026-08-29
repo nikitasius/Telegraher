@@ -1488,7 +1488,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
         fileBuffer = ByteBuffer.allocateDirect(1920);
 
         AndroidUtilities.runOnUIThread(() -> {
-            for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
+            for (int a : SharedConfig.activeAccounts) {
                 NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.fileLoaded);
                 NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.httpFileDidLoad);
                 NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.didReceiveNewMessages);
@@ -1673,7 +1673,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
         cleanupPlayer(true, true);
         audioInfo = null;
         playMusicAgain = false;
-        for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
+        for (int a : SharedConfig.activeAccounts) {
             DownloadController.getInstance(a).cleanup();
         }
         videoConvertQueue.clear();
@@ -3029,7 +3029,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
         playMusicAgain = true;
         playMessage(currentPlayList.get(currentPlaylistNum));
     }
-    
+
     private boolean traversePlaylist(ArrayList<MessageObject> playlist, int direction) {
         boolean last = false;
         final int wasCurrentPlaylistNum = currentPlaylistNum;
@@ -4274,7 +4274,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
     private boolean canStartMusicPlayerService() {
         return playingMessageObject != null && (playingMessageObject.isMusic() || playingMessageObject.isVoice() || playingMessageObject.isRoundVideo()) && !playingMessageObject.isVoiceOnce() && !playingMessageObject.isRoundOnce();
     }
-    
+
     public void updateSilent(boolean value) {
         isSilent = value;
         if (videoPlayer != null) {

@@ -14,28 +14,13 @@ import org.telegram.ui.ChatActivity;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class HashtagSearchController {
-    private static volatile HashtagSearchController[] Instance = new HashtagSearchController[UserConfig.MAX_ACCOUNT_COUNT];
-    private static final Object[] lockObjects = new Object[UserConfig.MAX_ACCOUNT_COUNT];
-
-    static {
-        for (int i = 0; i < UserConfig.MAX_ACCOUNT_COUNT; i++) {
-            lockObjects[i] = new Object();
-        }
-    }
+    private static final ConcurrentHashMap<Integer, HashtagSearchController> Instance = new ConcurrentHashMap<>();
 
     public static HashtagSearchController getInstance(int num) {
-        HashtagSearchController localInstance = Instance[num];
-        if (localInstance == null) {
-            synchronized (lockObjects[num]) {
-                localInstance = Instance[num];
-                if (localInstance == null) {
-                    Instance[num] = localInstance = new HashtagSearchController(num);
-                }
-            }
-        }
-        return localInstance;
+        return Instance.computeIfAbsent(num, HashtagSearchController::new);
     }
 
     public final int currentAccount;

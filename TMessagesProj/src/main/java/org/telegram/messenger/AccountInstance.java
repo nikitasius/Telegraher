@@ -5,21 +5,15 @@ import android.content.SharedPreferences;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.ui.Components.Paint.PersistColorPalette;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 public class AccountInstance {
 
     private int currentAccount;
-    private static volatile AccountInstance[] Instance = new AccountInstance[UserConfig.MAX_ACCOUNT_COUNT];
+    private static final ConcurrentHashMap<Integer, AccountInstance> Instance = new ConcurrentHashMap<>();
+
     public static AccountInstance getInstance(int num) {
-        AccountInstance localInstance = Instance[num];
-        if (localInstance == null) {
-            synchronized (AccountInstance.class) {
-                localInstance = Instance[num];
-                if (localInstance == null) {
-                    Instance[num] = localInstance = new AccountInstance(num);
-                }
-            }
-        }
-        return localInstance;
+        return Instance.computeIfAbsent(num, AccountInstance::new);
     }
 
     public AccountInstance(int instance) {

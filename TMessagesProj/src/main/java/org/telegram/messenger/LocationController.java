@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressLint("MissingPermission")
 public class LocationController extends BaseController implements NotificationCenter.NotificationCenterDelegate, ILocationServiceProvider.IAPIConnectionCallbacks, ILocationServiceProvider.IAPIOnConnectionFailedListener {
@@ -77,19 +78,10 @@ public class LocationController extends BaseController implements NotificationCe
 
     private ILocationServiceProvider.ILocationRequest locationRequest;
 
-    private static volatile LocationController[] Instance = new LocationController[UserConfig.MAX_ACCOUNT_COUNT];
+    private static final ConcurrentHashMap<Integer, LocationController> Instance = new ConcurrentHashMap();
 
     public static LocationController getInstance(int num) {
-        LocationController localInstance = Instance[num];
-        if (localInstance == null) {
-            synchronized (LocationController.class) {
-                localInstance = Instance[num];
-                if (localInstance == null) {
-                    Instance[num] = localInstance = new LocationController(num);
-                }
-            }
-        }
-        return localInstance;
+        return Instance.computeIfAbsent(num, LocationController::new);
     }
 
     public static class SharingLocationInfo {
@@ -940,7 +932,7 @@ public class LocationController extends BaseController implements NotificationCe
 
     public static int getLocationsCount() {
         int count = 0;
-        for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
+        for (int a : SharedConfig.activeAccounts) {
             count += LocationController.getInstance(a).sharingLocationsUI.size();
         }
         return count;

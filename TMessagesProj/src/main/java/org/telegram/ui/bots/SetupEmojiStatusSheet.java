@@ -20,21 +20,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.ApplicationLoader;
-import org.telegram.messenger.DocumentObject;
-import org.telegram.messenger.FileLoader;
-import org.telegram.messenger.ImageLocation;
-import org.telegram.messenger.ImageReceiver;
-import org.telegram.messenger.LocaleController;
-import org.telegram.messenger.MediaDataController;
-import org.telegram.messenger.MessagesController;
-import org.telegram.messenger.NotificationCenter;
-import org.telegram.messenger.R;
-import org.telegram.messenger.SvgHelper;
-import org.telegram.messenger.UserConfig;
-import org.telegram.messenger.UserObject;
-import org.telegram.messenger.Utilities;
+import org.telegram.messenger.*;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.tl.TL_account;
@@ -499,9 +485,8 @@ public class SetupEmojiStatusSheet {
     public static void clear() {
         Context context = ApplicationLoader.applicationContext;
         if (context == null) return;
-        for (int i = 0; i < UserConfig.MAX_ACCOUNT_COUNT; ++i) {
-            final SharedPreferences prefs = context.getSharedPreferences(PREF + i, Activity.MODE_PRIVATE);
-            prefs.edit().clear().apply();
+        for (int i : SharedConfig.activeAccounts) {
+            context.getSharedPreferences(PREF + i, Activity.MODE_PRIVATE).edit().clear().apply();
         }
     }
 

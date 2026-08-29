@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 public class GroupCallMessagesController extends BaseController {
@@ -291,19 +292,10 @@ public class GroupCallMessagesController extends BaseController {
 
     /* * */
 
-    private static volatile GroupCallMessagesController[] Instance = new GroupCallMessagesController[UserConfig.MAX_ACCOUNT_COUNT];
+    private static final ConcurrentHashMap<Integer, GroupCallMessagesController> Instance = new ConcurrentHashMap();
 
     public static GroupCallMessagesController getInstance(int num) {
-        GroupCallMessagesController localInstance = Instance[num];
-        if (localInstance == null) {
-            synchronized (GroupCallMessagesController.class) {
-                localInstance = Instance[num];
-                if (localInstance == null) {
-                    Instance[num] = localInstance = new GroupCallMessagesController(num);
-                }
-            }
-        }
-        return localInstance;
+        return Instance.computeIfAbsent(num, GroupCallMessagesController::new);
     }
 
     private GroupCallMessagesController(int accountId) {

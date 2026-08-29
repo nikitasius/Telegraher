@@ -16,6 +16,7 @@
 #include <map>
 #include <atomic>
 #include <unordered_set>
+#include <vector>
 #include "Defines.h"
 
 #ifdef ANDROID
@@ -90,6 +91,7 @@ public:
 
 private:
     static void *ThreadProc(void *data);
+    static std::vector<ConnectionsManager*> _instances;
 
     void initDatacenters();
     void loadConfig();
@@ -270,7 +272,7 @@ private:
 
 #ifdef ANDROID
 extern JavaVM *javaVm;
-extern JNIEnv *jniEnv[MAX_ACCOUNT_COUNT];
+extern std::vector<JNIEnv*> jniEnv;
 extern jclass jclass_ByteBuffer;
 extern jmethodID jclass_ByteBuffer_allocateDirect;
 #endif

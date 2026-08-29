@@ -36,15 +36,7 @@ import androidx.annotation.Keep;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.ApplicationLoader;
-import org.telegram.messenger.FileLoader;
-import org.telegram.messenger.FileLog;
-import org.telegram.messenger.LocaleController;
-import org.telegram.messenger.NotificationCenter;
-import org.telegram.messenger.R;
-import org.telegram.messenger.UserConfig;
-import org.telegram.messenger.Utilities;
+import org.telegram.messenger.*;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.tl.TL_account;
@@ -811,7 +803,7 @@ public class ThemesHorizontalListCell extends RecyclerListView implements Notifi
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
+        for (int a : SharedConfig.activeAccounts) {
             NotificationCenter.getInstance(a).addObserver(this, NotificationCenter.fileLoaded);
             NotificationCenter.getInstance(a).addObserver(this, NotificationCenter.fileLoadFailed);
         }
@@ -820,7 +812,7 @@ public class ThemesHorizontalListCell extends RecyclerListView implements Notifi
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
+        for (int a : SharedConfig.activeAccounts) {
             NotificationCenter.getInstance(a).removeObserver(this, NotificationCenter.fileLoaded);
             NotificationCenter.getInstance(a).removeObserver(this, NotificationCenter.fileLoadFailed);
         }

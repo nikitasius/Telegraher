@@ -11,6 +11,8 @@ import org.telegram.ui.bots.BotWebViewAttachedSheet;
 import org.telegram.ui.bots.BotWebViewSheet;
 import org.telegram.ui.bots.WebViewRequestProps;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 public class BotGuardHelper extends BaseController {
     private BotGuardHelper(int num) {
         super(num);
@@ -101,18 +103,9 @@ public class BotGuardHelper extends BaseController {
     }
 
 
+    private static final ConcurrentHashMap<Integer, BotGuardHelper> Instance = new ConcurrentHashMap<>();
 
-    private static volatile BotGuardHelper[] Instance = new BotGuardHelper[UserConfig.MAX_ACCOUNT_COUNT];
     public static BotGuardHelper getInstance(final int num) {
-        BotGuardHelper localInstance = Instance[num];
-        if (localInstance == null) {
-            synchronized (BotForumHelper.class) {
-                localInstance = Instance[num];
-                if (localInstance == null) {
-                    Instance[num] = localInstance = new BotGuardHelper(num);
-                }
-            }
-        }
-        return localInstance;
+        return Instance.computeIfAbsent(num, BotGuardHelper::new);
     }
 }

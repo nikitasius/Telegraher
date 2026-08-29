@@ -53,28 +53,14 @@ import org.telegram.ui.LaunchActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class FactCheckController {
 
-    private static volatile FactCheckController[] Instance = new FactCheckController[UserConfig.MAX_ACCOUNT_COUNT];
-    private static final Object[] lockObjects = new Object[UserConfig.MAX_ACCOUNT_COUNT];
-    static {
-        for (int i = 0; i < UserConfig.MAX_ACCOUNT_COUNT; i++) {
-            lockObjects[i] = new Object();
-        }
-    }
+    private static final ConcurrentHashMap<Integer, FactCheckController> Instance = new ConcurrentHashMap<>();
 
     public static FactCheckController getInstance(int num) {
-        FactCheckController localInstance = Instance[num];
-        if (localInstance == null) {
-            synchronized (lockObjects[num]) {
-                localInstance = Instance[num];
-                if (localInstance == null) {
-                    Instance[num] = localInstance = new FactCheckController(num);
-                }
-            }
-        }
-        return localInstance;
+        return Instance.computeIfAbsent(num, FactCheckController::new);
     }
 
     public final int currentAccount;

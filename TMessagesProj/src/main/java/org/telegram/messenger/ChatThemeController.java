@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -239,20 +240,10 @@ public class ChatThemeController extends BaseController {
     }
 
 
-    private static final ChatThemeController[] instances = new ChatThemeController[UserConfig.MAX_ACCOUNT_COUNT];
+    private static final ConcurrentHashMap<Integer, ChatThemeController> instances = new ConcurrentHashMap<>();
 
     public static ChatThemeController getInstance(int accountNum) {
-        ChatThemeController local = instances[accountNum];
-        if (local == null) {
-            synchronized (ChatThemeController.class) {
-                local = instances[accountNum];
-                if (local == null) {
-                    local = new ChatThemeController(accountNum);
-                    instances[accountNum] = local;
-                }
-            }
-        }
-        return local;
+        return instances.computeIfAbsent(accountNum, ChatThemeController::new);
     }
 
 

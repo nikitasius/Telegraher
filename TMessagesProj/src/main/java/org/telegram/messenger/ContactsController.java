@@ -110,11 +110,16 @@ public class ContactsController extends BaseController {
     private class MyContentObserver extends ContentObserver {
 
         private Runnable checkRunnable = () -> {
-            for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
+            for (int a : SharedConfig.activeAccounts) {
                 if (UserConfig.getInstance(a).isClientActivated()) {
                     ConnectionsManager.getInstance(a).resumeNetworkMaybe();
                     ContactsController.getInstance(a).checkContacts();
                 }
+            }
+            int login = SharedConfig.loginingAccount;
+            if (login != -1 && !SharedConfig.activeAccounts.contains(login)) {
+                ConnectionsManager.getInstance(login).resumeNetworkMaybe();
+                ContactsController.getInstance(login).checkContacts();
             }
         };
 
@@ -246,19 +251,11 @@ public class ContactsController extends BaseController {
     public HashMap<String, TLRPC.TL_contact> contactsByShortPhone = new HashMap<>();
 
     private int completedRequestsCount;
-    
-    private static volatile ContactsController[] Instance = new ContactsController[UserConfig.MAX_ACCOUNT_COUNT];
+
+    private static final ConcurrentHashMap<Integer, ContactsController> Instance = new ConcurrentHashMap();
+
     public static ContactsController getInstance(int num) {
-        ContactsController localInstance = Instance[num];
-        if (localInstance == null) {
-            synchronized (ContactsController.class) {
-                localInstance = Instance[num];
-                if (localInstance == null) {
-                    Instance[num] = localInstance = new ContactsController(num);
-                }
-            }
-        }
-        return localInstance;
+        return Instance.computeIfAbsent(num, ContactsController::new);
     }
 
     public ContactsController(int instance) {
@@ -400,7 +397,7 @@ public class ContactsController extends BaseController {
                 for (int a = 0; a < accounts.length; a++) {
                     Account acc = accounts[a];
                     boolean found = false;
-                    for (int b = 0; b < UserConfig.MAX_ACCOUNT_COUNT; b++) {
+                    for (int b : SharedConfig.activeAccounts) {
                         TLRPC.User user = UserConfig.getInstance(b).getCurrentUser();
                         if (user != null) {
                             if (acc.name.equals("" + user.id)) {
@@ -447,7 +444,7 @@ public class ContactsController extends BaseController {
             for (int a = 0; a < accounts.length; a++) {
                 Account acc = accounts[a];
                 boolean found = false;
-                for (int b = 0; b < UserConfig.MAX_ACCOUNT_COUNT; b++) {
+                for (int b : SharedConfig.activeAccounts) {
                     TLRPC.User user = UserConfig.getInstance(b).getCurrentUser();
                     if (user != null) {
                         if (acc.name.equals("" + user.id)) {

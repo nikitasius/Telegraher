@@ -29,6 +29,7 @@ import org.telegram.ui.MultiLayoutTypingAnimator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 public class BotForumHelper extends BaseController {
@@ -502,18 +503,10 @@ public class BotForumHelper extends BaseController {
         preferences = ApplicationLoader.applicationContext.getSharedPreferences("bot_drafts" + currentAccount, Activity.MODE_PRIVATE);
     }
 
-    private static volatile BotForumHelper[] Instance = new BotForumHelper[UserConfig.MAX_ACCOUNT_COUNT];
+    private static final ConcurrentHashMap<Integer, BotForumHelper> Instance = new ConcurrentHashMap<>();
+
     public static BotForumHelper getInstance(final int num) {
-        BotForumHelper localInstance = Instance[num];
-        if (localInstance == null) {
-            synchronized (BotForumHelper.class) {
-                localInstance = Instance[num];
-                if (localInstance == null) {
-                    Instance[num] = localInstance = new BotForumHelper(num);
-                }
-            }
-        }
-        return localInstance;
+        return Instance.computeIfAbsent(num, BotForumHelper::new);
     }
 
 

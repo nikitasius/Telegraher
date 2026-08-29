@@ -28,17 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.telegram.PhoneFormat.PhoneFormat;
-import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.ApplicationLoader;
-import org.telegram.messenger.Emoji;
-import org.telegram.messenger.FileLoader;
-import org.telegram.messenger.ImageLocation;
-import org.telegram.messenger.MediaDataController;
-import org.telegram.messenger.NotificationCenter;
-import org.telegram.messenger.R;
-import org.telegram.messenger.UserConfig;
-import org.telegram.messenger.UserObject;
-import org.telegram.messenger.Utilities;
+import org.telegram.messenger.*;
 import org.telegram.messenger.browser.Browser;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLObject;
@@ -150,7 +140,7 @@ public class OAuthSheet {
         final ArrayList<Integer> accountNumbers = new ArrayList<>();
         final boolean testBackend = ConnectionsManager.getInstance(currentAccount).isTestBackend();
         accountNumbers.clear();
-        for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
+        for (int a : SharedConfig.activeAccounts) {
             if (UserConfig.getInstance(a).isClientActivated() && ConnectionsManager.getInstance(a).isTestBackend() == testBackend) {
                 accountNumbers.add(a);
             }
@@ -554,7 +544,7 @@ public class OAuthSheet {
 
         int accountForEmoji = currentAccount;
         if (ConnectionsManager.getInstance(accountForEmoji).isTestBackend()) {
-            for (int i = 0; i < UserConfig.MAX_ACCOUNT_COUNT; ++i) {
+            for (int i : SharedConfig.activeAccounts) {
                 if (UserConfig.getInstance(i).isClientActivated() && !ConnectionsManager.getInstance(i).isTestBackend()) {
                     accountForEmoji = i;
                     break;

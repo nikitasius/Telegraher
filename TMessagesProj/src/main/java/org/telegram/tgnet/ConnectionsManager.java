@@ -185,22 +185,15 @@ public class ConnectionsManager extends BaseController {
 
     private static int lastClassGuid = 1;
 
-    private static final ConnectionsManager[] Instance = new ConnectionsManager[UserConfig.MAX_ACCOUNT_COUNT];
+    private static final ConcurrentHashMap<Integer, ConnectionsManager> Instance = new ConcurrentHashMap();
+
     public static ConnectionsManager getInstance(int num) {
-        ConnectionsManager localInstance = Instance[num];
-        if (localInstance == null) {
-            synchronized (ConnectionsManager.class) {
-                localInstance = Instance[num];
-                if (localInstance == null) {
-                    Instance[num] = localInstance = new ConnectionsManager(num);
-                }
-            }
-        }
-        return localInstance;
+        return Instance.computeIfAbsent(num, ConnectionsManager::new);
     }
 
     public ConnectionsManager(int instance) {
         super(instance);
+        native_setJava(instance);
         connectionState = native_getConnectionState(currentAccount);
         String deviceModel;
         String systemLangCode;
@@ -647,7 +640,7 @@ public class ConnectionsManager extends BaseController {
 
     public static void setLangCode(String langCode) {
         langCode = langCode.replace('_', '-').toLowerCase();
-        for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
+        for (int a : SharedConfig.activeAccounts) {
             native_setLangCode(a, langCode);
         }
     }
@@ -664,14 +657,14 @@ public class ConnectionsManager extends BaseController {
             String tag = type == PushListenerController.PUSH_TYPE_FIREBASE ? "FIREBASE" : "HUAWEI";
             pushString = SharedConfig.pushStringStatus = "__" + tag + "_GENERATING_SINCE_" + getInstance(0).getCurrentTime() + "__";
         }
-        for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
+        for (int a : SharedConfig.activeAccounts) {
             native_setRegId(a, pushString);
         }
     }
 
     public static void setSystemLangCode(String langCode) {
         langCode = langCode.replace('_', '-').toLowerCase();
-        for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
+        for (int a : SharedConfig.activeAccounts) {
             native_setSystemLangCode(a, langCode);
         }
     }
@@ -873,6 +866,16 @@ public class ConnectionsManager extends BaseController {
         AndroidUtilities.runOnUIThread(() -> NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.needShowAlert, 3));
     }
 
+    @Keep
+    public static void onProxyError(int currentAccount) {
+        AndroidUtilities.runOnUIThread(() -> {
+            if (currentAccount != UserConfig.selectedAccount) {
+                return;
+            }
+            NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.needShowAlert, 3);
+        });
+    }
+
     public static void getHostByName(String hostName, long address) {
         AndroidUtilities.runOnUIThread(() -> {
             ResolvedDomain resolvedDomain = dnsCache.get(hostName);
@@ -935,7 +938,7 @@ public class ConnectionsManager extends BaseController {
             secret = "";
         }
 
-        for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
+        for (int a : SharedConfig.activeAccounts) {
             if (enabled && !TextUtils.isEmpty(address)) {
                 native_setProxySettings(a, address, port, username, password, secret);
             } else {
@@ -976,6 +979,7 @@ public class ConnectionsManager extends BaseController {
     public static native void native_setRegId(int currentAccount, String regId);
     public static native void native_setSystemLangCode(int currentAccount, String langCode);
     public static native void native_setJava(boolean useJavaByteBuffers);
+    public static native void native_setJava(int instanceNum);
     public static native void native_setPushConnectionEnabled(int currentAccount, boolean value);
     public static native void native_applyDnsConfig(int currentAccount, long address, String phone, int date);
     public static native long native_checkProxy(int currentAccount, String address, int port, String username, String password, String secret, RequestTimeDelegate requestTimeDelegate);
