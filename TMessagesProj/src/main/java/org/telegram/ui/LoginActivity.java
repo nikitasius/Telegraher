@@ -3003,26 +3003,26 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 if (getParentActivity() instanceof LaunchActivity) {
                     for (int a : SharedConfig.activeAccounts) {
                         UserConfig userConfig = UserConfig.getInstance(a);
-                        if (!userConfig.isClientActivated()) {
-                            continue;
-                        }
-                        String userPhone = userConfig.getCurrentUser().phone;
-                        if (PhoneNumberUtils.compare(phone, userPhone) && ConnectionsManager.getInstance(a).isTestBackend() == testBackend) {
-                            final int num = a;
-                            AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-                            builder.setTitle(getString(R.string.AppName));
-                            builder.setMessage(getString("AccountAlreadyLoggedIn", R.string.AccountAlreadyLoggedIn));
-                            builder.setPositiveButton(getString("AccountSwitch", R.string.AccountSwitch), (dialog, which) -> {
-                                if (UserConfig.selectedAccount != num) {
-                                    ((LaunchActivity) getParentActivity()).switchToAccount(num, true);
-                                }
-                                finishFragment();
-                            });
-                            builder.setNegativeButton(getString("OK", R.string.OK), null);
-                            showDialog(builder.create());
-                            needHideProgress(false);
-                            return;
-                        }
+//                        if (!userConfig.isClientActivated()) {
+//                            continue;
+//                        }
+//                        String userPhone = userConfig.getCurrentUser().phone;
+//                        if (PhoneNumberUtils.compare(phone, userPhone) && ConnectionsManager.getInstance(a).isTestBackend() == testBackend) {
+//                            final int num = a;
+//                            AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
+//                            builder.setTitle(getString(R.string.AppName));
+//                            builder.setMessage(getString("AccountAlreadyLoggedIn", R.string.AccountAlreadyLoggedIn));
+//                            builder.setPositiveButton(getString("AccountSwitch", R.string.AccountSwitch), (dialog, which) -> {
+//                                if (UserConfig.selectedAccount != num) {
+//                                    ((LaunchActivity) getParentActivity()).switchToAccount(num, true);
+//                                }
+//                                finishFragment();
+//                            });
+//                            builder.setNegativeButton(getString("OK", R.string.OK), null);
+//                            showDialog(builder.create());
+//                            needHideProgress(false);
+//                            return;
+//                        }
                     }
                 }
             }
@@ -3379,17 +3379,17 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 if (userId != 0 && getParentActivity() instanceof LaunchActivity) {
                     for (int a : SharedConfig.activeAccounts) {
                         UserConfig userConfig = UserConfig.getInstance(a);
-                        if (!userConfig.isClientActivated()) {
-                            continue;
-                        }
-                        if (userConfig.getClientUserId() == userId && ConnectionsManager.getInstance(a).isTestBackend() == testBackend) {
-                            if (UserConfig.selectedAccount != a) {
-                                ((LaunchActivity) getParentActivity()).switchToAccount(a, true);
-                            }
-                            finishFragment();
-                            needHideProgress(false);
-                            return;
-                        }
+//                        if (!userConfig.isClientActivated()) {
+//                            continue;
+//                        }
+//                        if (userConfig.getClientUserId() == userId && ConnectionsManager.getInstance(a).isTestBackend() == testBackend) {
+//                            if (UserConfig.selectedAccount != a) {
+//                                ((LaunchActivity) getParentActivity()).switchToAccount(a, true);
+//                            }
+//                            finishFragment();
+//                            needHideProgress(false);
+//                            return;
+//                        }
                     }
                 }
                 if (err != null && err.contains("SESSION_PASSWORD_NEEDED")) {
