@@ -11,6 +11,7 @@ package org.telegram.ui;
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.AndroidUtilities.dpf2;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -19,6 +20,7 @@ import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -70,51 +72,35 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.evildayz.code.telegraher.SecretMediaExport;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 
-import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.Emoji;
-import org.telegram.messenger.ImageLocation;
-import org.telegram.messenger.ImageReceiver;
-import org.telegram.messenger.LocaleController;
-import org.telegram.messenger.MessageObject;
-import org.telegram.messenger.MessagesController;
-import org.telegram.messenger.NotificationCenter;
-import org.telegram.messenger.FileLoader;
-import org.telegram.messenger.FileLog;
-import org.telegram.messenger.R;
-import org.telegram.messenger.SharedConfig;
-import org.telegram.messenger.UserConfig;
+import org.telegram.messenger.*;
 import org.telegram.messenger.utils.WindowVisibilityManager;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.ActionBar;
+import org.telegram.ui.ActionBar.ActionBarMenu;
 import org.telegram.ui.ActionBar.SimpleTextView;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.TextSelectionHelper;
-import org.telegram.ui.Components.AnimatedEmojiDrawable;
-import org.telegram.ui.Components.AnimatedEmojiSpan;
-import org.telegram.ui.Components.AnimationProperties;
-import org.telegram.ui.Components.CubicBezierInterpolator;
-import org.telegram.ui.Components.LayoutHelper;
-import org.telegram.ui.Components.PlayPauseDrawable;
-import org.telegram.ui.Components.RLottieDrawable;
-import org.telegram.ui.Components.Scroller;
-import org.telegram.ui.Components.TimerParticles;
-import org.telegram.ui.Components.TranslateAlert2;
-import org.telegram.ui.Components.VideoPlayer;
-import org.telegram.ui.Components.VideoPlayerSeekBar;
+import org.telegram.ui.Components.*;
 import org.telegram.ui.Stories.DarkThemeResourceProvider;
 import org.telegram.ui.Stories.recorder.HintView2;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 
 public class SecretMediaViewer implements NotificationCenter.NotificationCenterDelegate, GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
+    private static final int MENU_SAVE_DOWNLOADS = 1;
+    private static final int MENU_SAVE_GALLERY = 2;
 
     private class FrameLayoutDrawer extends FrameLayout {
         public FrameLayoutDrawer(Context context) {
@@ -472,27 +458,7 @@ public class SecretMediaViewer implements NotificationCenter.NotificationCenterD
     @Override
     public void didReceivedNotification(int id, int account, Object... args) {
         if (id == NotificationCenter.messagesDeleted) {
-            boolean scheduled = (Boolean) args[2];
-            if (scheduled) {
-                return;
-            }
-            if (currentMessageObject == null) {
-                return;
-            }
-            long channelId = (Long) args[1];
-            if (channelId != 0) {
-                return;
-            }
-            ArrayList<Integer> markAsDeletedMessages = (ArrayList<Integer>) args[0];
-            if (markAsDeletedMessages.contains(currentMessageObject.getId())) {
-                if (isVideo && !videoWatchedOneTime) {
-                    closeVideoAfterWatch = true;
-                } else {
-                    if (!closePhoto(true, true)) {
-                        closeAfterAnimation = true;
-                    }
-                }
-            }
+            //empty for easy cherrypicking
         } else if (id == NotificationCenter.didCreatedNewDeleteTask) {
             if (currentMessageObject == null || secretDeleteTimer == null) {
                 return;
@@ -515,16 +481,161 @@ public class SecretMediaViewer implements NotificationCenter.NotificationCenterD
                 }
             }
         } else if (id == NotificationCenter.updateMessageMedia) {
-            TLRPC.Message message = (TLRPC.Message) args[0];
-            if (currentMessageObject.getId() == message.id) {
-                if (isVideo && !videoWatchedOneTime) {
-                    closeVideoAfterWatch = true;
-                } else {
-                    if (!closePhoto(true, true)) {
-                        closeAfterAnimation = true;
+            //empty for easy cherrypicking
+        }
+    }
+
+    private void saveCurrentMedia(boolean toGallery) {
+        if (parentActivity == null || currentMessageObject == null) {
+            return;
+        }
+        if (toGallery && !currentMessageObject.isPhoto() && !isImageDocument(currentMessageObject)) {
+            saveCurrentMedia(false);
+            return;
+        }
+        if (Build.VERSION.SDK_INT >= 23 && (Build.VERSION.SDK_INT <= 28)
+                && parentActivity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            parentActivity.requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 4);
+            return;
+        }
+
+        final boolean video = currentMessageObject.isVideo();
+        final boolean gif = currentMessageObject.isGif();
+        final Bitmap preview = (!video && !gif && centerImage != null) ? centerImage.getBitmap() : null;
+        final Bitmap bitmapCopy;
+        if (preview != null && !preview.isRecycled() && preview.getWidth() > 0 && preview.getHeight() > 0) {
+            Bitmap.Config config = preview.getConfig() != null ? preview.getConfig() : Bitmap.Config.ARGB_8888;
+            bitmapCopy = preview.copy(config, false);
+        } else {
+            bitmapCopy = null;
+        }
+
+        Utilities.globalQueue.postRunnable(() -> {
+            SecretMediaExport export = null;
+            File staged = null;
+            try {
+                if (bitmapCopy != null) {
+                    staged = stageExternalFile("jpg");
+                    try (FileOutputStream os = new FileOutputStream(staged)) {
+                        bitmapCopy.compress(Bitmap.CompressFormat.JPEG, 95, os);
+                        os.getFD().sync();
                     }
+                } else {
+                    export = SecretMediaExport.open(currentAccount, currentMessageObject);
+                    staged = stagePublicCopy(export.getFile());
+                }
+
+                if (staged == null || !staged.isFile() || staged.length() <= 0) {
+                    throw new IOException("ttl media file is not on disk");
+                }
+                if (AndroidUtilities.isInternalUri(Uri.fromFile(staged))) {
+                    throw new IOException("refusing internal cache path");
+                }
+
+                final int saveType = toGallery ? (video || gif ? 1 : 0) : 2;
+                final String name = toGallery ? null : (!TextUtils.isEmpty(currentMessageObject.getFileName())
+                                                        ? currentMessageObject.getFileName()
+                                                        : staged.getName());
+                final BulletinFactory.FileType bulletinType;
+                if (toGallery) {
+                    bulletinType = video ? BulletinFactory.FileType.VIDEO : BulletinFactory.FileType.PHOTO;
+                } else if (video) {
+                    bulletinType = BulletinFactory.FileType.VIDEO_TO_DOWNLOADS;
+                } else if (gif) {
+                    bulletinType = BulletinFactory.FileType.GIF_TO_DOWNLOADS;
+                } else if (currentMessageObject.isPhoto() || isImageDocument(currentMessageObject)) {
+                    bulletinType = BulletinFactory.FileType.PHOTO_TO_DOWNLOADS;
+                } else {
+                    bulletinType = BulletinFactory.FileType.UNKNOWN;
+                }
+
+                final File stagedFinal = staged;
+                final SecretMediaExport exportFinal = export;
+                MediaController.saveFile(stagedFinal.getAbsolutePath(), parentActivity, saveType, name, currentMessageObject.getMimeType(), uri -> AndroidUtilities.runOnUIThread(() -> {
+                    deleteQuietly(stagedFinal);
+                    closeQuietly(exportFinal);
+                    if (containerView == null) {
+                        return;
+                    }
+                    if (toGallery) {
+                        BulletinFactory.createSaveToGalleryBulletin(containerView, video || gif, 0xf9222222, 0xffffffff).show();
+                    } else {
+                        BulletinFactory.of(containerView, new DarkThemeResourceProvider())
+                                .createDownloadBulletin(bulletinType)
+                                .show();
+                    }
+                }));
+            } catch (Exception e) {
+                FileLog.e(e);
+                deleteQuietly(staged);
+                closeQuietly(export);
+                AndroidUtilities.runOnUIThread(() -> {
+                    if (containerView != null) {
+                        BulletinFactory.of(containerView, new DarkThemeResourceProvider())
+                                .createErrorBulletin(LocaleController.getString(R.string.ErrorOccurred))
+                                .show();
+                    }
+                });
+            } finally {
+                if (bitmapCopy != null && !bitmapCopy.isRecycled()) {
+                    bitmapCopy.recycle();
                 }
             }
+        });
+    }
+
+    private static boolean isImageDocument(MessageObject message) {
+        if (message == null || message.getDocument() == null || message.getDocument().mime_type == null) {
+            return message != null && message.isPhoto();
+        }
+        String mime = message.getDocument().mime_type;
+        return mime.startsWith("image/") && !message.isSticker() && !message.isAnimatedSticker();
+    }
+
+    private static File stageExternalFile(String ext) throws IOException {
+        File dir = ApplicationLoader.applicationContext.getExternalCacheDir();
+        if (dir == null) {
+            dir = ApplicationLoader.applicationContext.getCacheDir();
+        }
+        if (!dir.exists() && !dir.mkdirs()) {
+            throw new IOException("no external cache");
+        }
+        return File.createTempFile("graher_ttl_", "." + ext, dir);
+    }
+
+    private static File stagePublicCopy(File src) throws IOException {
+        if (src == null || !src.isFile()) {
+            throw new IOException("ttl media file is not on disk");
+        }
+        if (!AndroidUtilities.isInternalUri(Uri.fromFile(src))) {
+            return src;
+        }
+        String ext = FileLoader.getFileExtension(src);
+        if (TextUtils.isEmpty(ext)) {
+            ext = "bin";
+        }
+        File dst = stageExternalFile(ext);
+        try (FileInputStream in = new FileInputStream(src);
+             FileOutputStream out = new FileOutputStream(dst)) {
+            byte[] buf = new byte[64 * 1024];
+            int n;
+            while ((n = in.read(buf)) > 0) {
+                out.write(buf, 0, n);
+            }
+            out.getFD().sync();
+        }
+        return dst;
+    }
+
+    private static void deleteQuietly(File file) {
+        if (file != null && file.exists() && !file.delete()) {
+            file.deleteOnExit();
+        }
+    }
+
+    private static void closeQuietly(SecretMediaExport export) {
+        if (export != null) {
+            export.close();
         }
     }
 
@@ -877,11 +988,20 @@ public class SecretMediaViewer implements NotificationCenter.NotificationCenterD
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
         actionBar.setTitleRightMargin(dp(70));
         containerView.addView(actionBar, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
+        actionBar.setTitleRightMargin(dp(8));
+        ActionBarMenu menu = actionBar.createMenu();
+        menu.addItem(MENU_SAVE_DOWNLOADS, R.drawable.msg_download);
+        menu.addItem(MENU_SAVE_GALLERY, R.drawable.msg_gallery);
+
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {
                 if (id == -1) {
                     closePhoto(true, false);
+                } else if (id == MENU_SAVE_DOWNLOADS) {
+                    saveCurrentMedia(false);
+                } else if (id == MENU_SAVE_GALLERY) {
+                    saveCurrentMedia(true);
                 }
             }
         });
@@ -889,9 +1009,11 @@ public class SecretMediaViewer implements NotificationCenter.NotificationCenterD
         secretHint = new HintView2(activity, HintView2.DIRECTION_TOP);
         secretHint.setJoint(1, -26);
         secretHint.setPadding(dp(8), dp(8), dp(8), dp(8));
+        secretHint.setVisibility(View.GONE);
         containerView.addView(secretHint, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 80, Gravity.TOP | Gravity.RIGHT, 0, 48, 0, 0));
 
         secretDeleteTimer = new SecretDeleteTimer(activity);
+        secretDeleteTimer.setVisibility(View.GONE);
         containerView.addView(secretDeleteTimer, LayoutHelper.createFrame(119, 48, Gravity.TOP | Gravity.RIGHT, 0, 0, 0, 0));
 
         final VideoPlayerSeekBar.SeekBarDelegate seekBarDelegate = new VideoPlayerSeekBar.SeekBarDelegate() {
@@ -977,7 +1099,7 @@ public class SecretMediaViewer implements NotificationCenter.NotificationCenterD
                 WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR |
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
                 WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS;
-        windowLayoutParams.flags |= WindowManager.LayoutParams.FLAG_SECURE;
+        if (!SharedConfig.allowScreenCapture) windowLayoutParams.flags |= WindowManager.LayoutParams.FLAG_SECURE;
         AndroidUtilities.logFlagSecure();
         centerImage.setParentView(containerView);
         centerImage.setForceCrossfade(true);

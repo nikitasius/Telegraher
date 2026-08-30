@@ -9918,7 +9918,7 @@ public class MessageObject {
         return needDrawBluredPreview(true);
     }
     public boolean needDrawBluredPreview(boolean bFlag) {
-        if (bFlag) return false;
+//        if (bFlag) return false; //old graher stuff, disabled
         if (isRepostPreview) {
             return false;
         }

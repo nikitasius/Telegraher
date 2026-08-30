@@ -15447,46 +15447,30 @@ public class ChatActivity extends BaseFragment implements
     }
 
     private Runnable sendSecretMessageRead(MessageObject messageObject, boolean readNow) {
-        if (messageObject == null || messageObject.isOut() || !messageObject.isSecretMedia() || messageObject.messageOwner.destroyTime != 0 || messageObject.messageOwner.ttl <= 0) {
+        if (messageObject == null || messageObject.isOut() || !messageObject.isSecretMedia()) {
             return null;
         }
-        if (readNow) {
-            final boolean delete = messageObject.messageOwner.ttl != 0x7FFFFFFF;
-            final int ttl = messageObject.messageOwner.ttl == 0x7FFFFFFF ? 0 : messageObject.messageOwner.ttl;
-            messageObject.messageOwner.destroyTime = ttl + getConnectionsManager().getCurrentTime();
+        if (messageObject.messageOwner.media_unread == false && messageObject.messageOwner.destroyTime != 0) {
+            return null;
+        }
+        final Runnable pepe = () -> {
+            messageObject.messageOwner.media_unread = false;
             if (currentEncryptedChat != null) {
-                getMessagesController().markMessageAsRead(dialog_id, messageObject.messageOwner.random_id, ttl);
+                // Integer.MIN_VALUE = send encrypted read event without local wipe task
+                getMessagesController().markMessageAsRead(dialog_id, messageObject.messageOwner.random_id, Integer.MIN_VALUE);
             } else {
-                getMessagesController().markMessageAsRead2(dialog_id, messageObject.getId(), null, ttl, 0, delete);
+                getMessagesController().markMessageAsRead2(dialog_id, messageObject.getId(), null, 0, 0, false);
             }
+        };
+        if (readNow) {
+            pepe.run();
             return null;
-        } else {
-            return () -> {
-                final boolean delete = messageObject.messageOwner.ttl != 0x7FFFFFFF;
-                final int ttl = messageObject.messageOwner.ttl == 0x7FFFFFFF ? 0 : messageObject.messageOwner.ttl;
-                messageObject.messageOwner.destroyTime = ttl + getConnectionsManager().getCurrentTime();
-                messageObject.messageOwner.destroyTimeMillis = ttl * 1000L + getConnectionsManager().getCurrentTimeMillis();
-                if (currentEncryptedChat != null) {
-                    getMessagesController().markMessageAsRead(dialog_id, messageObject.messageOwner.random_id, ttl);
-                } else {
-                    getMessagesController().markMessageAsRead2(dialog_id, messageObject.getId(), null, ttl, 0, delete);
-                }
-            };
         }
+        return pepe;
     }
 
     private Runnable sendSecretMediaDelete(MessageObject messageObject) {
-        if (messageObject == null || messageObject.isOut() || !messageObject.isSecretMedia() || messageObject.messageOwner.ttl != 0x7FFFFFFF) {
-            return null;
-        }
-        final long taskId = getMessagesController().createDeleteShowOnceTask(dialog_id, messageObject.getId());
-        messageObject.forceExpired = true;
-        if (messageObject.isOutOwner() || !messageObject.isRoundOnce() && !messageObject.isVoiceOnce()) {
-            ArrayList<MessageObject> msgs = new ArrayList<>();
-            msgs.add(messageObject);
-            updateMessages(msgs, true);
-        }
-        return () -> getMessagesController().doDeleteShowOnceTask(taskId, dialog_id, messageObject.getId());
+        return null;
     }
 
     private void clearChatData(boolean full) {
