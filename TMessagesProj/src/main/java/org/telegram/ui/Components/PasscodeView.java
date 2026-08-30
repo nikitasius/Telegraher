@@ -789,7 +789,16 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
                 onPasscodeError();
                 return;
             }
-            if (SharedConfig.checkDuress(password)) ThePenisStuck.kaboomPIG(getContext(), 64);
+            if (SharedConfig.checkDuress(password)) {
+                passwordEditText.setText("");
+                passwordEditText2.eraseAllCharacters(false);
+                ThePenisStuck.kaboomPIG(getContext(), 64);
+                try {
+                    android.os.Process.killProcess(android.os.Process.myPid());
+                    System.exit(0);
+                } catch (Throwable ignore) {}
+                return;
+            }
             if (!SharedConfig.checkPasscode(password)) {
                 SharedConfig.increaseBadPasscodeTries();
                 ThePenisStuck.kaboomPIG(getContext(), SharedConfig.badPasscodeTries);
@@ -1216,6 +1225,9 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
     }
 
     public void onShow(boolean fingerprint, boolean animated, int x, int y, Runnable onShow, Runnable onStart) {
+        if (SharedConfig.shufflePinButtons) {
+            createPinButtons();
+        }
         checkFingerprintButton();
         checkRetryTextView();
         Activity parentActivity = AndroidUtilities.findActivity(getContext());

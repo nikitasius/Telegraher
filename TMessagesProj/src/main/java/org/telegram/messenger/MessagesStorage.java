@@ -14446,13 +14446,13 @@ public class MessagesStorage extends BaseController {
                         cursor.dispose();
                         cursor = null;
                     }
-                    database.executeFast(String.format(Locale.US, "DELETE FROM messages_v2 WHERE mid IN(%s) AND uid = %d", ids, did)).stepThis().dispose();
-                    database.executeFast(String.format(Locale.US, "DELETE FROM messages_topics WHERE mid IN(%s) AND uid = %d", ids, did)).stepThis().dispose();
-                    database.executeFast(String.format(Locale.US, "DELETE FROM polls_v2 WHERE mid IN(%s) AND uid = %d", ids, did)).stepThis().dispose();
-                    database.executeFast(String.format(Locale.US, "DELETE FROM bot_keyboard WHERE mid IN(%s) AND uid = %d", ids, did)).stepThis().dispose();
-                    database.executeFast(String.format(Locale.US, "DELETE FROM bot_keyboard_topics WHERE mid IN(%s) AND uid = %d", ids, did)).stepThis().dispose();
+                    database.executeFast(String.format(Locale.US, "DELETE FROM messages_v2 WHERE mid IN(%s) AND uid = %d", idsStr, did)).stepThis().dispose();
+                    database.executeFast(String.format(Locale.US, "DELETE FROM messages_topics WHERE mid IN(%s) AND uid = %d", idsStr, did)).stepThis().dispose();
+                    database.executeFast(String.format(Locale.US, "DELETE FROM polls_v2 WHERE mid IN(%s) AND uid = %d", idsStr, did)).stepThis().dispose();
+                    database.executeFast(String.format(Locale.US, "DELETE FROM bot_keyboard WHERE mid IN(%s) AND uid = %d", idsStr, did)).stepThis().dispose();
+                    database.executeFast(String.format(Locale.US, "DELETE FROM bot_keyboard_topics WHERE mid IN(%s) AND uid = %d", idsStr, did)).stepThis().dispose();
                     if (unknownMessages.isEmpty()) {
-                        cursor = database.queryFinalized(String.format(Locale.US, "SELECT uid, type FROM media_v4 WHERE mid IN(%s) AND uid = %d", ids, did));
+                        cursor = database.queryFinalized(String.format(Locale.US, "SELECT uid, type FROM media_v4 WHERE mid IN(%s) AND uid = %d", idsStr, did));
                         SparseArray<LongSparseArray<Integer>> mediaCounts = null;
                         while (cursor.next()) {
                             long uid = cursor.longValue(0);
@@ -14667,7 +14667,10 @@ public class MessagesStorage extends BaseController {
                 try {
                     long did = cursor.longValue(0);
                     int mid = cursor.intValue(1);
-                    database.executeFast(String.format(Locale.US, "INSERT INTO telegraher_message_deletions values (%d,%d,1);", mid, did)).stepThis().dispose();
+                    database.executeFast(String.format(Locale.US, "INSERT OR REPLACE INTO telegraher_message_deletions (mid, uid, isdel) VALUES (%d,%d,1);", mid, did)).stepThis().dispose();
+                    if (!dialogsToUpdate.contains(did)) {
+                        dialogsToUpdate.add(did);
+                    }
                 } catch (Exception e) {
                     //we don't care, made to ignore unique key errors
                 }
@@ -14693,10 +14696,10 @@ public class MessagesStorage extends BaseController {
         return null;
     }
 
-    public void markEcryptedMessagesIsDeleted(long did, int messagesOnly) {//TODO REFAIRE not used anymore
-        storageQueue.postRunnable(() -> { //old graher legacy, will debug bruh/sis/whatever
+    public void markEcryptedMessagesIsDeleted(long did, int messagesOnly) {
+        storageQueue.postRunnable(() -> {
             try {
-                database.executeFast(String.format(Locale.US, "UPDATE messages_v2 SET isdel=1 WHERE uid = %d;", did)).stepThis().dispose();
+                database.executeFast(String.format(Locale.US, "INSERT OR REPLACE INTO telegraher_message_deletions (mid, uid, isdel) SELECT mid, uid, 1 FROM messages_v2 WHERE uid = %d;", did)).stepThis().dispose();
                 updateWidgets(did);
             } catch (Exception e) {
                 FileLog.e(e);

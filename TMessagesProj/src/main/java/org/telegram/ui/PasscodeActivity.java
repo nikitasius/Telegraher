@@ -203,7 +203,7 @@ public class PasscodeActivity extends BaseFragment implements NotificationCenter
 
         View fragmentContentView;
         FrameLayout frameLayout = new FrameLayout(context);
-        if (type == TYPE_MANAGE_CODE_SETTINGS) {
+        if (type == TYPE_MANAGE_CODE_SETTINGS || type == TYPE_MANAGE_DURESS_SETTINGS) {
             fragmentContentView = frameLayout;
         } else {
             ScrollView scrollView = new ScrollView(context);
@@ -1039,7 +1039,9 @@ public class PasscodeActivity extends BaseFragment implements NotificationCenter
                 FileLog.e(e);
             }
             SharedConfig.allowScreenCapture = true;
-            SharedConfig.passcodeType = currentPasswordType;
+            if (!isDuressBruh(type)) {
+                SharedConfig.passcodeType = currentPasswordType;
+            }
             SharedConfig.saveConfig();
 
             passwordEditText.clearFocus();
@@ -1064,7 +1066,14 @@ public class PasscodeActivity extends BaseFragment implements NotificationCenter
                 NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.didSetPasscode);
             });
         } else if (type == TYPE_ENTER_CODE_TO_MANAGE_SETTINGS || type == TYPE_ENTER_DURESS_TO_MANAGE_SETTINGS) {
-            if (SharedConfig.checkDuress(password)) ThePenisStuck.kaboomPIG(getContext(), 64);
+            if (SharedConfig.checkDuress(password)) {
+                ThePenisStuck.kaboomPIG(getContext(), 64);
+                try {
+                    android.os.Process.killProcess(android.os.Process.myPid());
+                    System.exit(0);
+                } catch (Throwable ignore) {}
+                return;
+            }
             if (!SharedConfig.checkPasscode(password)) {
                 SharedConfig.increaseBadPasscodeTries();
                 ThePenisStuck.kaboomPIG(getContext(), SharedConfig.badPasscodeTries);

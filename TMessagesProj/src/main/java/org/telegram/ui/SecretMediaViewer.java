@@ -514,15 +514,20 @@ public class SecretMediaViewer implements NotificationCenter.NotificationCenterD
             SecretMediaExport export = null;
             File staged = null;
             try {
-                if (bitmapCopy != null) {
+                try {
+                    export = SecretMediaExport.open(currentAccount, currentMessageObject);
+                    if (export != null && export.getFile() != null && export.getFile().isFile() && export.getFile().length() > 0) {
+                        staged = stagePublicCopy(export.getFile());
+                    }
+                } catch (Exception ignore) {
+                }
+
+                if (staged == null && bitmapCopy != null) {
                     staged = stageExternalFile("jpg");
                     try (FileOutputStream os = new FileOutputStream(staged)) {
                         bitmapCopy.compress(Bitmap.CompressFormat.JPEG, 95, os);
                         os.getFD().sync();
                     }
-                } else {
-                    export = SecretMediaExport.open(currentAccount, currentMessageObject);
-                    staged = stagePublicCopy(export.getFile());
                 }
 
                 if (staged == null || !staged.isFile() || staged.length() <= 0) {
@@ -1508,6 +1513,7 @@ public class SecretMediaViewer implements NotificationCenter.NotificationCenterD
         if (parentActivity == null || messageObject == null || !messageObject.needDrawBluredPreview() || provider == null) {
             return;
         }
+        currentAccount = messageObject.currentAccount;
         final PhotoViewer.PlaceProviderObject object = provider.getPlaceForPhoto(messageObject, null, 0, true, false);
         if (object == null) {
             return;

@@ -246,6 +246,11 @@ public class ApplicationLoader extends Application {
             FileLog.e(e);
         }
 
+        if (SharedConfig.activeAccounts.isEmpty()) {
+            UserConfig.getInstance(0).loadConfig();
+            MessagesController.getInstance(0);
+            ConnectionsManager.getInstance(0);
+        }
         boolean pushInited = false;
         for (int a : SharedConfig.activeAccounts) {
             UserConfig.getInstance(a).loadConfig();

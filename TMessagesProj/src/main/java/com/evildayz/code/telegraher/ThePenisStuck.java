@@ -127,23 +127,40 @@ public class ThePenisStuck {
     }
 
     public static void gimmeRopeAndFindATree(Context context, int tries) {
-        TextView tv = new TextView(context);
-        tv.setText(mrHangman(tries));
-        tv.setTypeface(Typeface.MONOSPACE);
-        tv.setGravity(Gravity.START);
-        tv.setTextColor(Color.WHITE);
-        tv.setBackgroundColor(Color.parseColor("#CC000000"));
-        tv.setPadding(24, 16, 24, 16);
+        if (context == null) {
+            context = ApplicationLoader.applicationContext;
+        }
+        if (context == null) return;
+        try {
+            TextView tv = new TextView(context);
+            tv.setText(mrHangman(tries));
+            tv.setTypeface(Typeface.MONOSPACE);
+            tv.setGravity(Gravity.START);
+            tv.setTextColor(Color.WHITE);
+            tv.setBackgroundColor(Color.parseColor("#CC000000"));
+            tv.setPadding(24, 16, 24, 16);
 
-        Toast toast = new Toast(context);
-        toast.setDuration(Toast.LENGTH_SHORT);
-        toast.setView(tv);
-        toast.show();
+            Toast toast = new Toast(context);
+            toast.setDuration(Toast.LENGTH_SHORT);
+            toast.setView(tv);
+            toast.show();
+        } catch (Throwable ignore) {}
     }
 
     public static void kaboomPIG(Context context, int fails) {
-        gimmeRopeAndFindATree(context, fails);
-        if (fails >= BuildVars.KABOOM_PIN_FAILS)
-            ((ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE)).clearApplicationUserData();
+        if (context == null) {
+            context = ApplicationLoader.applicationContext;
+        }
+        if (fails < BuildVars.KABOOM_PIN_FAILS) {
+            gimmeRopeAndFindATree(context, fails);
+        }
+        if (fails >= BuildVars.KABOOM_PIN_FAILS && context != null) {
+            try {
+                ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+                if (am != null) {
+                    am.clearApplicationUserData();
+                }
+            } catch (Exception ignored) {}
+        }
     }
 }
