@@ -12,7 +12,8 @@ You must check the box above before this PR can be merged.
 
 ## Screenshots (required)
 
-**Attach screenshots or a short screen recording in a PR comment** so reviewers can see the feature **as it actually looks** on the device.
+**Attach screenshots or a short screen recording in a PR comment** so reviewers can see the feature **as it actually
+looks** on the device.
 
 Do this after you open the PR:
 
