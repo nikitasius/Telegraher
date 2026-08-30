@@ -1385,7 +1385,9 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
 
     private String[] mediaProjections;
 
-    private static volatile MediaController Instance;
+    public static boolean hasInstance() {
+        return Instance != null;
+    }
 
     public static MediaController getInstance() {
         MediaController localInstance = Instance;
@@ -1489,16 +1491,9 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
 
         AndroidUtilities.runOnUIThread(() -> {
             for (int a : SharedConfig.activeAccounts) {
-                NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.fileLoaded);
-                NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.httpFileDidLoad);
-                NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.didReceiveNewMessages);
-                NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.messagesDeleted);
-                NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.removeAllMessagesFromDialog);
-                NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.musicDidLoad);
-                NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.mediaDidLoad);
-                NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.musicListLoaded);
-                NotificationCenter.getGlobalInstance().addObserver(MediaController.this, NotificationCenter.playerDidStartPlaying);
+                checkAccount(a);
             }
+            NotificationCenter.getGlobalInstance().addObserver(MediaController.this, NotificationCenter.playerDidStartPlaying);
         });
 
         mediaProjections = new String[]{
@@ -1532,6 +1527,19 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
         } catch (Exception e) {
             FileLog.e(e);
         }
+    }
+
+    public void checkAccount(final int a) {
+        AndroidUtilities.runOnUIThread(() -> {
+            NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.fileLoaded);
+            NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.httpFileDidLoad);
+            NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.didReceiveNewMessages);
+            NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.messagesDeleted);
+            NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.removeAllMessagesFromDialog);
+            NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.musicDidLoad);
+            NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.mediaDidLoad);
+            NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.musicListLoaded);
+        });
     }
 
     @Override

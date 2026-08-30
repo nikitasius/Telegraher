@@ -504,6 +504,9 @@ public class SharedConfig {
     }
 
     public static void saveAccounts() {
+        if (ApplicationLoader.applicationContext == null) {
+            return;
+        }
         FileLog.d("Save accounts: " + activeAccounts);
         ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE).edit()
                 .putString("active_accounts", StringUtils.join(activeAccounts, ","))
@@ -512,7 +515,13 @@ public class SharedConfig {
 
     public static void loadAccounts(SharedPreferences preferences) {
         activeAccounts.clear();
-        String raw = preferences.getString("active_accounts", "");
+        String raw = "";
+        if (ApplicationLoader.applicationContext != null) {
+            raw = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE).getString("active_accounts", "");
+        }
+        if (raw.isEmpty() && preferences != null) {
+            raw = preferences.getString("active_accounts", "");
+        }
         if (!raw.isEmpty()) {
             for (String part : raw.split(",")) {
                 if (StringUtils.isBlank(part)) continue;
