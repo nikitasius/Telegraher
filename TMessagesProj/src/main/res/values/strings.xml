@@ -2345,6 +2345,7 @@
     <string name="AddAnExplanationInfo">Users will see this text after choosing the wrong answer, good for educational purposes.</string>
     <string name="EnableAnimations">Enable Animations</string>
     <string name="ChatSettings">Chat Settings</string>
+    <string name="THKillTheAPP">Kill the APP</string>
     <string name="Devices">Devices</string>
     <string name="SettingsHelp">Help</string>
     <string name="SettingsDebug">Debug</string>
