@@ -83,12 +83,13 @@ Actual graher is simplified, also it's acutually not FOSS. Maybe we'll make it f
 * Pin retry time reduced to 3 seconds, after 10 fails KABOOM
 * Brand unlimited multiacc
 * You can login with same phone multiple times in same app (tg won't ask for a code, just 2FA if you have it)
+* New flow for TTL medias in green and private chats to make nudes last forever
 * Hi, i'm Vanilla telegram using vanilla keys, vanilla fingerpring & package 💅
 
 ### TODO
 
-* Duress code
-* TTL images
+* ~~Duress code~~ (remote duress remain)
+* ~~TTL images~~
 * device spoofing
 * media quality boost
 
