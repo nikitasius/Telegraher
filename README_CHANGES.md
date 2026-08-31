@@ -4,6 +4,11 @@
 
 ## Stop fucking genocide in Gaza.
 
+* 12.92.10 (build 6991010)
+    * ideas from pr-183 to fix unfinity file sending on high android versions (16, more issues on 17)
+    * fix for android 17 grapheneos
+    * packahe fix in contactcontroller
+    * manifest update, missed intents (thank grok)
 * 12.92.9 (build 6991009)
     * new flow for TTL medias in green and private chats
     * "Kill the APP" button on profile to kill the app
