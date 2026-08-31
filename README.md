@@ -149,7 +149,7 @@ Probably it's a good thing 😃
 * Github: [https://github.com/nikitasius/Telegraher](https://github.com/nikitasius/Telegraher)
 * Gitlab (**OUTDATED**): [https://gitlab.com/nikitasius/Telegraher](https://gitlab.com/nikitasius/Telegraher)
     * autosync from github is for prem only, have to build a CI/CD dammit!
-* HTTPS (**OUTDATED**): [https://git.evildayz.com/Telegraher/](https://git.evildayz.com/Telegraher/)
+* HTTPS: [https://git.evildayz.com/Telegraher/](https://git.evildayz.com/Telegraher/)
     * manually sync (add a script later 😀)
     * `releases` w/ actual releases and cloned `Telegraher` & `Telegraher.git` in `.tar.gz`
     * `betas` w/ actual betas
