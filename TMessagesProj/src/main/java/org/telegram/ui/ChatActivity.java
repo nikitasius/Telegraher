@@ -13941,10 +13941,23 @@ public class ChatActivity extends BaseFragment implements
     @Override
     public void startDocumentSelectActivity() {
         try {
-            Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
-            photoPickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+            Intent photoPickerIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            photoPickerIntent.addCategory(Intent.CATEGORY_OPENABLE);
             photoPickerIntent.setType("*/*");
-            startActivityForResult(photoPickerIntent, 21);
+            photoPickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+            photoPickerIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+            try {
+                startActivityForResult(photoPickerIntent, 21);
+            } catch (Exception e) {
+                FileLog.e(e);
+                Intent fallback = new Intent(Intent.ACTION_GET_CONTENT);
+                fallback.addCategory(Intent.CATEGORY_OPENABLE);
+                fallback.setType("*/*");
+                fallback.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                fallback.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivityForResult(fallback, 21);
+            }
         } catch (Exception e) {
             FileLog.e(e);
         }
@@ -20128,6 +20141,7 @@ public class ChatActivity extends BaseFragment implements
         if (uri == null) {
             return;
         }
+        ImageLoader.getInstance().checkAccount(currentAccount);
         String extractUriFrom = uri.toString();
         if (extractUriFrom.contains("com.google.android.apps.photos.contentprovider")) {
             try {

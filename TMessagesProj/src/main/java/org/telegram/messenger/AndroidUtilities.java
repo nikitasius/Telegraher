@@ -1869,7 +1869,7 @@ public class AndroidUtilities {
                 try {
                     newPath = Utilities.readlinkFd(fd);
                 } catch (Throwable e) {
-                    return true;
+                    return false;
                 }
                 if (newPath == null || newPath.equals(pathString)) {
                     break;

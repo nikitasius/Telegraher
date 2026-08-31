@@ -1385,9 +1385,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
 
     private String[] mediaProjections;
 
-    public static boolean hasInstance() {
-        return Instance != null;
-    }
+    private static volatile MediaController Instance;
 
     public static MediaController getInstance() {
         MediaController localInstance = Instance;
@@ -1491,9 +1489,16 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
 
         AndroidUtilities.runOnUIThread(() -> {
             for (int a : SharedConfig.activeAccounts) {
-                checkAccount(a);
+                NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.fileLoaded);
+                NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.httpFileDidLoad);
+                NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.didReceiveNewMessages);
+                NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.messagesDeleted);
+                NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.removeAllMessagesFromDialog);
+                NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.musicDidLoad);
+                NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.mediaDidLoad);
+                NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.musicListLoaded);
+                NotificationCenter.getGlobalInstance().addObserver(MediaController.this, NotificationCenter.playerDidStartPlaying);
             }
-            NotificationCenter.getGlobalInstance().addObserver(MediaController.this, NotificationCenter.playerDidStartPlaying);
         });
 
         mediaProjections = new String[]{
@@ -6094,18 +6099,18 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
                 count++;
             } while (f.exists());
             inputStream = ApplicationLoader.applicationContext.getContentResolver().openInputStream(uri);
-            if (inputStream instanceof FileInputStream) {
-                FileInputStream fileInputStream = (FileInputStream) inputStream;
-                try {
-                    Method getInt = FileDescriptor.class.getDeclaredMethod("getInt$");
-                    int fdint = (Integer) getInt.invoke(fileInputStream.getFD());
-                    if (AndroidUtilities.isInternalUri(fdint)) {
-                        return null;
-                    }
-                } catch (Throwable e) {
-                    FileLog.e(e);
-                }
-            }
+//            if (inputStream instanceof FileInputStream) {
+//                FileInputStream fileInputStream = (FileInputStream) inputStream;
+//                try {
+//                    Method getInt = FileDescriptor.class.getDeclaredMethod("getInt$");
+//                    int fdint = (Integer) getInt.invoke(fileInputStream.getFD());
+//                    if (AndroidUtilities.isInternalUri(fdint)) {
+//                        return null;
+//                    }
+//                } catch (Throwable e) {
+//                    FileLog.e(e);
+//                }
+//            }
             output = new FileOutputStream(f);
             byte[] buffer = new byte[1024 * 20];
             int len;

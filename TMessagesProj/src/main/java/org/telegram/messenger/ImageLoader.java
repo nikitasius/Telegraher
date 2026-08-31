@@ -2193,8 +2193,8 @@ public class ImageLoader {
         }
         int cacheSize = DEBUG_MODE ? 1 : Math.min(maxSize, memoryClass / 7) * 1024 * 1024;
 
-        int commonCacheSize =  DEBUG_MODE ? 1 : (int) (cacheSize * 0.8f);
-        int smallImagesCacheSize =   DEBUG_MODE ? 1 : (int) (cacheSize * 0.2f);
+        int commonCacheSize = DEBUG_MODE ? 1 : (int) (cacheSize * 0.8f);
+        int smallImagesCacheSize = DEBUG_MODE ? 1 : (int) (cacheSize * 0.2f);
 
         memCache = new LruCache<BitmapDrawable>(commonCacheSize) {
             @Override

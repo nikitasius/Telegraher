@@ -253,31 +253,51 @@ public class UserConfig extends BaseController {
     }
 
     public void setCurrentUser(TLRPC.User user) {
+        final boolean becameActive;
         synchronized (sync) {
             TLRPC.User oldUser = currentUser;
             currentUser = user;
-            clientUserId = user != null ? user.id : 0;
+            clientUserId = user.id;
             checkPremiumSelf(oldUser, user);
-            syncAccount();
+            becameActive = currentUser != null;
+        }
+        applyAccountActivation(becameActive);
+    }
+
+//    public void syncAccount() {
+//        final boolean activated;
+//        synchronized (sync) {
+//            activated = currentUser != null;
+//        }
+//        applyAccountActivation(activated);
+//    }
+
+    private void applyAccountActivation(boolean activated) {
+        boolean changed;
+        if (activated) {
+            changed = SharedConfig.activeAccounts.add(currentAccount);
+        } else {
+            changed = SharedConfig.activeAccounts.remove(currentAccount);
+        }
+        if (!changed) {
+            if (activated) {
+                attachAccountDelegates();
+            }
+            return;
+        }
+        SharedConfig.saveAccounts();
+        if (activated) {
+            attachAccountDelegates();
         }
     }
 
-    public void syncAccount() {
-        boolean activated = currentUser != null;
-        if (activated) {
-            if (SharedConfig.activeAccounts.add(currentAccount)) {
-                SharedConfig.saveAccounts();
-                if (ImageLoader.hasInstance()) {
-                    ImageLoader.getInstance().checkAccount(currentAccount);
-                }
-                if (MediaController.hasInstance()) {
-                    MediaController.getInstance().checkAccount(currentAccount);
-                }
-            }
-        } else {
-            if (SharedConfig.activeAccounts.remove(currentAccount)) {
-                SharedConfig.saveAccounts();
-            }
+    private void attachAccountDelegates() {
+        if (ImageLoader.hasInstance()) {
+            ImageLoader.getInstance().checkAccount(currentAccount);
+        }
+        MediaController mc = MediaController.getInstance();
+        if (mc != null) {
+            mc.checkAccount(currentAccount);
         }
     }
 
@@ -390,8 +410,8 @@ public class UserConfig extends BaseController {
                 clientUserId = currentUser.id;
             }
             configLoaded = true;
-            syncAccount();
         }
+        applyAccountActivation(currentUser != null);
     }
 
     public boolean isConfigLoaded() {
@@ -480,6 +500,7 @@ public class UserConfig extends BaseController {
         lastMyLocationShareTime = 0;
         currentUser = null;
         clientUserId = 0;
+        applyAccountActivation(false);
         registeredForPush = false;
         contactsSavedCount = 0;
         lastSendMessageId = -210000;
@@ -499,7 +520,6 @@ public class UserConfig extends BaseController {
         draftsLoaded = false;
         contactsReimported = true;
         syncContacts = true;
-        syncAccount();
         showCallsTab = false;
         suggestContacts = true;
         unreadDialogsLoaded = true;
