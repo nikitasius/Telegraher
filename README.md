@@ -157,7 +157,7 @@ Probably it's a good thing 😃
 * XDA thread: https://xdaforums.com/t/blackjack-and-hookers.4492879/
 
 ### Coffee
-
+ 
 * Here is my [PayPal](https://paypal.me/nikitasius) `https://paypal.me/nikitasius`
 * Cryptos
     * [BTC](bitcoin:bc1qhdxuuud5cy494m7s2gg3gy9pgz052wjtvrgu6m?message=github_telegraher)
